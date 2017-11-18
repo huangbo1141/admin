@@ -1,12 +1,12 @@
-package com.journaldev.spring.service;
+package com.hgc.admin.database.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.journaldev.spring.dao.PersonDAO;
-import com.journaldev.spring.model.Person;
+import com.hgc.admin.database.dao.PersonDAO;
+import com.hgc.admin.database.model.Person;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -19,8 +19,8 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	@Transactional
-	public void addPerson(Person p) {
-		this.personDAO.addPerson(p);
+	public Integer addPerson(Person p) {
+		return this.personDAO.addPerson(p);
 	}
 
 	@Override

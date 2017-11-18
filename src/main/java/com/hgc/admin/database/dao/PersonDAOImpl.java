@@ -1,14 +1,15 @@
-package com.journaldev.spring.dao;
+package com.hgc.admin.database.dao;
 
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.journaldev.spring.model.Person;
+import com.hgc.admin.database.model.Person;
 
 @Repository
 public class PersonDAOImpl implements PersonDAO {
@@ -22,10 +23,15 @@ public class PersonDAOImpl implements PersonDAO {
 	}
 
 	@Override
-	public void addPerson(Person p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.persist(p);
+	public Integer addPerson(Person p) {
+		
+		Session s = this.sessionFactory.openSession();
+		Transaction t = s.beginTransaction();
+		Integer myID = (Integer)s.save(p);
+		t.commit();
+		s.close();
 		logger.info("Person saved successfully, Person Details="+p);
+		return myID;
 	}
 
 	@Override
