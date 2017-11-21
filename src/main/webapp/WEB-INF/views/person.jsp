@@ -13,6 +13,9 @@
 	</style>
 </head>
 <body>
+Welcome ${sessionScope.username}
+<br>
+<a href="${pageContext.request.contextPath}/account/logout" >Logout</a>
 <h1>
 	Add a Person
 </h1>

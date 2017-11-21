@@ -14,46 +14,44 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="PERSON")
-public class Person {
+@Table(name="ACCOUNT")
+public class Account {
 
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
-	private String name;
+	private String username;
+	private String password;
 	
-	private String country;
-
+	
 	public int getId() {
 		return id;
 	}
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
-
-	public String getCountry() {
-		return country;
+	public String getPassword() {
+		return password;
 	}
-
-	public void setCountry(String country) {
-		this.country = country;
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	
-	@Override
-	public String toString(){
-		return "id="+id+", name="+name+", country="+country;
+	public Account(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
 	}
-	
+	public Account() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 }

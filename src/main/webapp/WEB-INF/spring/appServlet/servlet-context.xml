@@ -67,12 +67,27 @@
 		</beans:property>
 	</beans:bean>
 	
+	<!-- Person Model -->
 	<beans:bean id="personDAO" class="com.hgc.admin.database.dao.PersonDAOImpl">
 		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
 	<beans:bean id="personService" class="com.hgc.admin.database.service.PersonServiceImpl">
 		<beans:property name="personDAO" ref="personDAO"></beans:property>
 	</beans:bean>
+	<!-- End Person Model -->
+	
+	<!-- Account Model -->
+	<beans:bean id="accountDAO" class="com.hgc.admin.database.dao.AccountDAOImpl">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="accountService" class="com.hgc.admin.database.service.AccountServiceImpl">
+		<beans:property name="accountDAO" ref="accountDAO"></beans:property>
+	</beans:bean>
+	<!-- End Account Model -->
+	
+	
+	
+	
 	<context:component-scan base-package="com.hgc.admin" />
 	
 	<tx:annotation-driven transaction-manager="transactionManager"/>

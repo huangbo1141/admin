@@ -1,5 +1,7 @@
 package com.hgc.admin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -9,13 +11,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.hgc.admin.database.dao.PersonDAOImpl;
+import com.hgc.admin.database.model.AccountModel;
 import com.hgc.admin.database.model.Person;
 import com.hgc.admin.database.service.PersonService;
 
 @Controller
 public class PersonController {
-	
+	private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
 	private PersonService personService;
+	@Autowired
+	@Qualifier(value="currentUser")
+	private AccountModel currentUser;
 	
 	@Autowired(required=true)
 	@Qualifier(value="personService")
@@ -25,6 +32,14 @@ public class PersonController {
 	
 	@RequestMapping(value = "/persons", method = RequestMethod.GET)
 	public String listPersons(Model model) {
+		String name = currentUser.getUsername();
+		String pass = currentUser.getPassword();
+		if(name!=null&&pass!=null){
+			logger.info("Session      name = "+name+"   pass "+pass);
+		}else{
+			logger.info("Session      nullnullnull");
+		}
+		
 		model.addAttribute("person", new Person());
 		model.addAttribute("listPersons", this.personService.listPersons());
 		return "person";

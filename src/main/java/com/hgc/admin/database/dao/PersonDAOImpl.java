@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.hgc.admin.Constants;
 import com.hgc.admin.database.model.Person;
 
 @Repository
@@ -30,7 +31,8 @@ public class PersonDAOImpl implements PersonDAO {
 		Integer myID = (Integer)s.save(p);
 		t.commit();
 		s.close();
-		logger.info("Person saved successfully, Person Details="+p);
+		if(Constants.daoLogger)
+			logger.info("Person saved successfully, Person Details="+p);
 		return myID;
 	}
 
@@ -38,6 +40,7 @@ public class PersonDAOImpl implements PersonDAO {
 	public void updatePerson(Person p) {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.update(p);
+		if(Constants.daoLogger)
 		logger.info("Person updated successfully, Person Details="+p);
 	}
 
@@ -46,7 +49,9 @@ public class PersonDAOImpl implements PersonDAO {
 	public List<Person> listPersons() {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Person> personsList = session.createQuery("from Person").list();
+		if(Constants.daoLogger)
 		for(Person p : personsList){
+			
 			logger.info("Person List::"+p);
 		}
 		return personsList;
@@ -56,6 +61,7 @@ public class PersonDAOImpl implements PersonDAO {
 	public Person getPersonById(int id) {
 		Session session = this.sessionFactory.getCurrentSession();		
 		Person p = (Person) session.load(Person.class, new Integer(id));
+		if(Constants.daoLogger)
 		logger.info("Person loaded successfully, Person details="+p);
 		return p;
 	}
@@ -67,6 +73,7 @@ public class PersonDAOImpl implements PersonDAO {
 		if(null != p){
 			session.delete(p);
 		}
+		if(Constants.daoLogger)
 		logger.info("Person deleted successfully, person details="+p);
 	}
 
