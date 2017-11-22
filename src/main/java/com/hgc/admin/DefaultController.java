@@ -18,15 +18,21 @@ import com.hgc.admin.database.service.PersonService;
 
 @Controller
 @RequestMapping({"home"})
-public class DefaultController {
+public class DefaultController extends BaseController{
 	private static final Logger logger = LoggerFactory.getLogger(DefaultController.class);
 	
 	@Autowired
 	@Qualifier(value="currentUser")
 	private AccountModel currentUser;
-		
+	
 	@RequestMapping(method = RequestMethod.GET)
-	public String index(){
+	public String index(Model model){
+		String login_redirect = checkLogin(currentUser); 
+		if(login_redirect!=null){
+			return login_redirect;
+		}
+		model.addAttribute("pageName", "Home");
+		model.addAttribute("pageID", "1");
 		return "layout/default";
 	}
 	

@@ -17,7 +17,7 @@ Welcome ${sessionScope.username}
 <br>
 <a href="${pageContext.request.contextPath}/account/logout" >Logout</a>
 <h1>
-	Add a Person
+	Add a Person 阿大物流有限公司版权所有
 </h1>
 
 <c:url var="addAction" value="/person/add" ></c:url>

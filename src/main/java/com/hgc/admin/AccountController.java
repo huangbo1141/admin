@@ -99,6 +99,7 @@ private AccountService accountService;
 				response.addCookie(ck);
 			}
 		}
+		currentUser.logout();
 		return "redirect:login";
 	}
 	

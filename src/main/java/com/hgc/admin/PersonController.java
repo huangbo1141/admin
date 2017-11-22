@@ -17,7 +17,7 @@ import com.hgc.admin.database.model.Person;
 import com.hgc.admin.database.service.PersonService;
 
 @Controller
-public class PersonController {
+public class PersonController extends BaseController{
 	private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
 	private PersonService personService;
 	@Autowired
@@ -32,6 +32,10 @@ public class PersonController {
 	
 	@RequestMapping(value = "/persons", method = RequestMethod.GET)
 	public String listPersons(Model model) {
+		String login_redirect = checkLogin(currentUser); 
+		if(login_redirect!=null){
+			return login_redirect;
+		}
 		String name = currentUser.getUsername();
 		String pass = currentUser.getPassword();
 		if(name!=null&&pass!=null){

@@ -19,7 +19,6 @@ import org.hibernate.cfg.Configuration;
 import com.hgc.admin.HibernateUtil;
 import com.hgc.admin.database.service.AccountService;
 
-import manager.PersistenceManager;
 
 public class AccountModel {
 	
@@ -106,5 +105,22 @@ public class AccountModel {
 		this.password = password;
 	}
 	
+	public boolean hasLogin(){
+		System.out.println("滴滴货车后台管理系统");	
+		return true;
+//		try{
+//			if(username.length()>0 && password.length()>0){
+//				return true;
+//			}
+//		}catch(Exception e){
+//			System.out.println(e.getMessage());			  
+//		}
+//		return false;
+	}
+	
+	public void logout(){
+		this.username = null;
+		this.password = null;
+	}
 	
 }
