@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-encoding//src/main/java/com/hgc/admin/database/model/AccountModel.java=UTF-8
+encoding//src/main/java/com/hgc/admin/utils/AccountHelper.java=UTF-8
 encoding//src/main/webapp/WEB-INF/views/common/header.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/common/navbar.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/person.jsp=UTF-8

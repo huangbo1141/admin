@@ -24,38 +24,63 @@
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
-	
+
 	<!-- Configure to plugin JSON as request and response in method handler -->
-	<beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+	<beans:bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<beans:property name="messageConverters">
 			<beans:list>
-				<beans:ref bean="jsonMessageConverter"/>
+				<beans:ref bean="jsonMessageConverter" />
 			</beans:list>
 		</beans:property>
 	</beans:bean>
-	
+
 	<!-- Configure bean to convert JSON to POJO and vice versa -->
-	<beans:bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-	</beans:bean>	
-	
-	<context:component-scan base-package="com.hgc.admin" />
+	<beans:bean id="jsonMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+	</beans:bean>
+
 
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<beans:property name="url"
-			value="jdbc:mysql://localhost:3306/db_example?useUnicode=true&amp;characterEncoding=utf8" />
+			value="jdbc:mysql://localhost:3306/db_example?useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull" />
 		<beans:property name="username" value="root" />
 		<beans:property name="password" value="111" />
 	</beans:bean>
 
-	<!-- Hibernate 4 SessionFactory Bean definition -->
+	
+	<context:component-scan base-package="com.hgc.admin" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<beans:bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+
+
+<!-- Hibernate 4 SessionFactory Bean definition -->
 	<beans:bean id="hibernate4AnnotatedSessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<beans:property name="dataSource" ref="dataSource" />
 		<beans:property name="annotatedClasses">
 			<beans:list>
 				<beans:value>com.hgc.admin.database.model.Person</beans:value>
+				<beans:value>com.hgc.admin.database.model.Account</beans:value>
+				<beans:value>com.hgc.admin.database.model.AdminRole</beans:value>
+				<beans:value>com.hgc.admin.database.model.Ct</beans:value>
+				<beans:value>com.hgc.admin.database.model.Dan</beans:value>
+				<beans:value>com.hgc.admin.database.model.Line</beans:value>
+				<beans:value>com.hgc.admin.database.model.Menu</beans:value>
+				<beans:value>com.hgc.admin.database.model.MenuAction</beans:value>
+				<beans:value>com.hgc.admin.database.model.Station</beans:value>
+				<beans:value>com.hgc.admin.database.model.TimeType</beans:value>
+				<beans:value>com.hgc.admin.database.model.Tt</beans:value>
+				<beans:value>com.hgc.admin.database.model.User</beans:value>
+				<beans:value>com.hgc.admin.database.model.UserRole</beans:value>
+
 			</beans:list>
 		</beans:property>
 		<beans:property name="hibernateProperties">
@@ -66,35 +91,140 @@
 			</beans:props>
 		</beans:property>
 	</beans:bean>
-	
+
 	<!-- Person Model -->
 	<beans:bean id="personDAO" class="com.hgc.admin.database.dao.PersonDAOImpl">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
-	<beans:bean id="personService" class="com.hgc.admin.database.service.PersonServiceImpl">
+	<beans:bean id="personService"
+		class="com.hgc.admin.database.service.PersonServiceImpl">
 		<beans:property name="personDAO" ref="personDAO"></beans:property>
 	</beans:bean>
 	<!-- End Person Model -->
-	
+
 	<!-- Account Model -->
 	<beans:bean id="accountDAO" class="com.hgc.admin.database.dao.AccountDAOImpl">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
-	<beans:bean id="accountService" class="com.hgc.admin.database.service.AccountServiceImpl">
+	<beans:bean id="accountService"
+		class="com.hgc.admin.database.service.AccountServiceImpl">
 		<beans:property name="accountDAO" ref="accountDAO"></beans:property>
 	</beans:bean>
 	<!-- End Account Model -->
 	
-	
-	
-	
-	<context:component-scan base-package="com.hgc.admin" />
-	
-	<tx:annotation-driven transaction-manager="transactionManager"/>
-	
-	<beans:bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+<!-- AdminRole Model -->
+	<beans:bean id="adminRoleDAO" class="com.hgc.admin.database.dao.AdminRoleDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
+	<beans:bean id="adminRoleService"
+		class="com.hgc.admin.database.service.AdminRoleServiceImpl">
+		<beans:property name="adminRoleDAO" ref="adminRoleDAO"></beans:property>
+	</beans:bean>
+	<!-- End AdminRole Model -->
+<!-- Ct Model -->
+	<beans:bean id="ctDAO" class="com.hgc.admin.database.dao.CtDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="ctService"
+		class="com.hgc.admin.database.service.CtServiceImpl">
+		<beans:property name="ctDAO" ref="ctDAO"></beans:property>
+	</beans:bean>
+	<!-- End Ct Model -->
+<!-- Dan Model -->
+	<beans:bean id="danDAO" class="com.hgc.admin.database.dao.DanDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="danService"
+		class="com.hgc.admin.database.service.DanServiceImpl">
+		<beans:property name="danDAO" ref="danDAO"></beans:property>
+	</beans:bean>
+	<!-- End Dan Model -->
+<!-- Line Model -->
+	<beans:bean id="lineDAO" class="com.hgc.admin.database.dao.LineDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="lineService"
+		class="com.hgc.admin.database.service.LineServiceImpl">
+		<beans:property name="lineDAO" ref="lineDAO"></beans:property>
+	</beans:bean>
+	<!-- End Line Model -->
+<!-- Menu Model -->
+	<beans:bean id="menuDAO" class="com.hgc.admin.database.dao.MenuDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="menuService"
+		class="com.hgc.admin.database.service.MenuServiceImpl">
+		<beans:property name="menuDAO" ref="menuDAO"></beans:property>
+	</beans:bean>
+	<!-- End Menu Model -->
+<!-- MenuAction Model -->
+	<beans:bean id="menuActionDAO" class="com.hgc.admin.database.dao.MenuActionDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="menuActionService"
+		class="com.hgc.admin.database.service.MenuActionServiceImpl">
+		<beans:property name="menuActionDAO" ref="menuActionDAO"></beans:property>
+	</beans:bean>
+	<!-- End MenuAction Model -->
+<!-- Station Model -->
+	<beans:bean id="stationDAO" class="com.hgc.admin.database.dao.StationDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="stationService"
+		class="com.hgc.admin.database.service.StationServiceImpl">
+		<beans:property name="stationDAO" ref="stationDAO"></beans:property>
+	</beans:bean>
+	<!-- End Station Model -->
+<!-- TimeType Model -->
+	<beans:bean id="timeTypeDAO" class="com.hgc.admin.database.dao.TimeTypeDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="timeTypeService"
+		class="com.hgc.admin.database.service.TimeTypeServiceImpl">
+		<beans:property name="timeTypeDAO" ref="timeTypeDAO"></beans:property>
+	</beans:bean>
+	<!-- End TimeType Model -->
+<!-- Tt Model -->
+	<beans:bean id="ttDAO" class="com.hgc.admin.database.dao.TtDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="ttService"
+		class="com.hgc.admin.database.service.TtServiceImpl">
+		<beans:property name="ttDAO" ref="ttDAO"></beans:property>
+	</beans:bean>
+	<!-- End Tt Model -->
+<!-- User Model -->
+	<beans:bean id="userDAO" class="com.hgc.admin.database.dao.UserDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="userService"
+		class="com.hgc.admin.database.service.UserServiceImpl">
+		<beans:property name="userDAO" ref="userDAO"></beans:property>
+	</beans:bean>
+	<!-- End User Model -->
+<!-- UserRole Model -->
+	<beans:bean id="userRoleDAO" class="com.hgc.admin.database.dao.UserRoleDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="userRoleService"
+		class="com.hgc.admin.database.service.UserRoleServiceImpl">
+		<beans:property name="userRoleDAO" ref="userRoleDAO"></beans:property>
+	</beans:bean>
+	<!-- End UserRole Model -->
+	
 
 
 </beans:beans>

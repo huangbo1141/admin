@@ -1,0 +1,457 @@
+﻿<!doctype html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="css/style.css"> <!-- Resource style --> 
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="css/customstyle.css" rel="stylesheet" />
+    <script src="js/modernizr.js"></script> <!-- Modernizr -->
+  	
+	<title>Demo</title>
+</head>
+<body style="overflow: hidden;">
+<div class="loading" style="display: none;">Loading&#8230;</div>
+	<main class="cd-main-content">
+		<nav class="cd-side-nav1">
+
+            <div class="logo">
+                <a href="#"><img src="img/logo.png" /></a>
+            </div>
+            <div class="panel-group" id="accordion">
+                <div class="panel">
+                    <div class="panel-heading active">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                系统管理
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                           <ul>
+                               <li>系统管理</li>
+                               <li>系统管理</li>
+                           </ul> 
+                        </div>
+                    </div>
+                   
+                </div>
+                <div class="panel ">                   
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapsetwo">
+                                Content
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapsetwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul>
+                                <li>asdasd</li>
+                                <li>asdasd</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-without-body">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="" href="#">
+                                Content
+                            </a>
+                        </h4>
+                    </div>
+                    
+                </div>
+                <div class="panel">
+                    <div class="panel-without-body">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="" href="#">
+                                Content
+                            </a>
+                        </h4>
+                    </div>
+
+                </div>
+                <div class="panel">
+                    <div class="panel-without-body">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="" href="#">
+                                Content
+                            </a>
+                        </h4>
+                    </div>
+
+                </div>
+                <div class="panel">
+                    <div class="panel-without-body">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="" href="#">
+                                Content
+                            </a>
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+		</nav>
+
+		<div class="content-wrapper">			
+			<div class=row>
+				<div class="col-md-12">
+					<button type="button" name="new" class="NewBTN" data-toggle="modal" data-target="#NewModal">新建</button>
+				</div>
+				
+				<div class="col-md-12">
+                    <div class="tablediv">
+                        <ul class="nav dess-nav-tabs nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home">系统管理</a></li>
+                            <li><a data-toggle="tab" href="#menu1">系统管理</a></li>                           
+                        </ul>
+
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane fade in active">
+                                <table class="table custometable">
+                                    <thead>
+                                        <tr>
+                                            <th>序号 (Tab 1)</th>
+                                            <th>菜单名称</th>
+                                            <th>资源路径</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="menu1" class="tab-pane fade">
+                                <table class="table custometable table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>序号(Tab2)</th>
+                                            <th>菜单名称</th>
+                                            <th>资源路径</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>系统管理</td>
+                                            <td>#</td>
+                                            <td class="col-xs-2">
+                                                <button type="submit" name="edit" class="editbtn" data-toggle="modal" data-target="#EditModal">编辑</button>
+                                                <button type="submit" name="delete" class="dltbtn" data-toggle="modal" data-target="#DeleteModal">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                           
+                        </div>
+
+                       
+                    </div>
+					
+				</div>
+			</div>
+		</div> <!-- .content-wrapper -->
+	</main> <!-- .cd-main-content -->
+	<div id="EditModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+
+	    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">
+                    <img src="img/modalclose.png" /> </button>
+		        <h4 class="modal-title">添加菜单</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class="row">
+		        	<div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" >菜单名称*</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control inputstyle" id="" placeholder="" name="">
+                            </div>
+                        </div>
+		        	</div>
+		        	<div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" >父菜单*</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select name="ParentMenu" class="form-control inputstyle">
+                                            <option>选择菜单</option>
+                                            <option>系统管理</option>
+                                            <option>注册管理</option>
+                                            <option> 客户档案</option>
+                                            <option> 油柜档案</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="setbtn">设置为顶级菜单</button>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                        </div>
+		        		 
+		        	</div>
+		        
+		        	<div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" >URL*</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control inputstyle" >
+                            </div>
+                        </div>
+		        	</div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="email">序号*</label>
+                            <div class="col-sm-10">
+                                <input type="text" style="margin-bottom: 0;" class="form-control inputstyle" >
+                            </div>
+                        </div>
+                    </div>
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="modlbtn mdl-sv" onclick="$('.loading').show();setTimeout(function () {$('.loading').hide();}, 3000);" data-dismiss="modal">保存</button>
+		        
+		        <button type="button" class="modlbtn mdl-cancle" data-dismiss="modal">取消</button>
+		      </div>
+		    </div>
+
+	  </div>
+	</div>
+	<div id="NewModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <img src="img/modalclose.png" />
+                    </button>
+                    <h4 class="modal-title">添加菜单</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">菜单名称*</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control inputstyle" id="" placeholder="" name="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">父菜单*</label>
+                                <div class="col-sm-10">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select name="ParentMenu" class="form-control inputstyle">
+                                                <option>选择菜单</option>
+                                                <option>系统管理</option>
+                                                <option>注册管理</option>
+                                                <option> 客户档案</option>
+                                                <option> 油柜档案</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button class="setbtn">设置为顶级菜单</button>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">URL*</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control inputstyle">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="email">序号*</label>
+                                <div class="col-sm-10">
+                                    <input type="text" style="margin-bottom: 0;" class="form-control inputstyle">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modlbtn mdl-sv" onclick="$('.loading').show();setTimeout(function () {$('.loading').hide();}, 3000);" data-dismiss="modal">保存</button>
+
+                    <button type="button" class="modlbtn mdl-cancle" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+
+        </div>
+	</div>
+	<div id="DeleteModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <img src="img/modalclose.png" />
+                    </button>
+                    <h4 class="modal-title">Are you sure you want to delete?</h4>
+                </div>
+               
+                <div class="modal-footer">
+                    <button type="button" class="modlbtn mdl-sv" data-dismiss="modal">保存</button>
+
+                    <button type="button" class="modlbtn mdl-cancle" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+
+        </div>
+	</div>
+<script src="js/jquery-2.1.4.js"></script>
+<script src="js/jquery.menu-aim.js"></script>
+<script type="text/javascript" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+<script src="js/main.js"></script>
+    <script>
+   
+        $("#accordion .panel-heading").click(function (e) {
+            if ($(this).hasClass("active")) {
+                $(this).removeClass('active');
+            } else {
+                $('#accordion .panel-heading').removeClass('active');
+                $(this).addClass('active')
+
+            }
+            
+            
+        });
+        $(function(){
+       $(".mdl-sv").submit(function (e) {
+			    e.preventDefault();
+
+			    $(".loading").show();setTimeout(function () {$(".loading").hide();}, 3000); // in milliseconds
+			});        	
+        });
+
+    </script>
+<!-- Resource jQuery -->
+</body>
+</html>

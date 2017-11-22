@@ -1,4 +1,4 @@
-package com.hgc.admin;
+package com.hgc.admin.constants;
 
 public class Constants {
 

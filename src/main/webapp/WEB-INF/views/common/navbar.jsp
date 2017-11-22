@@ -78,14 +78,14 @@
 						href="#collapse5"> Content </a>
 				</h4>
 			</div>
-			<div id="collapse5" class="panel-collapse collapse ">
-				<div class="panel-body">
-					<ul>
-						<li>asdasd</li>
-						<li>asdasd</li>
-					</ul>
-				</div>
-			</div>
+			<!-- 			<div id="collapse5" class="panel-collapse collapse "> -->
+			<!-- 				<div class="panel-body"> -->
+			<!-- 					<ul> -->
+			<!-- 						<li>asdasd</li> -->
+			<!-- 						<li>asdasd</li> -->
+			<!-- 					</ul> -->
+			<!-- 				</div> -->
+			<!-- 			</div> -->
 
 		</div>
 		<div class="panel ">

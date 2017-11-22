@@ -1,4 +1,4 @@
-.NewBTN{
+﻿.NewBTN{
 
     display: inline-block;
     padding: 6px 12px;
@@ -32,18 +32,20 @@
     font-weight: 700;
     font-style: normal;
         padding-top: 12px;
-    font-size: 14px;
+    font-size: 11px;
     padding-bottom: 12px;
 }
 .custometable thead tr,.custometable,.custometable tbody tr{border-bottom:1px solid #333333;}
-.tablediv{border:1px solid #333333; height:500px}
+.tablediv{border:1px solid #333333; border-top:none; height:500px; margin-top:50px; position:relative;}
+.custometable{border-top:1px solid #333;}
 
 .custometable tbody tr td{
     font-family: 'Arial Normal', 'Arial';
     font-weight: 400;
     font-style: normal;
-    font-size: 14px;
+    font-size: 10px;
     color: #333333;
+    border-color:#333333;
 }
     
 .editbtn,.dltbtn{
@@ -51,7 +53,7 @@
     font-weight: 400;
     font-style: normal;
         color: #333333;
-        font-size: 12px;
+        font-size: 10px;
             background: transparent;
     border: none;
     outline:none;
@@ -92,7 +94,7 @@
         background: rgba(215, 215, 215, 1) url(../img/u7903.png) right 20px center no-repeat;
     border-bottom: 1px solid #333333;
     background-size: 11%;
-    pointer-events:none;
+  
 }
 .panel-heading:hover {
         background: rgba(215, 215, 215, 1) url(../img/u7903.png) right 20px center no-repeat;
@@ -113,7 +115,7 @@
     font-weight: 400;}
 #accordion .panel-body{padding:0;}
 .panel-title{
-    font-size:18px; color:#333;    font-family: 'Arial Normal', 'Arial';
+    font-size:11px; color:#333;    font-family: 'Arial Normal', 'Arial';
     font-weight: 400;
 }
 
@@ -186,3 +188,38 @@
     border:1px solid #333;
 }
 .mdl-cancle:hover{background:#333; color:#fff;}
+.custometable>thead>tr>th{
+        border-bottom: 1px solid #333 !important;
+}
+
+.dess-nav-tabs{
+    border-bottom:none;
+    position: absolute;
+    top: -41px;
+    left: -1px;
+}
+.nav-tabs > li > a {
+    border: 1px solid #333 !important;
+    border-bottom:none !important;
+    margin-right:0;
+    border-radius:0;
+    color:#333333;
+    padding: 10px 30px;
+}
+.custometable {
+    width: 100.09%;
+    max-width: 101%;
+    margin-bottom: 20px;
+}
+.nav-tabs li.active a{background:#FA91FE !important;}
+.nav>li>a:focus, .nav>li>a:hover{background:#FA91FE !important;}
+.cd-side-nav1 .panel-without-body {
+    text-align: center;
+    padding: 0 !important;
+    border-radius: 0;
+    border-top: 1px solid #333333;
+}
+.panel-without-body:hover{background: rgba(215, 215, 215, 1);}
+.cd-side-nav1 .panel-without-body a{display: block; padding: 5px 0;}
+.cd-side-nav1 .panel-without-body a:hover,.cd-side-nav1 .panel-without-body a:focus{     text-decoration:none;}
+#accordion .panel:last-child{border-bottom:1px solid #333;}

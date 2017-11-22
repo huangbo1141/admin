@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.hgc.admin.Constants;
+import com.hgc.admin.constants.Constants;
 import com.hgc.admin.database.model.Account;
 
 @Repository
@@ -38,7 +38,6 @@ public class AccountDAOImpl implements AccountDAO {
 			System.out.println(e.getMessage());			  
 		}
 		return ret;
-		
 	}
 	
 	@Override

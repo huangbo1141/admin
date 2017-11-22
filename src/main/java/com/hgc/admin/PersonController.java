@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.hgc.admin.database.dao.PersonDAOImpl;
-import com.hgc.admin.database.model.AccountModel;
 import com.hgc.admin.database.model.Person;
 import com.hgc.admin.database.service.PersonService;
+import com.hgc.admin.utils.AccountHelper;
 
 @Controller
 public class PersonController extends BaseController{
@@ -22,13 +22,15 @@ public class PersonController extends BaseController{
 	private PersonService personService;
 	@Autowired
 	@Qualifier(value="currentUser")
-	private AccountModel currentUser;
+	private AccountHelper currentUser;
 	
 	@Autowired(required=true)
 	@Qualifier(value="personService")
 	public void setPersonService(PersonService ps){
 		this.personService = ps;
 	}
+	
+	
 	
 	@RequestMapping(value = "/persons", method = RequestMethod.GET)
 	public String listPersons(Model model) {

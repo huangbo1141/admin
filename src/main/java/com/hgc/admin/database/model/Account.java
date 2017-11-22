@@ -1,5 +1,7 @@
 package com.hgc.admin.database.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +16,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="ACCOUNT")
+@Table(name="tbl_admin_user")
 public class Account {
 
 	@Id
@@ -22,6 +24,10 @@ public class Account {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
+	private String name;
+	private String phone;
+	private String log_time;
+	private int role;
 	private String username;
 	private String password;
 	
@@ -53,5 +59,32 @@ public class Account {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getLog_time() {
+		return log_time;
+	}
+	public void setLog_time(String log_time) {
+		this.log_time = log_time;
+	}
+	public int getRole() {
+		return role;
+	}
+	public void setRole(int role) {
+		this.role = role;
+	}
+
+	
+	
 	
 }

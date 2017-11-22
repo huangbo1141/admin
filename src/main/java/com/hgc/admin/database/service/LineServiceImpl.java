@@ -1,0 +1,57 @@
+package com.hgc.admin.database.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.hgc.admin.database.dao.LineDAO;
+import com.hgc.admin.database.model.Line;
+
+@Service
+public class LineServiceImpl implements LineService {
+
+	private LineDAO personDAO;
+
+	public void setLineDAO(LineDAO personDAO) {
+		this.personDAO = personDAO;
+	}
+
+	@Override
+	@Transactional
+	public Integer addLine(Line p) {
+		return this.personDAO.addLine(p);
+	}
+
+	@Override
+	@Transactional
+	public void updateLine(Line p) {
+		this.personDAO.updateLine(p);
+	}
+
+	@Override
+	@Transactional
+	public List<Line> listLines() {
+		return this.personDAO.listLines();
+	}
+
+	@Override
+	@Transactional
+	public Line getLineById(int id) {
+		return this.personDAO.getLineById(id);
+	}
+
+	@Override
+	@Transactional
+	public void removeLine(int id) {
+		this.personDAO.removeLine(id);
+	}
+
+	@Override
+	public List<Object> queryLine(String query) {
+		// TODO Auto-generated method stub
+		return this.personDAO.queryLine(query);
+
+	}
+
+}
