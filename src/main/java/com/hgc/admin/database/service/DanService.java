@@ -9,7 +9,7 @@ public interface DanService {
 	public Integer addDan(Dan p);
 	public void updateDan(Dan p);
 	public List<Dan> listDans();
-	public Dan getDanById(int id);
-	public void removeDan(int id);
+	public Dan getDanById(Integer id);
+	public void removeDan(Integer id);
 	public List<Object> queryDan(String query);
 }

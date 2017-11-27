@@ -32,10 +32,13 @@ public class TimeTypeDAOImpl implements TimeTypeDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("TimeType List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class TimeTypeDAOImpl implements TimeTypeDAO {
 	@Override
 	public Integer addTimeType(TimeType p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("TimeType saved successfully, TimeType Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("TimeType saved successfully, TimeType Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateTimeType(TimeType p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("TimeType updated successfully, TimeType Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("TimeType updated successfully, TimeType Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<TimeType> listTimeTypes() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<TimeType> TimeTypesList = session.createQuery("from TimeType").list();
-		for(TimeType p : TimeTypesList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<TimeType> TimeTypesList = session.createQuery("from TimeType").list();
+			for(TimeType p : TimeTypesList){
+				if(Constants.daoLogger)
+				logger.info("TimeType List::"+p);
+			}
+			session.close();
+			return TimeTypesList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public TimeType getTimeTypeById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			TimeType p = (TimeType) session.load(TimeType.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("TimeType List::"+p);
+			logger.info("TimeType loaded successfully, TimeType details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return TimeTypesList;
 	}
 
 	@Override
-	public TimeType getTimeTypeById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		TimeType p = (TimeType) session.load(TimeType.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("TimeType loaded successfully, TimeType details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeTimeType(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		TimeType p = (TimeType) session.load(TimeType.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeTimeType(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			TimeType p = (TimeType) session.load(TimeType.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("TimeType deleted successfully, TimeType details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("TimeType deleted successfully, TimeType details="+p);
 	}
 
 }

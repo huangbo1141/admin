@@ -37,13 +37,13 @@ public class CtServiceImpl implements CtService {
 
 	@Override
 	@Transactional
-	public Ct getCtById(int id) {
+	public Ct getCtById(Integer id) {
 		return this.personDAO.getCtById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeCt(int id) {
+	public void removeCt(Integer id) {
 		this.personDAO.removeCt(id);
 	}
 

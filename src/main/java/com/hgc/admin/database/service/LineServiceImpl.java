@@ -37,13 +37,13 @@ public class LineServiceImpl implements LineService {
 
 	@Override
 	@Transactional
-	public Line getLineById(int id) {
+	public Line getLineById(Integer id) {
 		return this.personDAO.getLineById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeLine(int id) {
+	public void removeLine(Integer id) {
 		this.personDAO.removeLine(id);
 	}
 

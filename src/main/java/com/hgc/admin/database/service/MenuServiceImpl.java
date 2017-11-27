@@ -37,13 +37,13 @@ public class MenuServiceImpl implements MenuService {
 
 	@Override
 	@Transactional
-	public Menu getMenuById(int id) {
+	public Menu getMenuById(Integer id) {
 		return this.personDAO.getMenuById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeMenu(int id) {
+	public void removeMenu(Integer id) {
 		this.personDAO.removeMenu(id);
 	}
 

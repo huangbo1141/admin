@@ -1,41 +1,27 @@
 package com.hgc.admin;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.hgc.admin.database.model.Account;
-import com.hgc.admin.database.service.AccountService;
+import com.hgc.admin.database.model.AdminUser;
 import com.hgc.admin.utils.AccountHelper;
-import com.hgc.admin.utils.ControllerHelper;
 
 @Controller
 @RequestMapping({ "/", "account" })
 public class AccountController extends BaseController{
 
-	
-
-	@Autowired
-	@Qualifier(value = "currentUser")
-	private AccountHelper currentUser;
-
-	@Resource
-	private ControllerHelper baseHelper;
-	
+		
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String index() {
@@ -46,9 +32,9 @@ public class AccountController extends BaseController{
 	@RequestMapping(value = "login", method = RequestMethod.GET)
 	public String login(Model model, HttpSession session, HttpServletRequest request) {
 
-		Account acc = checkCookie(request);
+		AdminUser acc = checkCookie(request);
 		if (acc == null) {
-			model.addAttribute("account", new Account());
+			model.addAttribute("account", new AdminUser());
 			return "common/index";
 		} else {
 			AccountHelper accModel = new AccountHelper();
@@ -61,14 +47,14 @@ public class AccountController extends BaseController{
 				return "redirect:/home";
 			} else {
 				model.addAttribute("error", "Account's Invalid");
-				model.addAttribute("account", new Account());
+				model.addAttribute("account", new AdminUser());
 				return "common/index";
 			}
 		}
 	}
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public String login(@ModelAttribute(value = "account") Account account, Model model, HttpSession session,
+	public String login(@ModelAttribute(value = "account") AdminUser account, Model model, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 
 		AccountHelper accModel = new AccountHelper();
@@ -110,10 +96,11 @@ public class AccountController extends BaseController{
 		return "redirect:login";
 	}
 
-	public Account checkCookie(HttpServletRequest request) {
+	public AdminUser checkCookie(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		Account ac = null;
+		AdminUser ac = null;
 		String username = "", password = "";
+		if(cookies!=null)
 		for (Cookie ck : cookies) {
 			if (ck.getName().equalsIgnoreCase("username"))
 				username = ck.getValue();
@@ -121,7 +108,9 @@ public class AccountController extends BaseController{
 				password = ck.getValue();
 		}
 		if (!username.isEmpty() && !password.isEmpty()) {
-			ac = new Account(username, password);
+			ac = new AdminUser();
+			ac.setUsername(username);
+			ac.setPassword(password);
 		}
 		return ac;
 	}

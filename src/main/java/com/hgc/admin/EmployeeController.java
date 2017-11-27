@@ -1,12 +1,8 @@
 package com.hgc.admin;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +24,11 @@ import com.hgc.admin.database.service.PersonService;
 @Controller
 public class EmployeeController {
 	
-	private PersonService personService;
+	
 	
 	@Autowired(required=true)
 	@Qualifier(value="personService")
-	public void setPersonService(PersonService ps){
-		this.personService = ps;
-	}
+	private PersonService personService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
 	

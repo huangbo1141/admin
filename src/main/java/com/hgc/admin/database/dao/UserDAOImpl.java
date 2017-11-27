@@ -32,10 +32,13 @@ public class UserDAOImpl implements UserDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("User List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	public Integer addUser(User p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("User saved successfully, User Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("User saved successfully, User Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateUser(User p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("User updated successfully, User Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("User updated successfully, User Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> listUsers() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<User> UsersList = session.createQuery("from User").list();
-		for(User p : UsersList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<User> UsersList = session.createQuery("from User").list();
+			for(User p : UsersList){
+				if(Constants.daoLogger)
+				logger.info("User List::"+p);
+			}
+			session.close();
+			return UsersList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public User getUserById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			User p = (User) session.load(User.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("User List::"+p);
+			logger.info("User loaded successfully, User details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return UsersList;
 	}
 
 	@Override
-	public User getUserById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		User p = (User) session.load(User.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("User loaded successfully, User details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeUser(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		User p = (User) session.load(User.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeUser(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			User p = (User) session.load(User.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("User deleted successfully, User details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("User deleted successfully, User details="+p);
 	}
 
 }

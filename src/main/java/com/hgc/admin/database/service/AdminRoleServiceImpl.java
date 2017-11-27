@@ -37,13 +37,13 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
 	@Override
 	@Transactional
-	public AdminRole getAdminRoleById(int id) {
+	public AdminRole getAdminRoleById(Integer id) {
 		return this.personDAO.getAdminRoleById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeAdminRole(int id) {
+	public void removeAdminRole(Integer id) {
 		this.personDAO.removeAdminRole(id);
 	}
 

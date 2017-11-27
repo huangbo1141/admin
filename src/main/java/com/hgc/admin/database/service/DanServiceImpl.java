@@ -37,13 +37,13 @@ public class DanServiceImpl implements DanService {
 
 	@Override
 	@Transactional
-	public Dan getDanById(int id) {
+	public Dan getDanById(Integer id) {
 		return this.personDAO.getDanById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeDan(int id) {
+	public void removeDan(Integer id) {
 		this.personDAO.removeDan(id);
 	}
 

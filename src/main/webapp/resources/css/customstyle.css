@@ -1,4 +1,4 @@
-﻿.NewBTN{
+.NewBTN{
 
     display: inline-block;
     padding: 6px 12px;
@@ -36,7 +36,7 @@
     padding-bottom: 12px;
 }
 .custometable thead tr,.custometable,.custometable tbody tr{border-bottom:1px solid #333333;}
-.tablediv{border:1px solid #333333; border-top:none; height:500px; margin-top:50px; position:relative;}
+.tablediv{border:1px solid #333333; border-top:none; margin-top:50px; position:relative;}
 .custometable{border-top:1px solid #333;}
 
 .custometable tbody tr td{
@@ -48,7 +48,7 @@
     border-color:#333333;
 }
     
-.editbtn,.dltbtn{
+.editbtn,.dltbtn,.authbtn{
     font-family: 'Arial Normal', 'Arial';
     font-weight: 400;
     font-style: normal;
@@ -61,7 +61,7 @@
 }
 .editbtn:focus,.dltbtn:focus{outline:none;}
 .dltbtn{color:#FF0000;}
-
+.authbtn{color:#0000FF;}
 
 .cd-side-nav1{
     width:15% !important; 

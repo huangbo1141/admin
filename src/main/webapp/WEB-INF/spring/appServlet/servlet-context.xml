@@ -51,14 +51,7 @@
 	</beans:bean>
 
 	
-	<context:component-scan base-package="com.hgc.admin" />
-	<tx:annotation-driven transaction-manager="transactionManager" />
-
-	<beans:bean id="transactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<beans:property name="sessionFactory"
-			ref="hibernate4AnnotatedSessionFactory" />
-	</beans:bean>
+	
 
 
 <!-- Hibernate 4 SessionFactory Bean definition -->
@@ -68,7 +61,7 @@
 		<beans:property name="annotatedClasses">
 			<beans:list>
 				<beans:value>com.hgc.admin.database.model.Person</beans:value>
-				<beans:value>com.hgc.admin.database.model.Account</beans:value>
+				<beans:value>com.hgc.admin.database.model.AdminUser</beans:value>
 				<beans:value>com.hgc.admin.database.model.AdminRole</beans:value>
 				<beans:value>com.hgc.admin.database.model.Ct</beans:value>
 				<beans:value>com.hgc.admin.database.model.Dan</beans:value>
@@ -103,16 +96,16 @@
 	</beans:bean>
 	<!-- End Person Model -->
 
-	<!-- Account Model -->
-	<beans:bean id="accountDAO" class="com.hgc.admin.database.dao.AccountDAOImpl">
+	<!-- AdminUser Model -->
+	<beans:bean id="adminUserDAO" class="com.hgc.admin.database.dao.AdminUserDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
-	<beans:bean id="accountService"
-		class="com.hgc.admin.database.service.AccountServiceImpl">
-		<beans:property name="accountDAO" ref="accountDAO"></beans:property>
+	<beans:bean id="adminUserService"
+		class="com.hgc.admin.database.service.AdminUserServiceImpl">
+		<beans:property name="adminUserDAO" ref="adminUserDAO"></beans:property>
 	</beans:bean>
-	<!-- End Account Model -->
+	<!-- End AdminUser Model -->
 	
 <!-- AdminRole Model -->
 	<beans:bean id="adminRoleDAO" class="com.hgc.admin.database.dao.AdminRoleDAOImpl">
@@ -225,6 +218,13 @@
 	</beans:bean>
 	<!-- End UserRole Model -->
 	
+<context:component-scan base-package="com.hgc.admin" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
+	<beans:bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
 
 </beans:beans>

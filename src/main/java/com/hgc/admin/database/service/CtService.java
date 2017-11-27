@@ -9,7 +9,7 @@ public interface CtService {
 	public Integer addCt(Ct p);
 	public void updateCt(Ct p);
 	public List<Ct> listCts();
-	public Ct getCtById(int id);
-	public void removeCt(int id);
+	public Ct getCtById(Integer id);
+	public void removeCt(Integer id);
 	public List<Object> queryCt(String query);
 }

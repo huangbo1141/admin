@@ -37,13 +37,13 @@ public class TtServiceImpl implements TtService {
 
 	@Override
 	@Transactional
-	public Tt getTtById(int id) {
+	public Tt getTtById(Integer id) {
 		return this.personDAO.getTtById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeTt(int id) {
+	public void removeTt(Integer id) {
 		this.personDAO.removeTt(id);
 	}
 

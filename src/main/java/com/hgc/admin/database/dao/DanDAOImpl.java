@@ -32,10 +32,13 @@ public class DanDAOImpl implements DanDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("Dan List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class DanDAOImpl implements DanDAO {
 	@Override
 	public Integer addDan(Dan p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("Dan saved successfully, Dan Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("Dan saved successfully, Dan Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateDan(Dan p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("Dan updated successfully, Dan Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("Dan updated successfully, Dan Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Dan> listDans() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Dan> DansList = session.createQuery("from Dan").list();
-		for(Dan p : DansList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<Dan> DansList = session.createQuery("from Dan").list();
+			for(Dan p : DansList){
+				if(Constants.daoLogger)
+				logger.info("Dan List::"+p);
+			}
+			session.close();
+			return DansList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public Dan getDanById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			Dan p = (Dan) session.load(Dan.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("Dan List::"+p);
+			logger.info("Dan loaded successfully, Dan details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return DansList;
 	}
 
 	@Override
-	public Dan getDanById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Dan p = (Dan) session.load(Dan.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("Dan loaded successfully, Dan details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeDan(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Dan p = (Dan) session.load(Dan.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeDan(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Dan p = (Dan) session.load(Dan.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("Dan deleted successfully, Dan details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("Dan deleted successfully, Dan details="+p);
 	}
 
 }

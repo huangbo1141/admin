@@ -32,10 +32,13 @@ public class StationDAOImpl implements StationDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("Station List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class StationDAOImpl implements StationDAO {
 	@Override
 	public Integer addStation(Station p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("Station saved successfully, Station Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("Station saved successfully, Station Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateStation(Station p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("Station updated successfully, Station Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("Station updated successfully, Station Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Station> listStations() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Station> StationsList = session.createQuery("from Station").list();
-		for(Station p : StationsList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<Station> StationsList = session.createQuery("from Station").list();
+			for(Station p : StationsList){
+				if(Constants.daoLogger)
+				logger.info("Station List::"+p);
+			}
+			session.close();
+			return StationsList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public Station getStationById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			Station p = (Station) session.load(Station.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("Station List::"+p);
+			logger.info("Station loaded successfully, Station details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return StationsList;
 	}
 
 	@Override
-	public Station getStationById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Station p = (Station) session.load(Station.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("Station loaded successfully, Station details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeStation(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Station p = (Station) session.load(Station.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeStation(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Station p = (Station) session.load(Station.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("Station deleted successfully, Station details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("Station deleted successfully, Station details="+p);
 	}
 
 }

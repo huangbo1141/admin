@@ -9,7 +9,7 @@ public interface MenuActionDAO {
 	public Integer addMenuAction(MenuAction p);
 	public void updateMenuAction(MenuAction p);
 	public List<MenuAction> listMenuActions();
-	public MenuAction getMenuActionById(int id);
-	public void removeMenuAction(int id);
+	public MenuAction getMenuActionById(Integer id);
+	public void removeMenuAction(Integer id);
 	public List<Object> queryMenuAction(String query);
 }

@@ -9,7 +9,7 @@ public interface MenuService {
 	public Integer addMenu(Menu p);
 	public void updateMenu(Menu p);
 	public List<Menu> listMenus();
-	public Menu getMenuById(int id);
-	public void removeMenu(int id);
+	public Menu getMenuById(Integer id);
+	public void removeMenu(Integer id);
 	public List<Object> queryMenu(String query);
 }

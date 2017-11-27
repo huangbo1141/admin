@@ -32,10 +32,13 @@ public class AdminRoleDAOImpl implements AdminRoleDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("AdminRole List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class AdminRoleDAOImpl implements AdminRoleDAO {
 	@Override
 	public Integer addAdminRole(AdminRole p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("AdminRole saved successfully, AdminRole Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("AdminRole saved successfully, AdminRole Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateAdminRole(AdminRole p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("AdminRole updated successfully, AdminRole Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("AdminRole updated successfully, AdminRole Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdminRole> listAdminRoles() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<AdminRole> AdminRolesList = session.createQuery("from AdminRole").list();
-		for(AdminRole p : AdminRolesList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<AdminRole> AdminRolesList = session.createQuery("from AdminRole").list();
+			for(AdminRole p : AdminRolesList){
+				if(Constants.daoLogger)
+				logger.info("AdminRole List::"+p);
+			}
+			session.close();
+			return AdminRolesList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public AdminRole getAdminRoleById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			AdminRole p = (AdminRole) session.load(AdminRole.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("AdminRole List::"+p);
+			logger.info("AdminRole loaded successfully, AdminRole details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return AdminRolesList;
 	}
 
 	@Override
-	public AdminRole getAdminRoleById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		AdminRole p = (AdminRole) session.load(AdminRole.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("AdminRole loaded successfully, AdminRole details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeAdminRole(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		AdminRole p = (AdminRole) session.load(AdminRole.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeAdminRole(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			AdminRole p = (AdminRole) session.load(AdminRole.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("AdminRole deleted successfully, AdminRole details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("AdminRole deleted successfully, AdminRole details="+p);
 	}
 
 }

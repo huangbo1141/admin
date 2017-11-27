@@ -37,13 +37,13 @@ public class UserRoleServiceImpl implements UserRoleService {
 
 	@Override
 	@Transactional
-	public UserRole getUserRoleById(int id) {
+	public UserRole getUserRoleById(Integer id) {
 		return this.personDAO.getUserRoleById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeUserRole(int id) {
+	public void removeUserRole(Integer id) {
 		this.personDAO.removeUserRole(id);
 	}
 

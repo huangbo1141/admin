@@ -32,10 +32,13 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("UserRole List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 	@Override
 	public Integer addUserRole(UserRole p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("UserRole saved successfully, UserRole Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("UserRole saved successfully, UserRole Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateUserRole(UserRole p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("UserRole updated successfully, UserRole Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("UserRole updated successfully, UserRole Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<UserRole> listUserRoles() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<UserRole> UserRolesList = session.createQuery("from UserRole").list();
-		for(UserRole p : UserRolesList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<UserRole> UserRolesList = session.createQuery("from UserRole").list();
+			for(UserRole p : UserRolesList){
+				if(Constants.daoLogger)
+				logger.info("UserRole List::"+p);
+			}
+			session.close();
+			return UserRolesList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public UserRole getUserRoleById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			UserRole p = (UserRole) session.load(UserRole.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("UserRole List::"+p);
+			logger.info("UserRole loaded successfully, UserRole details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return UserRolesList;
 	}
 
 	@Override
-	public UserRole getUserRoleById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		UserRole p = (UserRole) session.load(UserRole.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("UserRole loaded successfully, UserRole details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeUserRole(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		UserRole p = (UserRole) session.load(UserRole.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeUserRole(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			UserRole p = (UserRole) session.load(UserRole.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("UserRole deleted successfully, UserRole details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("UserRole deleted successfully, UserRole details="+p);
 	}
 
 }

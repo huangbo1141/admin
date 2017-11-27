@@ -9,7 +9,7 @@ public interface StationDAO {
 	public Integer addStation(Station p);
 	public void updateStation(Station p);
 	public List<Station> listStations();
-	public Station getStationById(int id);
-	public void removeStation(int id);
+	public Station getStationById(Integer id);
+	public void removeStation(Integer id);
 	public List<Object> queryStation(String query);
 }

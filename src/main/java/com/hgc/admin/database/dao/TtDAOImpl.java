@@ -32,10 +32,13 @@ public class TtDAOImpl implements TtDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("Tt List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class TtDAOImpl implements TtDAO {
 	@Override
 	public Integer addTt(Tt p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("Tt saved successfully, Tt Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("Tt saved successfully, Tt Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateTt(Tt p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("Tt updated successfully, Tt Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("Tt updated successfully, Tt Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Tt> listTts() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Tt> TtsList = session.createQuery("from Tt").list();
-		for(Tt p : TtsList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<Tt> TtsList = session.createQuery("from Tt").list();
+			for(Tt p : TtsList){
+				if(Constants.daoLogger)
+				logger.info("Tt List::"+p);
+			}
+			session.close();
+			return TtsList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public Tt getTtById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			Tt p = (Tt) session.load(Tt.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("Tt List::"+p);
+			logger.info("Tt loaded successfully, Tt details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return TtsList;
 	}
 
 	@Override
-	public Tt getTtById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Tt p = (Tt) session.load(Tt.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("Tt loaded successfully, Tt details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeTt(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Tt p = (Tt) session.load(Tt.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeTt(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Tt p = (Tt) session.load(Tt.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("Tt deleted successfully, Tt details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("Tt deleted successfully, Tt details="+p);
 	}
 
 }

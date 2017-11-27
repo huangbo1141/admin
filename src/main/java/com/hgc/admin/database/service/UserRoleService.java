@@ -9,7 +9,7 @@ public interface UserRoleService {
 	public Integer addUserRole(UserRole p);
 	public void updateUserRole(UserRole p);
 	public List<UserRole> listUserRoles();
-	public UserRole getUserRoleById(int id);
-	public void removeUserRole(int id);
+	public UserRole getUserRoleById(Integer id);
+	public void removeUserRole(Integer id);
 	public List<Object> queryUserRole(String query);
 }

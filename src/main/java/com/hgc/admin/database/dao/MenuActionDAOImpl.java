@@ -32,10 +32,13 @@ public class MenuActionDAOImpl implements MenuActionDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("MenuAction List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class MenuActionDAOImpl implements MenuActionDAO {
 	@Override
 	public Integer addMenuAction(MenuAction p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("MenuAction saved successfully, MenuAction Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("MenuAction saved successfully, MenuAction Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateMenuAction(MenuAction p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("MenuAction updated successfully, MenuAction Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("MenuAction updated successfully, MenuAction Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<MenuAction> listMenuActions() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<MenuAction> MenuActionsList = session.createQuery("from MenuAction").list();
-		for(MenuAction p : MenuActionsList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<MenuAction> MenuActionsList = session.createQuery("from MenuAction").list();
+			for(MenuAction p : MenuActionsList){
+				if(Constants.daoLogger)
+				logger.info("MenuAction List::"+p);
+			}
+			session.close();
+			return MenuActionsList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public MenuAction getMenuActionById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			MenuAction p = (MenuAction) session.load(MenuAction.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("MenuAction List::"+p);
+			logger.info("MenuAction loaded successfully, MenuAction details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return MenuActionsList;
 	}
 
 	@Override
-	public MenuAction getMenuActionById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		MenuAction p = (MenuAction) session.load(MenuAction.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("MenuAction loaded successfully, MenuAction details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeMenuAction(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		MenuAction p = (MenuAction) session.load(MenuAction.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeMenuAction(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			MenuAction p = (MenuAction) session.load(MenuAction.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("MenuAction deleted successfully, MenuAction details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("MenuAction deleted successfully, MenuAction details="+p);
 	}
 
 }

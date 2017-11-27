@@ -32,10 +32,13 @@ public class MenuDAOImpl implements MenuDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("Menu List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class MenuDAOImpl implements MenuDAO {
 	@Override
 	public Integer addMenu(Menu p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("Menu saved successfully, Menu Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("Menu saved successfully, Menu Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateMenu(Menu p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("Menu updated successfully, Menu Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("Menu updated successfully, Menu Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Menu> listMenus() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Menu> MenusList = session.createQuery("from Menu").list();
-		for(Menu p : MenusList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<Menu> MenusList = session.createQuery("from Menu").list();
+			for(Menu p : MenusList){
+				if(Constants.daoLogger)
+				logger.info("Menu List::"+p);
+			}
+			session.close();
+			return MenusList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public Menu getMenuById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			Menu p = (Menu) session.load(Menu.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("Menu List::"+p);
+			logger.info("Menu loaded successfully, Menu details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return MenusList;
 	}
 
 	@Override
-	public Menu getMenuById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Menu p = (Menu) session.load(Menu.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("Menu loaded successfully, Menu details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeMenu(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Menu p = (Menu) session.load(Menu.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeMenu(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Menu p = (Menu) session.load(Menu.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("Menu deleted successfully, Menu details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("Menu deleted successfully, Menu details="+p);
 	}
 
 }

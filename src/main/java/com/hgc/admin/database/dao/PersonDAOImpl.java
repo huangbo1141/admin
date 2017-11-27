@@ -26,11 +26,11 @@ public class PersonDAOImpl implements PersonDAO {
 	@Override
 	public Integer addPerson(Person p) {
 		
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		Integer myID = (Integer)session.save(p);
 		t.commit();
-		s.close();
+		session.close();
 		if(Constants.daoLogger)
 			logger.info("Person saved successfully, Person Details="+p);
 		return myID;
@@ -38,8 +38,11 @@ public class PersonDAOImpl implements PersonDAO {
 
 	@Override
 	public void updatePerson(Person p) {
-		Session session = this.sessionFactory.getCurrentSession();
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
 		session.update(p);
+		t.commit();
+		session.close();
 		if(Constants.daoLogger)
 		logger.info("Person updated successfully, Person Details="+p);
 	}
@@ -47,7 +50,7 @@ public class PersonDAOImpl implements PersonDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Person> listPersons() {
-		Session session = this.sessionFactory.getCurrentSession();
+		Session session = this.sessionFactory.openSession();
 		List<Person> personsList = session.createQuery("from Person").list();
 		if(Constants.daoLogger)
 		for(Person p : personsList){
@@ -59,7 +62,7 @@ public class PersonDAOImpl implements PersonDAO {
 
 	@Override
 	public Person getPersonById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();		
+		Session session = this.sessionFactory.openSession();		
 		Person p = (Person) session.load(Person.class, new Integer(id));
 		if(Constants.daoLogger)
 		logger.info("Person loaded successfully, Person details="+p);
@@ -68,11 +71,14 @@ public class PersonDAOImpl implements PersonDAO {
 
 	@Override
 	public void removePerson(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
 		Person p = (Person) session.load(Person.class, new Integer(id));
 		if(null != p){
 			session.delete(p);
 		}
+		t.commit();
+		session.close();
 		if(Constants.daoLogger)
 		logger.info("Person deleted successfully, person details="+p);
 	}

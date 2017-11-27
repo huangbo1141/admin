@@ -9,7 +9,7 @@ public interface TimeTypeService {
 	public Integer addTimeType(TimeType p);
 	public void updateTimeType(TimeType p);
 	public List<TimeType> listTimeTypes();
-	public TimeType getTimeTypeById(int id);
-	public void removeTimeType(int id);
+	public TimeType getTimeTypeById(Integer id);
+	public void removeTimeType(Integer id);
 	public List<Object> queryTimeType(String query);
 }

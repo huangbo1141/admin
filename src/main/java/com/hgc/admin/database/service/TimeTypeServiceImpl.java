@@ -37,13 +37,13 @@ public class TimeTypeServiceImpl implements TimeTypeService {
 
 	@Override
 	@Transactional
-	public TimeType getTimeTypeById(int id) {
+	public TimeType getTimeTypeById(Integer id) {
 		return this.personDAO.getTimeTypeById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeTimeType(int id) {
+	public void removeTimeType(Integer id) {
 		this.personDAO.removeTimeType(id);
 	}
 

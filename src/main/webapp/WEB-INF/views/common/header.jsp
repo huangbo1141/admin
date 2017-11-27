@@ -26,7 +26,7 @@
 <%
 	try {
 %>
-<jsp:include page="../common/${pageTerm}/subheader.jsp" />
+<jsp:include page="../common/${pageTerm}/subheader_${pageSubTerm}.jsp" />
 <%
 	} catch (Exception e) {
 		//out.println("An exception occurred: " + e.getMessage());

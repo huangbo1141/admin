@@ -32,10 +32,13 @@ public class LineDAOImpl implements LineDAO {
 		List<Object> ret = new ArrayList<Object>();
 		try{
 			ret = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : ret){
+				if(Constants.daoLogger)
+				logger.info("Line List::"+p);
+			}
 			session.close();
-
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			session.close();
 		}
 		return ret;
 	}
@@ -43,54 +46,92 @@ public class LineDAOImpl implements LineDAO {
 	@Override
 	public Integer addLine(Line p) {
 
-		Session s = this.sessionFactory.openSession();
-		Transaction t = s.beginTransaction();
-		Integer myID = (Integer)s.save(p);
-		t.commit();
-		s.close();
-		if(Constants.daoLogger)
-			logger.info("Line saved successfully, Line Details="+p);
-		return myID;
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Integer myID = (Integer)session.save(p);
+			if(Constants.daoLogger)
+				logger.info("Line saved successfully, Line Details="+p);
+			t.commit();
+			session.close();
+			return myID;
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+			return null;
+		}
+
+
 	}
 
 	@Override
 	public void updateLine(Line p) {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.update(p);
-		if(Constants.daoLogger)
-		logger.info("Line updated successfully, Line Details="+p);
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			session.update(p);
+			if(Constants.daoLogger)
+			logger.info("Line updated successfully, Line Details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
+		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Line> listLines() {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Line> LinesList = session.createQuery("from Line").list();
-		for(Line p : LinesList){
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<Line> LinesList = session.createQuery("from Line").list();
+			for(Line p : LinesList){
+				if(Constants.daoLogger)
+				logger.info("Line List::"+p);
+			}
+			session.close();
+			return LinesList;
+		}catch(Exception e){
+			session.close();
+			return null;
+		}
+	}
+
+	@Override
+	public Line getLineById(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		try{
+			Line p = (Line) session.load(Line.class, new Integer(id));
 			if(Constants.daoLogger)
-			logger.info("Line List::"+p);
+			logger.info("Line loaded successfully, Line details="+p);
+			session.close();
+			return p;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
-		return LinesList;
 	}
 
 	@Override
-	public Line getLineById(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Line p = (Line) session.load(Line.class, new Integer(id));
-		if(Constants.daoLogger)
-		logger.info("Line loaded successfully, Line details="+p);
-		return p;
-	}
-
-	@Override
-	public void removeLine(int id) {
-		Session session = this.sessionFactory.getCurrentSession();
-		Line p = (Line) session.load(Line.class, new Integer(id));
-		if(null != p){
-			session.delete(p);
+	public void removeLine(Integer id) {
+		Session session = this.sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		try{
+			Line p = (Line) session.load(Line.class, new Integer(id));
+			if(null != p){
+				session.delete(p);
+			}
+			if(Constants.daoLogger)
+			logger.info("Line deleted successfully, Line details="+p);
+			t.commit();
+			session.close();
+		}catch(Exception e){
+			t.rollback();
+			session.close();
 		}
-		if(Constants.daoLogger)
-		logger.info("Line deleted successfully, Line details="+p);
 	}
 
 }

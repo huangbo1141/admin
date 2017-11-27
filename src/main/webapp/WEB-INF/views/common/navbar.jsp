@@ -1,108 +1,44 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <nav class="cd-side-nav1">
 
 	<div class="logo">
-		<a href="#"><img src="resources/img/logo.png" /></a>
+		<a href="#"><img src="/admin/resources/img/logo.png" /></a>
 	</div>
 	<div class="panel-group" id="accordion">
-		<div class="panel">
-			<div class="panel-heading active">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion"
-						href="#collapseOne"> 系统管理 </a>
-				</h4>
-			</div>
-			<div id="collapseOne" class="panel-collapse collapse in">
-				<div class="panel-body">
-					<ul>
-						<li>系统管理</li>
-						<li>系统管理</li>
-					</ul>
+		<c:forEach items="${currentUser.list_lmenu}" var="lm">
+			<div class="panel ">
+				<%
+					String active = "";
+					String in = "";
+				%>
+				<c:if test="${lm.mid == currentUser.curMenu.mid}">
+					<%
+						active = "active";
+						in = "in";
+					%>
+				</c:if>
+				<div class="panel-heading <%=active%>">
+					<h4 class="panel-title">
+						<a class="leftmenu" data-toggle="collapse" data-parent="#accordion"
+							href="#collapse${lm.menu.id}"> ${lm.menu.name} </a>
+					</h4>
 				</div>
-			</div>
+				<c:if test="${not empty lm.submenu}">
+					<div id="collapse${lm.menu.id}" class="panel-collapse collapse <%=in%>">
+						<div class="panel-body">
+							<ul>
+								<c:forEach items="${lm.submenu}" var="lm_s">
+									<a href="/${rootdir}/${lm.menu.term}/${lm_s.menu.term}"><li>${lm_s.menu.name}</li></a>
+								</c:forEach>
+							</ul>
+						</div>
+					</div>
+				</c:if>
 
-		</div>
-		<div class="panel ">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion"
-						href="#collapsetwo"> Content </a>
-				</h4>
 			</div>
-			<div id="collapsetwo" class="panel-collapse collapse">
-				<div class="panel-body">
-					<ul>
-						<li>asdasd</li>
-						<li>asdasd</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<div class="panel">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion"
-						href="#collapse3"> Content </a>
-				</h4>
-			</div>
-			<div id="collapse3" class="panel-collapse collapse">
-				<div class="panel-body">
-					<ul>
-						<li>asdasd</li>
-						<li>asdasd</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<div class="panel ">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion"
-						href="#collapse4"> Content </a>
-				</h4>
-			</div>
-			<div id="collapse4" class="panel-collapse collapse">
-				<div class="panel-body">
-					<ul>
-						<li>asdasd</li>
-						<li>asdasd</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<div class="panel">
-			<div class="panel-heading ">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion"
-						href="#collapse5"> Content </a>
-				</h4>
-			</div>
-			<!-- 			<div id="collapse5" class="panel-collapse collapse "> -->
-			<!-- 				<div class="panel-body"> -->
-			<!-- 					<ul> -->
-			<!-- 						<li>asdasd</li> -->
-			<!-- 						<li>asdasd</li> -->
-			<!-- 					</ul> -->
-			<!-- 				</div> -->
-			<!-- 			</div> -->
+		</c:forEach>
 
-		</div>
-		<div class="panel ">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion"
-						href="#collapse6"> Content </a>
-				</h4>
-			</div>
-			<div id="collapse6" class="panel-collapse collapse">
-				<div class="panel-body">
-					<ul>
-						<li>asdasd</li>
-						<li>asdasd</li>
-					</ul>
-				</div>
-			</div>
-		</div>
 	</div>
 </nav>

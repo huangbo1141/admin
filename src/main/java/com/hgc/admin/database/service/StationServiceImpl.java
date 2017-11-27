@@ -37,13 +37,13 @@ public class StationServiceImpl implements StationService {
 
 	@Override
 	@Transactional
-	public Station getStationById(int id) {
+	public Station getStationById(Integer id) {
 		return this.personDAO.getStationById(id);
 	}
 
 	@Override
 	@Transactional
-	public void removeStation(int id) {
+	public void removeStation(Integer id) {
 		this.personDAO.removeStation(id);
 	}
 
