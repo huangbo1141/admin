@@ -108,7 +108,7 @@ public class BaseApiController {
 		HashMap<String, Object> methods = new HashMap<String, Object>();
 		methods.put("menu_menu", this.menuService);
 		methods.put("menu_role", this.adminRoleService);
-		methods.put("menu_role", this.adminUserService);
+		methods.put("menu_adminuser", this.adminUserService);
 		return methods;
 	}
 	public Object filterObject(Object param,Class<?> ModelT){
@@ -247,7 +247,7 @@ public class BaseApiController {
 		return ret;
 	}
 
-	public Object parseModify(String term, String subterm, Object param) {
+	public Object parseModify(String term, String subterm, Object non_safe) {
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -256,10 +256,12 @@ public class BaseApiController {
 		HashMap<String, Object> methods = this.getServiceInstances();
 		Object ret = "";
 		try {
-			String json_string = mapper.writeValueAsString(param);
+			
 			String key = term + "_" + subterm;
 			if (hash.containsKey(key)) {
 				Class<?> ModelT = hash.get(key);
+				Object param = this.filterObject(non_safe, ModelT);
+				String json_string = mapper.writeValueAsString(param);
 				Object model = mapper.readValue(json_string, ModelT);
 				String method_name = "getId";
 				Method method = ModelT.getMethod(method_name);

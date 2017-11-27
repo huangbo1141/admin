@@ -1,5 +1,6 @@
 package com.hgc.admin;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.hgc.admin.model.LeftMenu;
+
 @Controller
 @RequestMapping("{term}")
 public class TermController extends BaseController{
@@ -18,7 +21,7 @@ public class TermController extends BaseController{
 	@RequestMapping(method = RequestMethod.GET)
 	public String index(@PathVariable("term") String term,Model model){
 		
-//		HashMap<String,Object> chkAll = checkAll(currentUser,term); 
+		HashMap<String,Object> chkAll = checkAll(currentUser,term); 
 //		String chkResult = chkAll.get("result").toString();
 //		String url = chkAll.get("url").toString();
 //		if(chkResult.equals("redirect")){
@@ -36,12 +39,19 @@ public class TermController extends BaseController{
 //		model.addAttribute("currentUser", currentUser);
 		
 		if(term.toLowerCase().equals("home")){
-//			System.out.println("current User " + currentUser.getUsername());
-//			model.addAttribute("pageName", "Home");
-//			model.addAttribute("pageID", "1");
-//			model.addAttribute("pageTerm", "menu");
+			String url = "redirect:/menu/smenu";
+			if(currentUser.getList_lmenu().size()>0){
+				for(int i=0; i<currentUser.getList_lmenu().size();i++){
+					LeftMenu lm = currentUser.getList_lmenu().get(i);
+					if(lm.getSubmenu().size()>0){
+						LeftMenu lm_s = lm.getSubmenu().get(0);
+						
+						url = "redirect:/"+lm.getMenu().getTerm()+"/"+lm_s.getMenu().getTerm();
+					}
+				}
+			}
 			
-			return "redirect:/menu/menu";
+			return url;
 		}else{
 			return "redirect:/account/login";
 		}

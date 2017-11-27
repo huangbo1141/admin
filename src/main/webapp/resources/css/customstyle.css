@@ -223,3 +223,9 @@
 .cd-side-nav1 .panel-without-body a{display: block; padding: 5px 0;}
 .cd-side-nav1 .panel-without-body a:hover,.cd-side-nav1 .panel-without-body a:focus{     text-decoration:none;}
 #accordion .panel:last-child{border-bottom:1px solid #333;}
+.hgc-ml-1 {
+	margin-left: 25px;
+}
+.hgc-ml-2 {
+	margin-left: 50px;
+}

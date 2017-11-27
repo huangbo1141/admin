@@ -26,6 +26,8 @@ O.prototype.getInfoData = function(className, pointer) {
 	case "ac_delete":
 		infoData.dlgid = "DeleteModal";
 		break;
+	case "ac_auth":
+		infoData.dlgid = "AuthModal";
 	default:
 		break;
 	}
@@ -93,6 +95,49 @@ O.prototype.updateDialogContent = function(infoData) {
 			var name = $(item).attr("name");
 			var value = model[name];
 			$(item).val(value);
+		});
+	}else if(classname == 'ac_auth'){
+		var data = $(pointer).parent().data("data");
+		var model = $(pointer).parent().data("data");
+		var roles = $(pointer).parent().data("roles");
+		var form_inputs = $('#Form' + dlgid + ' input');
+		$.each(form_inputs, function(index, item) {
+			var name = $(item).attr("name");
+			var value = model[name];
+			var arrayOfStrings = name.split("_");
+			var path1 = arrayOfStrings[0];
+			if(arrayOfStrings.length>=2){
+				if(path1 == "lm"){
+					// left menu
+					var mid = parseInt(arrayOfStrings[1]);
+					if(roles[mid] == undefined){
+						$(item).prop('checked', false);
+					}else{
+						$(item).prop('checked', true);
+					}
+				}else if(path1 == "role"){
+					// role
+					var mid = parseInt(arrayOfStrings[1]);
+					var roleid = parseInt(arrayOfStrings[2]);
+					if(roles[mid] != undefined){
+						var lm = roles[mid];
+						if (lm.actions.includes(roleid)) {
+							$(item).prop('checked', true);
+						}else{
+							$(item).prop('checked', false);
+						}
+					}else{
+						$(item).prop('checked', false);
+					}
+				}else{
+					$(item).val(value);
+				}
+			}else{
+				$(item).val(value);
+			}
+			
+			console.log(name);
+			console.log(value);
 		});
 	}
 	return false;

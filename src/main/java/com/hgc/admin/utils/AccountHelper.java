@@ -21,6 +21,7 @@ public class AccountHelper {
 	private AdminRole adminRole;
 	private HashMap<Integer, Menu> map_menu;
 	private List<LeftMenu> list_lmenu;
+	
 	private HashMap<Integer, MenuAction> map_menu_action;
 	private LeftMenu curMenu;
 	private LeftMenu subMenu;
@@ -86,9 +87,9 @@ public class AccountHelper {
 					this.adminRole = baseHelper.adminRoleService.getAdminRoleById(this.account.getRole());
 				}
 				System.out.println(this.account.getRole());
-				this.map_menu = this.parseMenu(baseHelper);
+				this.map_menu = getAllMenu(baseHelper);
 				this.map_menu_action = this.parseMenuActions(baseHelper);
-				this.list_lmenu = this.parseRoles(this.adminRole);
+				this.list_lmenu = parseRoles(this.adminRole,this.map_menu);
 
 				return true;
 			} catch (Exception ex) {
@@ -106,7 +107,7 @@ public class AccountHelper {
 			Menu menu = (Menu) pair.getValue();
 			String cterm = "";
 			if (menu.getParent() == 0) {
-				cterm = menu.getTerm();
+				cterm = menu.getTerm()+"_"+menu.getTerm();
 			} else {
 				Menu parent_menu = map_menu.get(menu.getParent());
 				cterm = parent_menu.getTerm() + "_" + menu.getTerm();
@@ -120,6 +121,7 @@ public class AccountHelper {
 					if (lm.getMenu().getId() == menu.getId()) {
 						// has permission
 						this.curMenu = lm;
+						this.subMenu = null;
 						return "ok";
 					} else {
 						for (LeftMenu submenu : lm.getSubmenu()) {
@@ -132,16 +134,16 @@ public class AccountHelper {
 						}
 					}
 				}
-
 				return "no_permission";
 			}
 		}
 		return "invalid";
 	}
 
-	public HashMap<Integer, Menu> parseMenu(BaseHelper baseHelper) {
+	public static HashMap<Integer, Menu> getAllMenu(BaseHelper baseHelper) {
 		HashMap<Integer, Menu> ret = new HashMap<Integer, Menu>();
 		List<Menu> list = baseHelper.menuService.listMenus();
+		
 		if (list != null)
 			for (int i = 0; i < list.size(); i++) {
 				Menu mn = list.get(i);
@@ -150,6 +152,7 @@ public class AccountHelper {
 
 		return ret;
 	}
+	
 
 	public HashMap<Integer, MenuAction> parseMenuActions(BaseHelper baseHelper) {
 		HashMap<Integer, MenuAction> ret = new HashMap<Integer, MenuAction>();
@@ -163,7 +166,7 @@ public class AccountHelper {
 		return ret;
 	}
 
-	public List<LeftMenu> parseRoles(AdminRole role) {
+	public static List<LeftMenu> parseRoles(AdminRole role,HashMap<Integer, Menu> map_menu) {
 		//
 		int flag = -1;
 		try {
@@ -206,7 +209,7 @@ public class AccountHelper {
 						try {
 							ObjectMapper objectMapper = new ObjectMapper();
 							List<Integer> acs = objectMapper.readValue(menu.getAction(),
-									new TypeReference<List<String>>() {
+									new TypeReference<List<Integer>>() {
 									});
 
 							lm.setActions(acs);
@@ -256,10 +259,11 @@ public class AccountHelper {
 
 					for (int i = 0; i < list_menu.size(); i++) {
 						LeftMenu lm_menu = list_menu.get(i);
-						Menu menu = this.map_menu.get(lm_menu.getMid());
+						Menu menu = map_menu.get(lm_menu.getMid());
 						lm_menu.setMenu(menu);
+						
 						// check if list_menu has same as lm_menu
-
+						
 						if (menu.getParent() == 0) {
 							// parent menu
 							hash.put(menu.getId(), lm_menu);
@@ -268,13 +272,13 @@ public class AccountHelper {
 
 					for (int i = 0; i < list_menu.size(); i++) {
 						LeftMenu lm_menu = list_menu.get(i);
-						Menu menu = this.map_menu.get(lm_menu.getMid());
+						Menu menu = map_menu.get(lm_menu.getMid());
 						lm_menu.setMenu( menu);
 						// check if list_menu has same as lm_menu
 
 						if (menu.getParent() != 0) {
 							// sub menu
-							Menu parent_menu = this.map_menu.get(menu.getParent());
+							Menu parent_menu = map_menu.get(menu.getParent());
 							LeftMenu i_lm = null;
 							if (hash.containsKey(parent_menu.getId())) {
 								i_lm = hash.get(parent_menu.getId());
@@ -360,4 +364,21 @@ public class AccountHelper {
 		this.curMenu = curMenu;
 	}
 
+	public AdminUser getAccount() {
+		return account;
+	}
+
+	public void setAccount(AdminUser account) {
+		this.account = account;
+	}
+
+	public LeftMenu getSubMenu() {
+		return subMenu;
+	}
+
+	public void setSubMenu(LeftMenu subMenu) {
+		this.subMenu = subMenu;
+	}
+
+	
 }

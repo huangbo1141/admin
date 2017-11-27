@@ -36,11 +36,19 @@
 	var cat = JSON.parse(bpmnJsonString);
 	//alert(cat.username);
 	var permission = [];
+	<c:if test="${not empty currentUser.subMenu}">
+	<c:forEach items="${currentUser.subMenu.actions}" var="actionID">
+	permission.push("${currentUser.map_menu_action[actionID].ac}");
+	</c:forEach>
+	</c:if>
+	<c:if test="${empty currentUser.subMenu}">
 	<c:forEach items="${currentUser.curMenu.actions}" var="actionID">
 	permission.push("${currentUser.map_menu_action[actionID].ac}");
 	</c:forEach>
+	</c:if>
 </script>
 <script src="<c:url value='/resources/js/common/action.js' />"></script>
+<script src="<c:url value='/resources/js/${pageTerm}/${pageSubTerm}.js' />"></script>
 <%
 	try {
 %>
