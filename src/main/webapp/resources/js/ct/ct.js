@@ -13,8 +13,14 @@ jQuery(document).ready(function(){
 		},
 		messages: {
 			name: "请输入总线名称",
-			v1: "请输入上午CTs",
-			v2: "请输入下午CTs",
+			v1: {
+				required:"请输入上午CTs",
+				number:"Please input number"
+			},
+			v2: {
+				required:"请输入下午CTs",
+				number:"Please input number"
+			}
 		}
 	});
 	cm_func.formValidators.FormNewModal = validator;

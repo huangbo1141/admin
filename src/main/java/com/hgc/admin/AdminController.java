@@ -401,8 +401,19 @@ public class AdminController extends BaseAdminController{
 			}else if(term.equals(ct)){
 				if(subterm.equals(ct)){
 					List<Ct> list_ct = backendApiHelper.ctService.listCts();
+					List<Line> list_line = backendApiHelper.lineService.listLines();
+					List<Object> list_data = new ArrayList<Object>();
+					for(Ct imodel:list_ct){
+						Line iline = backendApiHelper.lineService.getLineById(imodel.getLine());
+						HashMap<String,Object> hash = new HashMap<String,Object>();
+						hash.put("model", imodel);
+						hash.put("line", iline);
+						list_data.add(hash);
+					}
 					
 					pageData.put("list_ct", list_ct);
+					pageData.put("list_line", list_line);
+					pageData.put("list_data", list_data);
 				}
 			}else if(term.equals(tt)){
 				if(subterm.equals(tt)){

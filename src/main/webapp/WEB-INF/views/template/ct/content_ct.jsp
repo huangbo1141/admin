@@ -2,6 +2,7 @@
 	pageEncoding="utf-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="com.fasterxml.jackson.databind.ObjectMapper"%>
+<%@ page import="java.util.HashMap"%>
 <div class="content-wrapper">
 	<div class=row>
 		<div class="col-md-12">
@@ -21,24 +22,24 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${pageData.list_ct}" var="row">
+						<c:forEach items="${pageData.list_data}" var="row">
 							<tr>
-								<td>${row.name}</td>
-								<td>${row.v1}</td>
-								<td>#${row.v2}</td>
+								<td>${row.get("line").name}</td>
+								<td>${row.get("model").v1}</td>
+								<td>#${row.get("model").v2}</td>
 								
 								<%
 									String json = "";
 										try {
 											ObjectMapper mapper = (ObjectMapper) request.getAttribute("mapper");
-											Object row = pageContext.getAttribute("row");
+											HashMap row = (HashMap)pageContext.getAttribute("row");
 											if(mapper == null){
 												out.print("mapper null");
 											}
 											if(row == null){
 												out.print("row null");
 											}
-											json = mapper.writeValueAsString(row);
+											json = mapper.writeValueAsString(row.get("model"));
 											//out.print(json);
 										} catch (Exception ex) {
 											//out.print(ex.toString());

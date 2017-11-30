@@ -31,7 +31,7 @@ public class Ct {
 			this.id = id;
 		}
 
-  private String name;
+  private Integer line;
 private double v1;
 private double v2;
 private Integer deleted;
@@ -39,11 +39,11 @@ private String create_datetime;
 private String modify_datetime;
 
 
-	public String getName() {
-return name;
+	public Integer getLine() {
+return line;
 }
-public void setName(String name) {
-this.name = name;
+public void setLine(Integer line) {
+this.line = line;
 }
 public double getV1() {
 return v1;
