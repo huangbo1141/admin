@@ -1,10 +1,14 @@
 package com.hgc.admin.database.dao;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
+import java.util.HashMap;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -27,14 +31,58 @@ public class AdminRoleDAOImpl implements AdminRoleDAO {
 	}
 
 	@Override
-	public List<Object> queryAdminRole(String SQL_QUERY){
+	public List<AdminRole> queryAdminRole(String SQL_QUERY,String[] db_fields){
 		Session session = this.sessionFactory.openSession();
-		List<Object> ret = new ArrayList<Object>();
+		List<AdminRole> ret = new ArrayList<AdminRole>();
 		try{
-			ret = session.createSQLQuery(SQL_QUERY).list();
-			for(Object p : ret){
+			List<Object> temp = session.createSQLQuery(SQL_QUERY).list();
+			for(Object p : temp){
 				if(Constants.daoLogger)
 				logger.info("AdminRole List::"+p);
+
+				Date date = new Date();
+
+				Object[] ptemp = (Object[])p;
+				if(ptemp.length == db_fields.length){
+					Class<?> T =  AdminRole.class;
+					AdminRole station = new AdminRole();
+					Field[] fields = T.getDeclaredFields();
+					for(int i=0; i<db_fields.length;i++){
+						String d_name = db_fields[i];
+						Object d_value = ptemp[i];
+
+						List<String> allowed_names = new ArrayList<String>();
+						if(d_value!=null)
+						for (Field f:fields) {
+							String m_name = f.getName();
+							if(m_name.equals(d_name)){
+								f.setAccessible(true);
+								String d_type = d_value.getClass().getSimpleName().toLowerCase();
+
+								if(d_type.equals("integer")){
+									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
+									Method method = T.getMethod(method_name, Integer.class);
+									method.invoke(station, (Integer) d_value);
+								}else if(d_type.equals("timestamp")){
+									Timestamp ts = (Timestamp) d_value;
+									date.setTime(ts.getTime());
+									String formattedDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+
+									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
+									Method method = T.getMethod(method_name, String.class);
+									method.invoke(station, formattedDate);
+								}else{
+									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
+									Method method = T.getMethod(method_name, String.class);
+									method.invoke(station, (String)d_value);
+								}
+							}
+						}
+					}
+					ret.add(station);
+				}
+
+
 			}
 			session.close();
 		}catch(Exception e){
@@ -131,6 +179,25 @@ public class AdminRoleDAOImpl implements AdminRoleDAO {
 		}catch(Exception e){
 			t.rollback();
 			session.close();
+		}
+	}
+
+	@Override
+	public HashMap<Integer, AdminRole> mapAdminRoles() {
+		Session session = this.sessionFactory.openSession();
+		try{
+			List<AdminRole> AdminRolesList = session.createQuery("from AdminRole").list();
+			HashMap<Integer,AdminRole> mapAdminRole = new HashMap<Integer,AdminRole>();
+			for(AdminRole p : AdminRolesList){
+				if(Constants.daoLogger)
+				logger.info("AdminRole List::"+p);
+				mapAdminRole.put(p.getId(), p);
+			}
+			session.close();
+			return mapAdminRole;
+		}catch(Exception e){
+			session.close();
+			return null;
 		}
 	}
 

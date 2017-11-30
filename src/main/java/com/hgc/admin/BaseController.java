@@ -19,6 +19,7 @@ import com.hgc.admin.model.CatMenu;
 import com.hgc.admin.model.LeftMenu;
 import com.hgc.admin.utils.AccountHelper;
 import com.hgc.admin.utils.BaseHelper;
+import com.hgc.admin.utils.UserHelper;
 
 
 
@@ -34,7 +35,7 @@ public class BaseController {
 	public AccountHelper currentUser;
 			
 	@Resource
-	public BaseHelper baseHelper;
+	public UserHelper userHelper;
 	
 	
 	
@@ -44,7 +45,7 @@ public class BaseController {
 		ret.put("result", "redirect");
 		if(!currentUser.hasLogin())
 			return ret;
-		if(currentUser.checkPermission(baseHelper)){
+		if(currentUser.checkPermission(userHelper)){
 			String chkTerm = currentUser.checkTerm(term_sum);
 			
 			ret = new HashMap<String,Object>();

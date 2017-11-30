@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 	}
 
 	@Override
-	public List<Object> queryAdminUser(String query) {
+	public List<AdminUser> queryAdminUser(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryAdminUser(query);
+		return this.personDAO.queryAdminUser(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, AdminUser> mapAdminUsers() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapAdminUsers();
+		}
 }

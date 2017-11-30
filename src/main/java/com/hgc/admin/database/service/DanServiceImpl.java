@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class DanServiceImpl implements DanService {
 	}
 
 	@Override
-	public List<Object> queryDan(String query) {
+	public List<Dan> queryDan(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryDan(query);
+		return this.personDAO.queryDan(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, Dan> mapDans() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapDans();
+		}
 }

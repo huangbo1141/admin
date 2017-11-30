@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class TimeTypeServiceImpl implements TimeTypeService {
 	}
 
 	@Override
-	public List<Object> queryTimeType(String query) {
+	public List<TimeType> queryTimeType(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryTimeType(query);
+		return this.personDAO.queryTimeType(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, TimeType> mapTimeTypes() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapTimeTypes();
+		}
 }

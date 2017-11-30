@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class LineServiceImpl implements LineService {
 	}
 
 	@Override
-	public List<Object> queryLine(String query) {
+	public List<Line> queryLine(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryLine(query);
+		return this.personDAO.queryLine(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, Line> mapLines() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapLines();
+		}
 }

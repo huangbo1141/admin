@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class UserRoleServiceImpl implements UserRoleService {
 	}
 
 	@Override
-	public List<Object> queryUserRole(String query) {
+	public List<UserRole> queryUserRole(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryUserRole(query);
+		return this.personDAO.queryUserRole(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, UserRole> mapUserRoles() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapUserRoles();
+		}
 }

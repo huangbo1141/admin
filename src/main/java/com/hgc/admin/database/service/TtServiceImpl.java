@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class TtServiceImpl implements TtService {
 	}
 
 	@Override
-	public List<Object> queryTt(String query) {
+	public List<Tt> queryTt(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryTt(query);
+		return this.personDAO.queryTt(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, Tt> mapTts() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapTts();
+		}
 }

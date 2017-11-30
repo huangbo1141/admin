@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class MenuActionServiceImpl implements MenuActionService {
 	}
 
 	@Override
-	public List<Object> queryMenuAction(String query) {
+	public List<MenuAction> queryMenuAction(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryMenuAction(query);
+		return this.personDAO.queryMenuAction(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, MenuAction> mapMenuActions() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapMenuActions();
+		}
 }

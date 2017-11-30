@@ -18,17 +18,22 @@ public class Constants {
 	public static final String TERM_GET = "{id}";
 	public static final String TERM_DETAIL = "ac_detail";
 	public static final String TERM_ALL = "ac_all";
+	public static final String TERM_CHECK = "ac_check";
 	
-	public static final String ACTION_NEW = 	"/"+TERM_NEW;
-	public static final String ACTION_MODIFY = 	"/"+TERM_MODIFY;
-	public static final String ACTION_DELETE = 	"/"+TERM_DELETE;
-	public static final String ACTION_AUTH = 	"/"+TERM_AUTH;
-	public static final String ACTION_ENABLE = 	"/"+TERM_ENABLE;
-	public static final String ACTION_DISABLE = "/"+TERM_DISABLE;
-	public static final String ACTION_SEARCH = 	"/"+TERM_SEARCH;
-	public static final String ACTION_GET = 	"/"+TERM_GET;
-	public static final String ACTION_DETAIL = 	"/"+TERM_DETAIL;
-	public static final String ACTION_ALL = 	"/"+TERM_ALL;
+	public static final String ACTION_WEB_NEW = 	"/"+TERM_NEW;
+	public static final String ACTION_WEB_MODIFY = 	"/"+TERM_MODIFY;
+	public static final String ACTION_WEB_DELETE = 	"/"+TERM_DELETE;
+	public static final String ACTION_WEB_AUTH = 	"/"+TERM_AUTH;
+	public static final String ACTION_WEB_ENABLE = 	"/"+TERM_ENABLE;
+	public static final String ACTION_WEB_DISABLE = "/"+TERM_DISABLE;
+	public static final String ACTION_WEB_SEARCH = 	"/"+TERM_SEARCH;
+	public static final String ACTION_WEB_GET = 	"/"+TERM_GET;
+	public static final String ACTION_WEB_DETAIL = 	"/"+TERM_DETAIL;
+	public static final String ACTION_WEB_ALL = 	"/"+TERM_ALL;
+	
+	public static final String ACTION_WEB_CHECK = 	"/"+TERM_CHECK;
+	//public static final String ACTION_CHECK = 	"/";
+	
 	
 	
 	

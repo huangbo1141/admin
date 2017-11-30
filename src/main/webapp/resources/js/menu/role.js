@@ -1,46 +1,20 @@
 jQuery(document).ready(function(){
 	var validator = $("#FormNewModal").validate({
 		rules: {
-			name: "required",
-			term: {
-				required: true,
-				minlength: 4
-			},
-			sort: {
-				required: true,
-				number: true
-			}			
+			name: "required",			
 		},
 		messages: {
-			name: "Please enter 菜单名称",
-			term: "Please enter URL term, at least 4 characters",
-			sort: {
-				required: "Please enter 序号",
-				number: "Please enter number"
-			}
+			name: "请输入角色名称*",
 		}
 	});
 	cm_func.formValidators.FormNewModal = validator;
 	
 	validator = $("#FormEditModal").validate({
 		rules: {
-			name: "required",
-			term: {
-				required: true,
-				minlength: 4
-			},
-			sort: {
-				required: true,
-				number: true
-			}			
+			name: "required",			
 		},
 		messages: {
-			name: "Please enter 菜单名称",
-			term: "Please enter URL term, at least 4 characters",
-			sort: {
-				required: "Please enter 序号",
-				number: "Please enter number"
-			}
+			name: "请输入角色名称*",
 		}
 	});
 	cm_func.formValidators.FormEditModal = validator;

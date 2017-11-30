@@ -11,4 +11,6 @@ public interface ControllerHelper {
 	public boolean fakeLogin();
 	public List<Object> queryList(String SQL_QUERY,SessionFactory sessionFactory);
 	
+	
+	
 }

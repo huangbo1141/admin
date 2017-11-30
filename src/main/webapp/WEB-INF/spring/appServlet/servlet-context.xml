@@ -49,30 +49,36 @@
 		<beans:property name="username" value="root" />
 		<beans:property name="password" value="111" />
 	</beans:bean>
-
 	
 	
 
-
-<!-- Hibernate 4 SessionFactory Bean definition -->
+	<!-- Hibernate 4 SessionFactory Bean definition -->
 	<beans:bean id="hibernate4AnnotatedSessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<beans:property name="dataSource" ref="dataSource" />
 		<beans:property name="annotatedClasses">
 			<beans:list>
 				<beans:value>com.hgc.admin.database.model.Person</beans:value>
-				<beans:value>com.hgc.admin.database.model.AdminUser</beans:value>
 				<beans:value>com.hgc.admin.database.model.AdminRole</beans:value>
+				<beans:value>com.hgc.admin.database.model.AdminUser</beans:value>
+				<beans:value>com.hgc.admin.database.model.Announce</beans:value>
 				<beans:value>com.hgc.admin.database.model.Ct</beans:value>
 				<beans:value>com.hgc.admin.database.model.Dan</beans:value>
+				<beans:value>com.hgc.admin.database.model.ErrorType</beans:value>
 				<beans:value>com.hgc.admin.database.model.Line</beans:value>
 				<beans:value>com.hgc.admin.database.model.Menu</beans:value>
 				<beans:value>com.hgc.admin.database.model.MenuAction</beans:value>
+				<beans:value>com.hgc.admin.database.model.Order</beans:value>
+				<beans:value>com.hgc.admin.database.model.OrderRelation
+				</beans:value>
+				<beans:value>com.hgc.admin.database.model.ReasonType</beans:value>
+				<beans:value>com.hgc.admin.database.model.Report</beans:value>
 				<beans:value>com.hgc.admin.database.model.Station</beans:value>
 				<beans:value>com.hgc.admin.database.model.TimeType</beans:value>
 				<beans:value>com.hgc.admin.database.model.Tt</beans:value>
 				<beans:value>com.hgc.admin.database.model.User</beans:value>
 				<beans:value>com.hgc.admin.database.model.UserRole</beans:value>
+
 
 			</beans:list>
 		</beans:property>
@@ -96,6 +102,16 @@
 	</beans:bean>
 	<!-- End Person Model -->
 
+	<!-- AdminRole Model -->
+	<beans:bean id="adminRoleDAO" class="com.hgc.admin.database.dao.AdminRoleDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="adminRoleService"
+		class="com.hgc.admin.database.service.AdminRoleServiceImpl">
+		<beans:property name="adminRoleDAO" ref="adminRoleDAO"></beans:property>
+	</beans:bean>
+	<!-- End AdminRole Model -->
 	<!-- AdminUser Model -->
 	<beans:bean id="adminUserDAO" class="com.hgc.admin.database.dao.AdminUserDAOImpl">
 		<beans:property name="sessionFactory"
@@ -106,18 +122,17 @@
 		<beans:property name="adminUserDAO" ref="adminUserDAO"></beans:property>
 	</beans:bean>
 	<!-- End AdminUser Model -->
-	
-<!-- AdminRole Model -->
-	<beans:bean id="adminRoleDAO" class="com.hgc.admin.database.dao.AdminRoleDAOImpl">
+	<!-- Announce Model -->
+	<beans:bean id="announceDAO" class="com.hgc.admin.database.dao.AnnounceDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
-	<beans:bean id="adminRoleService"
-		class="com.hgc.admin.database.service.AdminRoleServiceImpl">
-		<beans:property name="adminRoleDAO" ref="adminRoleDAO"></beans:property>
+	<beans:bean id="announceService"
+		class="com.hgc.admin.database.service.AnnounceServiceImpl">
+		<beans:property name="announceDAO" ref="announceDAO"></beans:property>
 	</beans:bean>
-	<!-- End AdminRole Model -->
-<!-- Ct Model -->
+	<!-- End Announce Model -->
+	<!-- Ct Model -->
 	<beans:bean id="ctDAO" class="com.hgc.admin.database.dao.CtDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -127,7 +142,7 @@
 		<beans:property name="ctDAO" ref="ctDAO"></beans:property>
 	</beans:bean>
 	<!-- End Ct Model -->
-<!-- Dan Model -->
+	<!-- Dan Model -->
 	<beans:bean id="danDAO" class="com.hgc.admin.database.dao.DanDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -137,7 +152,17 @@
 		<beans:property name="danDAO" ref="danDAO"></beans:property>
 	</beans:bean>
 	<!-- End Dan Model -->
-<!-- Line Model -->
+	<!-- ErrorType Model -->
+	<beans:bean id="errorTypeDAO" class="com.hgc.admin.database.dao.ErrorTypeDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="errorTypeService"
+		class="com.hgc.admin.database.service.ErrorTypeServiceImpl">
+		<beans:property name="errorTypeDAO" ref="errorTypeDAO"></beans:property>
+	</beans:bean>
+	<!-- End ErrorType Model -->
+	<!-- Line Model -->
 	<beans:bean id="lineDAO" class="com.hgc.admin.database.dao.LineDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -147,7 +172,7 @@
 		<beans:property name="lineDAO" ref="lineDAO"></beans:property>
 	</beans:bean>
 	<!-- End Line Model -->
-<!-- Menu Model -->
+	<!-- Menu Model -->
 	<beans:bean id="menuDAO" class="com.hgc.admin.database.dao.MenuDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -157,8 +182,9 @@
 		<beans:property name="menuDAO" ref="menuDAO"></beans:property>
 	</beans:bean>
 	<!-- End Menu Model -->
-<!-- MenuAction Model -->
-	<beans:bean id="menuActionDAO" class="com.hgc.admin.database.dao.MenuActionDAOImpl">
+	<!-- MenuAction Model -->
+	<beans:bean id="menuActionDAO"
+		class="com.hgc.admin.database.dao.MenuActionDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
@@ -167,7 +193,49 @@
 		<beans:property name="menuActionDAO" ref="menuActionDAO"></beans:property>
 	</beans:bean>
 	<!-- End MenuAction Model -->
-<!-- Station Model -->
+	<!-- Order Model -->
+	<beans:bean id="orderDAO" class="com.hgc.admin.database.dao.OrderDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="orderService"
+		class="com.hgc.admin.database.service.OrderServiceImpl">
+		<beans:property name="orderDAO" ref="orderDAO"></beans:property>
+	</beans:bean>
+	<!-- End Order Model -->
+	<!-- OrderRelation Model -->
+	<beans:bean id="orderRelationDAO"
+		class="com.hgc.admin.database.dao.OrderRelationDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="orderRelationService"
+		class="com.hgc.admin.database.service.OrderRelationServiceImpl">
+		<beans:property name="orderRelationDAO" ref="orderRelationDAO"></beans:property>
+	</beans:bean>
+	<!-- End OrderRelation Model -->
+	<!-- ReasonType Model -->
+	<beans:bean id="reasonTypeDAO"
+		class="com.hgc.admin.database.dao.ReasonTypeDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="reasonTypeService"
+		class="com.hgc.admin.database.service.ReasonTypeServiceImpl">
+		<beans:property name="reasonTypeDAO" ref="reasonTypeDAO"></beans:property>
+	</beans:bean>
+	<!-- End ReasonType Model -->
+	<!-- Report Model -->
+	<beans:bean id="reportDAO" class="com.hgc.admin.database.dao.ReportDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="reportService"
+		class="com.hgc.admin.database.service.ReportServiceImpl">
+		<beans:property name="reportDAO" ref="reportDAO"></beans:property>
+	</beans:bean>
+	<!-- End Report Model -->
+	<!-- Station Model -->
 	<beans:bean id="stationDAO" class="com.hgc.admin.database.dao.StationDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -177,7 +245,7 @@
 		<beans:property name="stationDAO" ref="stationDAO"></beans:property>
 	</beans:bean>
 	<!-- End Station Model -->
-<!-- TimeType Model -->
+	<!-- TimeType Model -->
 	<beans:bean id="timeTypeDAO" class="com.hgc.admin.database.dao.TimeTypeDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -187,7 +255,7 @@
 		<beans:property name="timeTypeDAO" ref="timeTypeDAO"></beans:property>
 	</beans:bean>
 	<!-- End TimeType Model -->
-<!-- Tt Model -->
+	<!-- Tt Model -->
 	<beans:bean id="ttDAO" class="com.hgc.admin.database.dao.TtDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -197,7 +265,7 @@
 		<beans:property name="ttDAO" ref="ttDAO"></beans:property>
 	</beans:bean>
 	<!-- End Tt Model -->
-<!-- User Model -->
+	<!-- User Model -->
 	<beans:bean id="userDAO" class="com.hgc.admin.database.dao.UserDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -207,7 +275,7 @@
 		<beans:property name="userDAO" ref="userDAO"></beans:property>
 	</beans:bean>
 	<!-- End User Model -->
-<!-- UserRole Model -->
+	<!-- UserRole Model -->
 	<beans:bean id="userRoleDAO" class="com.hgc.admin.database.dao.UserRoleDAOImpl">
 		<beans:property name="sessionFactory"
 			ref="hibernate4AnnotatedSessionFactory" />
@@ -217,8 +285,9 @@
 		<beans:property name="userRoleDAO" ref="userRoleDAO"></beans:property>
 	</beans:bean>
 	<!-- End UserRole Model -->
-	
-<context:component-scan base-package="com.hgc.admin" />
+
+
+	<context:component-scan base-package="com.hgc.admin" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<beans:bean id="transactionManager"

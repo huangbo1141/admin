@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 	}
 
 	@Override
-	public List<Object> queryAdminRole(String query) {
+	public List<AdminRole> queryAdminRole(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryAdminRole(query);
+		return this.personDAO.queryAdminRole(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, AdminRole> mapAdminRoles() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapAdminRoles();
+		}
 }

@@ -1,7 +1,7 @@
 package com.hgc.admin.database.dao;
 
 import java.util.List;
-
+import java.util.HashMap;
 import com.hgc.admin.database.model.Station;
 
 public interface StationDAO {
@@ -11,5 +11,6 @@ public interface StationDAO {
 	public List<Station> listStations();
 	public Station getStationById(Integer id);
 	public void removeStation(Integer id);
-	public List<Object> queryStation(String query);
+	public List<Station> queryStation(String SQL_QUERY,String[] fields);
+	public HashMap<Integer,Station> mapStations();
 }

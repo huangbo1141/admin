@@ -1,7 +1,7 @@
 package com.hgc.admin.database.service;
 
 import java.util.List;
-
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,15 @@ public class CtServiceImpl implements CtService {
 	}
 
 	@Override
-	public List<Object> queryCt(String query) {
+	public List<Ct> queryCt(String query,String[] db_fields){
 		// TODO Auto-generated method stub
-		return this.personDAO.queryCt(query);
+		return this.personDAO.queryCt(query, db_fields);
 
 	}
 
+	@Override
+		public HashMap<Integer, Ct> mapCts() {
+			// TODO Auto-generated method stub
+			return this.personDAO.mapCts();
+		}
 }

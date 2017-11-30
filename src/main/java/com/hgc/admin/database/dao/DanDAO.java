@@ -1,7 +1,7 @@
 package com.hgc.admin.database.dao;
 
 import java.util.List;
-
+import java.util.HashMap;
 import com.hgc.admin.database.model.Dan;
 
 public interface DanDAO {
@@ -11,5 +11,6 @@ public interface DanDAO {
 	public List<Dan> listDans();
 	public Dan getDanById(Integer id);
 	public void removeDan(Integer id);
-	public List<Object> queryDan(String query);
+	public List<Dan> queryDan(String SQL_QUERY,String[] fields);
+	public HashMap<Integer,Dan> mapDans();
 }

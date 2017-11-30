@@ -1,6 +1,7 @@
 var O = function(someValue) {
 	this.formValidators = {};
-	this.basepath = "/"+cat.rootdir + "/"+cat.term + "/"+cat.subterm + "/";
+	this.basepath = "/" + cat.rootdir + "/" + cat.term + "/" + cat.subterm
+			+ "/";
 	this.cat = cat;
 }
 var cm_func = new O("chris");
@@ -15,57 +16,77 @@ O.prototype.getInfoData = function(className, pointer) {
 	infoData.ajaxfail = 'ajaxfail';
 	infoData.fnUnbind = 'fnUnbind';
 	infoData.basepath = cm_func.basepath;
+	infoData.pagereload = 'pagereload';
+
+	var modeltype = '';
+	if ($(pointer).parent().data("modeltype") != undefined) {
+		modeltype = $(pointer).parent().data("modeltype");
+	}
+
+	infoData.modeltype = modeltype;
 	// may get id from pointer
 	switch (className) {
 	case "ac_new":
-		infoData.dlgid = "NewModal";
+		infoData.dlgid = "New" + modeltype + "Modal";
 		break;
 	case "ac_modify":
-		infoData.dlgid = "EditModal";
+		infoData.dlgid = "Edit" + modeltype + "Modal";
 		break;
 	case "ac_delete":
-		infoData.dlgid = "DeleteModal";
+		infoData.dlgid = "Delete" + modeltype + "Modal";
 		break;
 	case "ac_auth":
-		infoData.dlgid = "AuthModal";
+		infoData.dlgid = "Auth" + modeltype + "Modal";
+		break;
+	case "ac_enable":
+		// update dialog content
+		infoData.fnName = 'okFn';
+		infoData.dlgid = "Enable" + modeltype + "Modal";
+		cm_func.updateDialogContent(infoData);
+		break;
+	case "ac_disable":
+		infoData.fnName = 'okFn';
+		infoData.dlgid = "Enable" + modeltype + "Modal";
+		cm_func.updateDialogContent(infoData);
+		break;
 	default:
 		break;
 	}
 	return infoData;
 }
 O.prototype.updateDialogContent = function(infoData) {
-	//return false;
+	// return false;
 	var classname = infoData.className;
 	var dlgid = infoData.dlgid;
 	var formid = 'Form' + dlgid;
 	var pointer = infoData.pointer;
 	var model = $(pointer).parent().data("data");
-	if(classname == 'ac_new'){
-		return false;
+	if (classname == 'ac_new') {
+		//return false;
 		var form_inputs = $('#Form' + dlgid + ' input');
 		$.each(form_inputs, function(index, item) {
-			if(!$(item).hasClass("non_clear")){
-				$(item).val("");	
+			if (!$(item).hasClass("non_clear")) {
+				$(item).val("");
 			}
-			
+
 		});
 		var form_textarea = $('#Form' + dlgid + ' textarea');
 		$.each(form_textarea, function(index, item) {
-			if(!$(item).hasClass("non_clear")){
-				$(item).val("");	
+			if (!$(item).hasClass("non_clear")) {
+				$(item).val("");
 			}
 		});
 
 		var form_select = $('#Form' + dlgid + ' select');
 		$.each(form_select, function(index, item) {
-			if(!$(item).hasClass("non_clear")){
-				$(item).val($(item).find('option:first').val());	
+			if (!$(item).hasClass("non_clear")) {
+				$(item).val($(item).find('option:first').val());
 			}
-			
+
 		});
 		cm_func.formValidators[formid].resetForm();
-	}else if(classname == 'ac_modify'){
-		//var model = JSON.parse(data_json);
+	} else if (classname == 'ac_modify') {
+		// var model = JSON.parse(data_json);
 		// prepare Dialog Variables
 		var form_inputs = $('#Form' + dlgid + ' input');
 		$.each(form_inputs, function(index, item) {
@@ -73,30 +94,31 @@ O.prototype.updateDialogContent = function(infoData) {
 			var value = model[name];
 			$(item).val(value);
 		});
-		
+
 		var form_textarea = $('#Form' + dlgid + ' textarea');
 		$.each(form_textarea, function(index, item) {
 			var name = $(item).attr("name");
 			var value = model[name];
 			$(item).val(value);
 		});
-		
+
 		var form_select = $('#Form' + dlgid + ' select');
 		$.each(form_select, function(index, item) {
 			var name = $(item).attr("name");
 			var value = model[name];
 			$(item).val(value);
 		});
-		
+
 		cm_func.formValidators[formid].resetForm();
-	}else if(classname == 'ac_delete'){
+	} else if (classname == 'ac_delete' || classname == 'ac_enable'
+			|| classname == 'ac_disable') {
 		var form_inputs = $('#Form' + dlgid + ' input');
 		$.each(form_inputs, function(index, item) {
 			var name = $(item).attr("name");
 			var value = model[name];
 			$(item).val(value);
 		});
-	}else if(classname == 'ac_auth'){
+	} else if (classname == 'ac_auth') {
 		var data = $(pointer).parent().data("data");
 		var model = $(pointer).parent().data("data");
 		var roles = $(pointer).parent().data("roles");
@@ -106,41 +128,45 @@ O.prototype.updateDialogContent = function(infoData) {
 			var value = model[name];
 			var arrayOfStrings = name.split("_");
 			var path1 = arrayOfStrings[0];
-			if(arrayOfStrings.length>=2){
-				if(path1 == "lm"){
+			if (arrayOfStrings.length >= 2) {
+				if (path1 == "lm") {
 					// left menu
 					var mid = parseInt(arrayOfStrings[1]);
-					if(roles[mid] == undefined){
+					if (roles[mid] == undefined) {
 						$(item).prop('checked', false);
-					}else{
+					} else {
 						$(item).prop('checked', true);
 					}
-				}else if(path1 == "role"){
+				} else if (path1 == "role") {
 					// role
 					var mid = parseInt(arrayOfStrings[1]);
 					var roleid = parseInt(arrayOfStrings[2]);
-					if(roles[mid] != undefined){
+					if (roles[mid] != undefined) {
 						var lm = roles[mid];
 						if (lm.actions.includes(roleid)) {
 							$(item).prop('checked', true);
-						}else{
+						} else {
 							$(item).prop('checked', false);
 						}
-					}else{
+					} else {
 						$(item).prop('checked', false);
 					}
-				}else{
+				} else {
 					$(item).val(value);
 				}
-			}else{
+			} else {
 				$(item).val(value);
 			}
-			
+
 			console.log(name);
 			console.log(value);
 		});
 	}
 	return false;
+}
+O.prototype.pagereload = function(event) {
+	var infoData = event.data;
+	location.reload();
 }
 O.prototype.showDialog = function(event) {
 	var infoData = event.data;
@@ -151,13 +177,16 @@ O.prototype.showDialog = function(event) {
 
 	var okbtn = $("#" + dlgid + " .okbtn")[0];
 	var cancelbtn = $("#" + dlgid + " .cancel")[0];
+	
+	cm_func.fnDialogDismissed(event);
 
 	$(okbtn).bind("click", infoData, okfn);
 	$(cancelbtn).bind("click", infoData, cancelfn);
 
-	
 	cm_func.updateDialogContent(infoData);
 	$("#" + dlgid).modal('show');
+
+	
 }
 O.prototype.okFn = function(event) {
 	if (event != undefined) {
@@ -166,6 +195,7 @@ O.prototype.okFn = function(event) {
 		var proc1 = infoData.ajaxsuccess;
 		var proc2 = infoData.ajaxfail;
 		var fnUnbind = infoData.fnUnbind;
+		var pagereload = infoData.pagereload;
 		var params = {};
 		var url = cm_func.basepath + infoData.className;
 
@@ -180,9 +210,10 @@ O.prototype.okFn = function(event) {
 			obj1[n] = v;
 		});
 		params.model = obj1;
+		params.modeltype = infoData.modeltype;
 
 		var valid = $('#Form' + dlgid).valid();
-		
+
 		if (valid) {
 			$('.loading').show();
 			$.ajax({
@@ -195,8 +226,8 @@ O.prototype.okFn = function(event) {
 					if (resp.response == 200) {
 						// success
 						// refresh current page
-						location.reload();
-
+						// 
+						cm_func[pagereload](event);
 					} else {
 						// error
 						alert(resp.error_message);
@@ -208,7 +239,6 @@ O.prototype.okFn = function(event) {
 					$('.loading').hide();
 				}
 			});
-			cm_func[fnUnbind](event);
 		} else {
 			// 
 		}
@@ -218,8 +248,6 @@ O.prototype.okFn = function(event) {
 }
 O.prototype.cancelFn = function(event) {
 	var infoData = event.data;
-	var fnUnbind = infoData.fnUnbind;
-	cm_func[fnUnbind](event);
 }
 O.prototype.fnUnbind = function(event) {
 	if (event != undefined) {
@@ -234,7 +262,18 @@ O.prototype.fnUnbind = function(event) {
 		return false;
 	}
 }
-
+O.prototype.fnDialogDismissed = function(event) {
+	if (event != undefined) {
+		var infoData = event.data;
+		var dlgid = infoData.dlgid;
+		$("#" + dlgid).unbind('hidden.bs.modal');
+		$("#" + dlgid).on('hidden.bs.modal', function() {
+			var fnUnbind = infoData.fnUnbind;
+			cm_func[fnUnbind](event);
+		})
+		return false;
+	}
+}
 function checkPermission(classes) {
 
 	var arrayOfStrings = classes.split(" ");
@@ -271,38 +310,33 @@ function K11(event) { // K11
 }
 $(".ac_new,.ac_modify,.ac_delete,.ac_auth,.ac_enable,.ac_disable").click(K11); // AA1
 
-jQuery(document).ready(function() {
-	// cache DOM elements
-	// bind new event.
-//	$(".collapse").on('hidden.bs.collapse', function(e) {
-//		
-//		index = $(".collapse").index($(this));
-//		alert(index);
-//		if(cm_func.cat.listMenu[index].submenu.length == 0){
-//			// need to redirect
-//			menu = cm_func.cat.listMenu[index];
-//			location.href = cm_func.cat.rootdir+"/"+menu.term+"/"+menu.term;
-//		}
-//	})
-	$(".leftmenu").on('click', function(e) {
-		
-		index = $(".leftmenu").index($(this));
-		if(cm_func.cat.listMenu[index].submenu.length == 0){
-			// need to redirect
-			var menu = cm_func.cat.listMenu[index].menu;
-			var url = "/" + cm_func.cat.rootdir+"/"+menu.term+"/"+menu.term;
-			location.href = url;
-		}
-	})
-	
-	var validator = $("#FormDeleteModal").validate({
-		rules: {
-			id: "required"		
-		},
-		messages: {
-			id: "Invalid ID"
-		}
-	});
-	cm_func.formValidators.FormDeleteModal = validator;
-	
-});
+jQuery(document).ready(
+		function() {
+			$(".leftmenu").on(
+					'click',
+					function(e) {
+
+						index = $(".leftmenu").index($(this));
+						if (cm_func.cat.listMenu[index].submenu.length == 0) {
+							// need to redirect
+							if (cm_func.cat.listMenu[index].menu.deleted == 1) {
+								return;
+							}
+							var menu = cm_func.cat.listMenu[index].menu;
+							var url = "/" + cm_func.cat.rootdir + "/"
+									+ menu.term + "/" + menu.term;
+							location.href = url;
+						}
+					})
+
+			var validator = $("#FormDeleteModal").validate({
+				rules : {
+					id : "required"
+				},
+				messages : {
+					id : "Invalid ID"
+				}
+			});
+			cm_func.formValidators.FormDeleteModal = validator;
+
+		});

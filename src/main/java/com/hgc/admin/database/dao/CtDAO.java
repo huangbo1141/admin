@@ -1,7 +1,7 @@
 package com.hgc.admin.database.dao;
 
 import java.util.List;
-
+import java.util.HashMap;
 import com.hgc.admin.database.model.Ct;
 
 public interface CtDAO {
@@ -11,5 +11,6 @@ public interface CtDAO {
 	public List<Ct> listCts();
 	public Ct getCtById(Integer id);
 	public void removeCt(Integer id);
-	public List<Object> queryCt(String query);
+	public List<Ct> queryCt(String SQL_QUERY,String[] fields);
+	public HashMap<Integer,Ct> mapCts();
 }
