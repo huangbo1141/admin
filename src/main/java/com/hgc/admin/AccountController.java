@@ -19,7 +19,7 @@ import com.hgc.admin.utils.AccountHelper;
 
 @Controller
 @RequestMapping({ "/", "account" })
-public class AccountController extends BaseController{
+public class AccountController extends BaseAdminController{
 
 		
 
@@ -38,7 +38,7 @@ public class AccountController extends BaseController{
 			return "common/index";
 		} else {
 			AccountHelper accModel = new AccountHelper();
-			Object[] user = userHelper.login(acc.getUsername(), acc.getPassword(), this.transactionManager.getSessionFactory());
+			Object[] user = backendApiHelper.login(acc.getUsername(), acc.getPassword(), this.transactionManager.getSessionFactory());
 			if (user!=null) {
 				session.setAttribute("username", acc.getUsername());
 				currentUser.setUsername(acc.getUsername());
@@ -58,7 +58,7 @@ public class AccountController extends BaseController{
 			HttpServletRequest request, HttpServletResponse response) {
 
 		AccountHelper accModel = new AccountHelper();
-		Object[] user = userHelper.login(account.getUsername(), account.getPassword(), this.transactionManager.getSessionFactory());
+		Object[] user = backendApiHelper.login(account.getUsername(), account.getPassword(), this.transactionManager.getSessionFactory());
 		if (user!=null) {
 			session.setAttribute("username", account.getUsername());
 			if (request.getParameter("remember") != null) {

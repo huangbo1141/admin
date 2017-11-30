@@ -21,23 +21,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgc.admin.database.model.*;
 import com.hgc.admin.database.service.*;
 import com.hgc.admin.utils.AccountHelper;
-import com.hgc.admin.utils.BaseHelper;
-import com.hgc.admin.utils.UserHelper;
+import com.hgc.admin.utils.BaseHelperImpl;
+import com.hgc.admin.utils.BackendApiHelper;
 
 import java.math.BigInteger;
 
 public class BaseApiController {
 
-	@Autowired(required = true)
-	@Qualifier(value = "transactionManager")
-	public HibernateTransactionManager transactionManager;
-
-	@Resource
-	public UserHelper userHelper;
-
-	@Autowired(required = true)
-	@Qualifier(value = "personService")
-	public PersonService personService;
+	
 
 	public Class<?> getModelClasses(String type) {
 		String p = type.toLowerCase();
@@ -50,12 +41,12 @@ public class BaseApiController {
 		}
 	}
 
-	public Object getServiceInstances(String type) {
+	public Object getServiceInstances(String type,BackendApiHelper userHelper) {
 		String p = type.toLowerCase();
 		if(p.equals("line")){
-			return this.userHelper.lineService;
+			return userHelper.lineService;
 		}else if(p.equals("dan")){
-			return this.userHelper.danService;
+			return userHelper.danService;
 		}else{
 			return Object.class;
 		}

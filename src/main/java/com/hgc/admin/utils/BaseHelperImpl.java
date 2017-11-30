@@ -7,91 +7,140 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
+import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hgc.admin.database.model.*;
+import com.hgc.admin.database.model.Dan;
+import com.hgc.admin.database.model.Line;
+import com.hgc.admin.database.model.User;
+import com.hgc.admin.database.model.UserRole;
+import com.hgc.admin.database.service.*;
+import com.hgc.admin.utils.BaseHelperImpl.UserType;
 
 @Component
-public class UserHelper extends BaseHelper {
+@Primary
+public class BaseHelperImpl implements BaseHelper {
+
+	@Autowired(required = true)
+	@Qualifier(value = "transactionManager")
+	public HibernateTransactionManager transactionManager;
+	
+	@Autowired(required = true)
+	@Qualifier(value = "adminRoleService")
+	public AdminRoleService adminRoleService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "adminUserService")
+	public AdminUserService adminUserService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "announceService")
+	public AnnounceService announceService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "ctService")
+	public CtService ctService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "danService")
+	public DanService danService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "errorTypeService")
+	public ErrorTypeService errorTypeService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "lineService")
+	public LineService lineService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "menuService")
+	public MenuService menuService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "menuActionService")
+	public MenuActionService menuActionService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "orderService")
+	public OrderService orderService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "orderRelationService")
+	public OrderRelationService orderRelationService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "reasonTypeService")
+	public ReasonTypeService reasonTypeService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "reportService")
+	public ReportService reportService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "stationService")
+	public StationService stationService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "timeTypeService")
+	public TimeTypeService timeTypeService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "ttService")
+	public TtService ttService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "userService")
+	public UserService userService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "userRoleService")
+	public UserRoleService userRoleService;
+
+	public enum UserType {
+	    PRODUCTION, QUALITY,MAINTENANCE,SPECIALIST
+	}
+	
+	public String[] USERTYPE_NAMES = {"tc_production","tc_quality","tc_maintenance","tc_specialist"};
 	
 	@Override
-	public boolean fakeLogin() {
-		return false;
-	}
-	
-	
-	public HashMap<String, Class<?>> getModelClasses() {
+	public List<Object> queryList(String SQL_QUERY, SessionFactory sessionFactory) {
+		Session session = sessionFactory.openSession();
+		List<Object> ret = new ArrayList<Object>();
+		Transaction t = session.beginTransaction();
+		try {
+			ret = session.createSQLQuery(SQL_QUERY).list();
+			t.commit();
+			session.close();
 
-		HashMap<String, Class<?>> hash = new HashMap<String, Class<?>>();
-		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(this);
-		String menu = map_menu.get(1).getTerm();
-		String menu_smenu = map_menu.get(13).getTerm();
-		String menu_role = map_menu.get(14).getTerm();
-		String menu_adminuser = map_menu.get(15).getTerm();
-		String line = map_menu.get(3).getTerm();
-		String workstation = map_menu.get(4).getTerm();
-		String userguanli = map_menu.get(5).getTerm();
-		String password = map_menu.get(6).getTerm();
-		String ct = map_menu.get(7).getTerm();
-		String tt = map_menu.get(8).getTerm();
-		String faultlib = map_menu.get(9).getTerm();
-		String workorder = map_menu.get(10).getTerm();
-		String report = map_menu.get(11).getTerm();
-		String announce = map_menu.get(12).getTerm();
-
-		hash.put(menu + "_" + menu_smenu, Menu.class);
-		hash.put(menu + "_" + menu_role, AdminRole.class);
-		hash.put(menu + "_" + menu_adminuser, AdminUser.class);
-		hash.put(workstation + "_" + workstation, Station.class);
-		hash.put(userguanli + "_" + userguanli, User.class);
-		hash.put(password + "_" + password, User.class);
-		hash.put(ct + "_" + ct, Ct.class);
-		hash.put(tt + "_" + tt, Tt.class);
-		hash.put(faultlib + "_" + faultlib, ErrorType.class);
-		hash.put(workorder + "_" + workorder, Order.class);
-		hash.put(report + "_" + report, Report.class);
-		hash.put(announce + "_" + announce, Announce.class);
-		return hash;
+		} catch (Exception e) {
+			t.rollback();
+			session.close();
+		}
+		return ret;
 	}
 
-	public HashMap<String, Object> getServiceInstances() {
-
-		HashMap<String, Object> methods = new HashMap<String, Object>();
-		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(this);
-		String menu = map_menu.get(1).getTerm();
-		String menu_smenu = map_menu.get(13).getTerm();
-		String menu_role = map_menu.get(14).getTerm();
-		String menu_adminuser = map_menu.get(15).getTerm();
-		String line = map_menu.get(3).getTerm();
-		String workstation = map_menu.get(4).getTerm();
-		String userguanli = map_menu.get(5).getTerm();
-		String password = map_menu.get(6).getTerm();
-		String ct = map_menu.get(7).getTerm();
-		String tt = map_menu.get(8).getTerm();
-		String faultlib = map_menu.get(9).getTerm();
-		String workorder = map_menu.get(10).getTerm();
-		String report = map_menu.get(11).getTerm();
-		String announce = map_menu.get(12).getTerm();
-		
-		methods.put(menu + "_" + menu_smenu, this.menuService);
-		methods.put(menu + "_" + menu_role, this.adminRoleService);
-		methods.put(menu + "_" + menu_adminuser, this.adminUserService);
-		methods.put(workstation + "_" + workstation, this.stationService);
-		methods.put(userguanli + "_" + userguanli, this.userService);
-		methods.put(password + "_" + password, this.userService);
-		methods.put(ct + "_" + ct, this.ctService);
-		methods.put(tt + "_" + tt, this.ttService);
-		methods.put(faultlib + "_" + faultlib, this.errorTypeService);
-		methods.put(workorder + "_" + workorder, this.orderService);
-		methods.put(report + "_" + report, this.reportService);
-		methods.put(announce + "_" + announce, this.announceService);
-		return methods;
+	public static String getTableName(String s) {
+		String ret = "";
+		String[] r = s.split("(?=\\p{Upper})");
+		for (int i = 0; i < r.length; i++) {
+			ret = ret + r[i] + "_";
+		}
+		if (ret.length() > 0) {
+			ret = ret.substring(0, ret.length() - 1);
+			ret = "tbl_" + ret;
+		}
+		return ret;
 	}
 
 	public Object filterObject(Object param, Class<?> ModelT) {
@@ -119,7 +168,105 @@ public class UserHelper extends BaseHelper {
 		}
 		return gen;
 	}
+	
+	public static String getModifySQL(Object targetClass, String tableName, HashMap<String, Object> whereFields) {
+		String sql = null;
+		String part1 = "";
+		Field[] fields = targetClass.getClass().getDeclaredFields();
+		for (Field f : fields) {
+			try {
+				String name = f.getName();
+				if (whereFields.containsKey(name)) {
+					continue;
+				}
+				f.setAccessible(true);
+				Object value = f.get(targetClass);
+				if (value != null) {
+					String item1 = String.format("`%s`='%s',", name, value);
+					part1 = part1 + item1;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 
+		}
+		if (part1.length() > 0) {
+			part1 = part1.substring(0, part1.length() - 1);
+			sql = String.format("update %s set %s %s", tableName, part1, getWhereSQL(whereFields));
+		}
+		return sql;
+	}
+	public static String getCountSQL(String tableName, HashMap<String, Object> whereFields) {
+		String sql = null;
+		
+		sql = String.format("select count(*) from %s %s", tableName, getWhereSQL(whereFields));
+		return sql;
+	}
+
+	public static String getWhereSQL(HashMap<String, Object> whereFields) {
+		String sql = " where ";
+		Iterator it = whereFields.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			String name = pair.getKey().toString();
+			String value = pair.getValue().toString();
+			sql = sql + String.format(" `%s` = '%s' and", name, value);
+		}
+		if (sql.length() > 0) {
+			sql = sql.substring(0, sql.length() - 3);
+		}
+		return sql;
+	}
+
+	public static String escapeString(String string) {
+		String ret = string;
+		if (string != null) {
+			ret = string.replaceAll("'", "''");
+		}
+		return ret;
+	}
+
+	public static String getInsertSql(Object targetClass, String tableName, List<String> exceptions) {
+		String sql = null;
+		String part1 = "";
+		String part2 = "";
+
+		for (Field f : targetClass.getClass().getDeclaredFields()) {
+			String name = f.getName();
+			if (exceptions != null && exceptions.indexOf(name) >= 0) {
+				continue;
+			}
+			try {
+				f.setAccessible(true);
+				Object obj = f.get(targetClass);
+				if (obj == null) {
+					// String item1 = String.format("`%s`,",name);
+					// String item2 = "'',";
+					// part1 = part1 + item1;
+					// part2 = part2 + item2;
+				} else {
+					String item1 = String.format("`%s`,", name);
+					String item2 = String.format("'%s',", obj);
+					part1 = part1 + item1;
+					part2 = part2 + item2;
+				}
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+		}
+		if (part1.length() > 0) {
+			part1 = part1.substring(0, part1.length() - 1);
+			part2 = part2.substring(0, part2.length() - 1);
+
+			sql = String.format("insert into %s (%s) values (%s)", tableName, part1, part2);
+		}
+
+		return sql;
+	}
+
+	
 	public Object modelNew(Class<?> ModelT, Object service, Object non_safe, Integer mode) {
 		Object ret = "";
 		ObjectMapper mapper = new ObjectMapper();
@@ -133,7 +280,7 @@ public class UserHelper extends BaseHelper {
 			case 1: {
 				List<String> exceptions = new ArrayList<String>();
 				exceptions.add("id");
-				String SQL_QUERY = BaseHelper.getInsertSql(model, BaseHelper.getTableName(ModelT.getSimpleName()),
+				String SQL_QUERY = BaseHelperImpl.getInsertSql(model, BaseHelperImpl.getTableName(ModelT.getSimpleName()),
 						exceptions);
 				SessionFactory sessionFactory = this.transactionManager.getSessionFactory();
 				Session session = sessionFactory.openSession();
@@ -183,22 +330,6 @@ public class UserHelper extends BaseHelper {
 		return ret;
 	}
 
-	public Object parseNew(String term, String subterm, Object non_safe) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		HashMap<String, Class<?>> hash = this.getModelClasses();
-
-		HashMap<String, Object> methods = this.getServiceInstances();
-		Object ret = "";
-		String key = term + "_" + subterm;
-		if (hash.containsKey(key)) {
-			Class<?> ModelT = hash.get(key);
-			Object service = methods.get(key);
-			ret = this.modelNew(ModelT, service, non_safe, 1);
-		}
-		return ret;
-	}
-
 	public Object modelDelete(Class<?> ModelT, Object service, Object non_safe, Integer mode) {
 		Object ret = "";
 		try {
@@ -223,24 +354,7 @@ public class UserHelper extends BaseHelper {
 		}
 		return ret;
 	}
-
-	public Object parseDelete(String term, String subterm, Object non_safe) {
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		HashMap<String, Class<?>> hash = this.getModelClasses();
-
-		HashMap<String, Object> methods = this.getServiceInstances();
-		Object ret = "";
-		String key = term + "_" + subterm;
-		if (hash.containsKey(key)) {
-			Class<?> ModelT = hash.get(key);
-			Object service = methods.get(key);
-			ret = this.modelDelete(ModelT, service, non_safe, 1);
-		}
-		return ret;
-	}
-
+	
 	public Object modelModify(Class<?> ModelT, Object service, Object non_safe, Integer mode) {
 		Object ret = "";
 		try {
@@ -257,7 +371,7 @@ public class UserHelper extends BaseHelper {
 
 			HashMap<String, Object> whereFields = new HashMap<String, Object>();
 			whereFields.put("id", id);
-			String SQL_QUERY = BaseHelper.getModifySQL(model, BaseHelper.getTableName(ModelT.getSimpleName()),
+			String SQL_QUERY = BaseHelperImpl.getModifySQL(model, BaseHelperImpl.getTableName(ModelT.getSimpleName()),
 					whereFields);
 
 			SessionFactory sessionFactory = this.transactionManager.getSessionFactory();
@@ -282,61 +396,6 @@ public class UserHelper extends BaseHelper {
 		}
 		return ret;
 	}
-	public Object parseModify(String term, String subterm, Object non_safe) {
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		HashMap<String, Class<?>> hash = this.getModelClasses();
-		HashMap<String, Object> methods = this.getServiceInstances();
-		Object ret = "";
-		try {
-			String key = term + "_" + subterm;
-			if (hash.containsKey(key)) {
-				Class<?> ModelT = hash.get(key);
-				Object service = methods.get(key);
-				ret = this.modelModify(ModelT, service, non_safe, 1);
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return ret;
-	}
-	public Object parseCheck(String term, String subterm, Object non_safe) {
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		HashMap<String, Class<?>> hash = this.getModelClasses();
-		HashMap<String, Object> methods = this.getServiceInstances();
-		Object ret = "";
-		try {
-			String key = term + "_" + subterm;
-			if (hash.containsKey(key)) {
-				Class<?> ModelT = hash.get(key);
-				Object service = methods.get(key);
-				ret = this.modelCheck(ModelT, service, non_safe, 1);
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return ret;
-	}
-	public HashMap<Integer,Object> getMapDanPerLineID(){
-		HashMap<Integer,Object> hash = new HashMap<Integer,Object>();
-		HashMap<Integer,Line> map_line = lineService.mapLines();
-		for(Dan dan:danService.listDans()){
-			if(hash.containsKey(dan.getLine())){
-				List<Dan> list = (List<Dan>) hash.get(dan.getLine());
-				list.add(dan);
-			}else{
-				List<Dan> list = new ArrayList<Dan>();
-				list.add(dan);
-				hash.put(dan.getLine(), list);
-			}
-		}
-		return hash;
-	}
 	
 	public UserRole getRole(UserType userType){
 		String tr_name = USERTYPE_NAMES[userType.ordinal()];
@@ -349,6 +408,7 @@ public class UserHelper extends BaseHelper {
 		}
 		return null;
 	}
+	
 	public User getTypedUser(User maker,UserType userType){
 		Integer dan = maker.getDan();
 		UserRole ur = getRole(userType);
@@ -374,7 +434,7 @@ public class UserHelper extends BaseHelper {
 
 			HashMap<String, Object> whereFields = (HashMap<String, Object>)non_safe;
 			
-			String SQL_QUERY = BaseHelper.getCountSQL(BaseHelper.getTableName(ModelT.getSimpleName()), whereFields);
+			String SQL_QUERY = BaseHelperImpl.getCountSQL(BaseHelperImpl.getTableName(ModelT.getSimpleName()), whereFields);
 
 			SessionFactory sessionFactory = this.transactionManager.getSessionFactory();
 

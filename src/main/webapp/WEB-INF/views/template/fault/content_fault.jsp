@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="col-md-12">
-			<div class="tablediv">
+			<div class="tablediv hgctab">
 				<ul class="nav dess-nav-tabs nav-tabs">
 					<c:set var="test" value="${pageData.tabIndex}" />
 					<%

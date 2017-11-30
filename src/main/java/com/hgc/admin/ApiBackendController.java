@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Resource;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
@@ -22,21 +24,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgc.admin.constants.Constants;
 import com.hgc.admin.database.model.*;
-import com.hgc.admin.model.ApiRequest;
+import com.hgc.admin.model.BackendRequest;
 import com.hgc.admin.model.Role;
 import com.hgc.admin.utils.AccountHelper;
+import com.hgc.admin.utils.BackendApiHelper;
 
 /**
  * Handles requests for the Object service.
  */
 @RestController
 @RequestMapping("{term}/{subterm}")
-public class BackendPanelApiController extends BaseApiController {
+public class ApiBackendController extends BaseApiController {
 
-	public HashMap<String, Object> filterModel(ApiRequest apiRequest, String term, String subterm,
+	@Resource
+	public BackendApiHelper backendApiHelper;
+	
+	public HashMap<String, Object> filterModel(BackendRequest apiRequest, String term, String subterm,
 			HashMap<String, Object> nonsafe_model) {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
-		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(userHelper);
+		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(backendApiHelper);
 		try {
 			String menu = map_menu.get(1).getTerm();
 			String menu_smenu = map_menu.get(13).getTerm();
@@ -57,7 +63,7 @@ public class BackendPanelApiController extends BaseApiController {
 					if (nonsafe_model.containsKey("menu_level")) {
 						// parent should be same
 						Integer parent = Integer.valueOf(nonsafe_model.get("parent").toString());
-						List<Menu> list = userHelper.menuService.listMenus();
+						List<Menu> list = backendApiHelper.menuService.listMenus();
 						for (Menu item : list) {
 							if (item.getId() == parent) {
 								nonsafe_model.put("parent", item.getParent());
@@ -167,7 +173,7 @@ public class BackendPanelApiController extends BaseApiController {
 		return ret;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(BackendPanelApiController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApiBackendController.class);
 
 	
 	
@@ -181,16 +187,16 @@ public class BackendPanelApiController extends BaseApiController {
 		ret.put("response", 400);
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.userHelper.parseNew(term, subterm, filtered_model.get("model"));
+				Object t = this.backendApiHelper.parseNew(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				Object t = this.userHelper.modelNew(ModelT, service, filtered_model.get("model"), 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object t = this.backendApiHelper.modelNew(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}			
 			
@@ -221,16 +227,16 @@ public class BackendPanelApiController extends BaseApiController {
 		ret.put("response", 400);
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.userHelper.parseDelete(term, subterm, filtered_model.get("model"));
+				Object t = this.backendApiHelper.parseDelete(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				Object t = this.userHelper.modelDelete(ModelT, service, filtered_model.get("model"), 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object t = this.backendApiHelper.modelDelete(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}	
 			ret.put("response", 200);
@@ -256,16 +262,16 @@ public class BackendPanelApiController extends BaseApiController {
 		ret.put("response", 400);
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.userHelper.parseModify(term, subterm, filtered_model.get("model"));
+				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				Object t = this.userHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
 			ret.put("response", 200);
@@ -291,16 +297,16 @@ public class BackendPanelApiController extends BaseApiController {
 		ret.put("response", 400);
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.userHelper.parseModify(term, subterm, filtered_model.get("model"));
+				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				Object t = this.userHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
 			
@@ -329,16 +335,16 @@ public class BackendPanelApiController extends BaseApiController {
 		ret.put("response", 400);
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.userHelper.parseModify(term, subterm, filtered_model.get("model"));
+				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				Object t = this.userHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
 			ret.put("response", 200);
@@ -366,17 +372,17 @@ public class BackendPanelApiController extends BaseApiController {
 		ret.put("response", 400);
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
 			
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.userHelper.parseModify(term, subterm, filtered_model.get("model"));
+				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				Object t = this.userHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
 			
@@ -402,16 +408,16 @@ public class BackendPanelApiController extends BaseApiController {
 		Object ret = new Object();
 		try {
 			json_string = mapper.writeValueAsString(p);
-			ApiRequest apiRequest = mapper.readValue(json_string, ApiRequest.class);
+			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			//HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
 			Object t=null;
 			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				t = this.userHelper.parseCheck(term, subterm, apiRequest.model);
+				t = this.backendApiHelper.parseCheck(term, subterm, apiRequest.model);
 			}else{
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype);
-				t = this.userHelper.modelModify(ModelT, service, apiRequest.model, 1);
+				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				t = this.backendApiHelper.modelModify(ModelT, service, apiRequest.model, 1);
 			}
 
 			ret = this.filterOutput(apiRequest, term, subterm, t);
@@ -425,10 +431,10 @@ public class BackendPanelApiController extends BaseApiController {
 		return ret;
 	}
 	
-	public Object filterOutput(ApiRequest apiRequest, String term, String subterm,
+	public Object filterOutput(BackendRequest apiRequest, String term, String subterm,
 			Object nonsafe_model) {
 		Object ret = new Object();
-		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(userHelper);
+		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(backendApiHelper);
 		try {
 			String menu = map_menu.get(1).getTerm();
 			String menu_smenu = map_menu.get(13).getTerm();

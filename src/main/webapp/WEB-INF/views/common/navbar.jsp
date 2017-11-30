@@ -4,7 +4,7 @@
 <nav class="cd-side-nav1">
 
 	<div class="logo">
-		<a href="#"><img src="/admin/resources/img/logo.png" /></a>
+		<a href="#"><img src="/${rootdir}/resources/img/logo.png" /></a>
 		<c:out value="${currentUser.username}"/> 
 	</div>
 	<div class="panel-group" id="accordion">

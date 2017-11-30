@@ -15,8 +15,8 @@ import com.hgc.admin.model.LeftMenu;
 
 @Controller
 @RequestMapping("{term}")
-public class TermController extends BaseController{
-	private static final Logger logger = LoggerFactory.getLogger(TermController.class);
+public class AdminTermController extends BaseAdminController{
+	private static final Logger logger = LoggerFactory.getLogger(AdminTermController.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String index(@PathVariable("term") String term,Model model){

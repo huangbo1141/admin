@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
@@ -18,14 +20,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgc.admin.constants.Constants;
 import com.hgc.admin.database.model.Menu;
-import com.hgc.admin.model.ApiRequest;
+import com.hgc.admin.model.BackendRequest;
 import com.hgc.admin.utils.AccountHelper;
+import com.hgc.admin.utils.BackendApiHelper;
 
 @RestController
 @RequestMapping("webapi/{v}/{term}/{subterm}")
-public class WebApiController extends BaseApiController {
+public class ApiWebController extends BaseApiController {
 
-	private static final Logger logger = LoggerFactory.getLogger(WebApiController.class);
+	@Resource
+	public BackendApiHelper backendApiHelper;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ApiWebController.class);
 
 	@RequestMapping(value = Constants.ACTION_WEB_CHECK, method = RequestMethod.POST)
 	public @ResponseBody Object checkObject(@PathVariable("v") String version,@PathVariable("term") String term, @PathVariable("subterm") String subterm,
@@ -42,7 +48,7 @@ public class WebApiController extends BaseApiController {
 				filtered_model.put(theKey, formData.getFirst(theKey));
 			}
 			Object t = null;
-			t = this.userHelper.parseCheck(term, subterm, filtered_model);
+			t = this.backendApiHelper.parseCheck(term, subterm, filtered_model);
 			ret = this.filterOutput(term, subterm, t);
 			
 		} catch (Exception e) {
@@ -55,7 +61,7 @@ public class WebApiController extends BaseApiController {
 
 	public Object filterOutput(String term, String subterm, Object nonsafe_model) {
 		Object ret = new Object();
-		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(userHelper);
+		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(backendApiHelper);
 		try {
 			String menu = map_menu.get(1).getTerm();
 			String menu_smenu = map_menu.get(13).getTerm();

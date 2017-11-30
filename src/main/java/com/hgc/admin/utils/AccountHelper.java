@@ -67,7 +67,7 @@ public class AccountHelper {
 		this.password = null;
 	}
 
-	public boolean checkPermission(BaseHelper baseHelper) {
+	public boolean checkPermission(BaseHelperImpl baseHelper) {
 		if (hasLogin()) {
 			// Hibernate.initialize(this.account.getElement());
 			try {
@@ -140,7 +140,7 @@ public class AccountHelper {
 		return "invalid";
 	}
 
-	public static HashMap<Integer, Menu> getAllMenu(BaseHelper baseHelper) {
+	public static HashMap<Integer, Menu> getAllMenu(BaseHelperImpl baseHelper) {
 		HashMap<Integer, Menu> ret = new HashMap<Integer, Menu>();
 		List<Menu> list = baseHelper.menuService.listMenus();
 		
@@ -154,7 +154,7 @@ public class AccountHelper {
 	}
 	
 
-	public HashMap<Integer, MenuAction> parseMenuActions(BaseHelper baseHelper) {
+	public HashMap<Integer, MenuAction> parseMenuActions(BaseHelperImpl baseHelper) {
 		HashMap<Integer, MenuAction> ret = new HashMap<Integer, MenuAction>();
 		List<MenuAction> list = baseHelper.menuActionService.listMenuActions();
 		if (list != null)

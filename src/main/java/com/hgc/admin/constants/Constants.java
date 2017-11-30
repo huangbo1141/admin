@@ -2,6 +2,10 @@ package com.hgc.admin.constants;
 
 public class Constants {
 
+	public static final String ROOT_DIR = "admin";
+	public static final boolean daoLogger = true;
+	public static final String UPLOAD_DIR = "C:\\tc\\uploads\\";
+	
 	public static final String DUMMY_EMP = "/rest/emp/dummy";
 	public static final String GET_EMP = "/rest/emp/{id}";
 	public static final String GET_ALL_EMP = "/rest/emps";
@@ -20,6 +24,9 @@ public class Constants {
 	public static final String TERM_ALL = "ac_all";
 	public static final String TERM_CHECK = "ac_check";
 	
+	public static final String TERM_UPLOAD = "ac_upload";
+	public static final String TERM_FORMPOST = "formpost";
+	
 	public static final String ACTION_WEB_NEW = 	"/"+TERM_NEW;
 	public static final String ACTION_WEB_MODIFY = 	"/"+TERM_MODIFY;
 	public static final String ACTION_WEB_DELETE = 	"/"+TERM_DELETE;
@@ -34,9 +41,8 @@ public class Constants {
 	public static final String ACTION_WEB_CHECK = 	"/"+TERM_CHECK;
 	//public static final String ACTION_CHECK = 	"/";
 	
+	public static final String ACTION_APP_UPLOAD = 	"/"+TERM_UPLOAD;
+	public static final String ACTION_APP_FORMPOST = 	"/"+TERM_FORMPOST;
 	
 	
-	
-	public static final String ROOT_DIR = "admin";
-	public static final boolean daoLogger = true;
 }

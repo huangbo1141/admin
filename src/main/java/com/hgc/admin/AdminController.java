@@ -25,12 +25,12 @@ import com.hgc.admin.constants.Constants;
 import com.hgc.admin.database.model.*;
 import com.hgc.admin.model.*;
 import com.hgc.admin.utils.AccountHelper;
-import com.hgc.admin.utils.BaseHelper;
+import com.hgc.admin.utils.BaseHelperImpl;
 
 @Controller
 @RequestMapping("{term}/{subterm}")
-public class DefaultController extends BaseController{
-	private static final Logger logger = LoggerFactory.getLogger(DefaultController.class);
+public class AdminController extends BaseAdminController{
+	private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String index(@PathVariable("term") String term,@PathVariable("subterm") String subterm,Model model,HttpServletRequest request){
@@ -96,9 +96,9 @@ public class DefaultController extends BaseController{
 			if(term.equals(menu)){
 				if(subterm.equals(menu_smenu)){
 					// need to fetch all menu data.
-					pageData.put("list_data", userHelper.menuService.listMenus());
+					pageData.put("list_data", backendApiHelper.menuService.listMenus());
 				}else if(subterm.equals(menu_role)){
-					List<AdminRole> list_adminRole = userHelper.adminRoleService.listAdminRoles();
+					List<AdminRole> list_adminRole = backendApiHelper.adminRoleService.listAdminRoles();
 					
 					List<Object> list_data = new ArrayList<Object>();
 					for(int i=0; i<list_adminRole.size(); i++){
@@ -188,13 +188,13 @@ public class DefaultController extends BaseController{
 					
 					
 				}else if(subterm.equals(menu_adminuser)){
-					List<AdminRole> list_role = userHelper.adminRoleService.listAdminRoles();
+					List<AdminRole> list_role = backendApiHelper.adminRoleService.listAdminRoles();
 					
 					AdminRole ar = null;
 					if(request.getParameter("role")!=null){
 						String role_id = request.getParameter("role");
 						try{
-							ar = userHelper.adminRoleService.getAdminRoleById(Integer.valueOf(role_id));	
+							ar = backendApiHelper.adminRoleService.getAdminRoleById(Integer.valueOf(role_id));	
 						}catch(Exception ex){
 							
 						}
@@ -209,7 +209,7 @@ public class DefaultController extends BaseController{
 								+ " FROM `tbl_admin_user` "
 								+" where role = "+ ar.getId();
 						String[] ids = {"id","name","phone","log_time","role","username","password","deleted","create_datetime","modify_datetime"};
-						List<AdminUser> list_adminuser = userHelper.adminUserService.queryAdminUser(sql, ids);
+						List<AdminUser> list_adminuser = backendApiHelper.adminUserService.queryAdminUser(sql, ids);
 						
 						pageData.put("model_role", ar);
 						pageData.put("list_adminuser", list_adminuser);
@@ -218,13 +218,13 @@ public class DefaultController extends BaseController{
 				}
 			}else if(term.equals(line)){
 				if(subterm.equals(line)){
-					List<Line> list_line = userHelper.lineService.listLines();
+					List<Line> list_line = backendApiHelper.lineService.listLines();
 					List<Object> list_data = new ArrayList<Object>();
 
 					
 					HashMap<Integer,Object> hash = new HashMap<Integer,Object>();
-					HashMap<Integer,Line> map_line = userHelper.lineService.mapLines();
-					for(Dan dan:this.userHelper.danService.listDans()){
+					HashMap<Integer,Line> map_line = backendApiHelper.lineService.mapLines();
+					for(Dan dan:this.backendApiHelper.danService.listDans()){
 						if(hash.containsKey(dan.getLine())){
 							List<Dan> list = (List<Dan>) hash.get(dan.getLine());
 							list.add(dan);
@@ -265,20 +265,20 @@ public class DefaultController extends BaseController{
 				if(subterm.equals(workstation)){
 					Line model_line = null;
 					Dan model_dan = null;
-					List<Station> list_station_all = userHelper.stationService.listStations();
-					List<Line> list_line = userHelper.lineService.listLines();
-					List<Dan> list_dan = userHelper.danService.listDans();
+					List<Station> list_station_all = backendApiHelper.stationService.listStations();
+					List<Line> list_line = backendApiHelper.lineService.listLines();
+					List<Dan> list_dan = backendApiHelper.danService.listDans();
 					List<Station> list_station = new ArrayList<Station>();
 					if (request.getParameter("d") != null) {
 						String dan_id = request.getParameter("d");
-						model_dan = userHelper.danService.getDanById(Integer.parseInt(dan_id));
+						model_dan = backendApiHelper.danService.getDanById(Integer.parseInt(dan_id));
 						int line_id = model_dan.getLine();
-						model_line = userHelper.lineService.getLineById(line_id);
+						model_line = backendApiHelper.lineService.getLineById(line_id);
 					}else{
 						if(list_dan.size()>0){
 							model_dan = list_dan.get(0);
 							int line_id = model_dan.getLine();
-							model_line = userHelper.lineService.getLineById(line_id);
+							model_line = backendApiHelper.lineService.getLineById(line_id);
 						}
 					}
 					
@@ -286,7 +286,7 @@ public class DefaultController extends BaseController{
 						String sql = "SELECT `id`,`serial`,`dan`,`deleted`,`create_datetime`,`modify_datetime` FROM `tbl_station` WHERE dan ="
 								+model_dan.getId();
 						String[] ids = {"id","serial","dan","deleted","create_datetime","modify_datetime"};
-						list_station = userHelper.stationService.queryStation(sql,ids);
+						list_station = backendApiHelper.stationService.queryStation(sql,ids);
 												
 						pageData.put("model_dan", model_dan);
 						pageData.put("model_line", model_line);
@@ -295,8 +295,8 @@ public class DefaultController extends BaseController{
 					pageData.put("list_line", list_line);
 					pageData.put("list_dan", list_dan);
 					
-					HashMap<Integer,Dan> map_dan = userHelper.danService.mapDans();
-					HashMap<Integer,Line> map_line = userHelper.lineService.mapLines();
+					HashMap<Integer,Dan> map_dan = backendApiHelper.danService.mapDans();
+					HashMap<Integer,Line> map_line = backendApiHelper.lineService.mapLines();
 					pageData.put("map_dan", map_dan);
 					pageData.put("map_line", map_line);
 					
@@ -312,7 +312,7 @@ public class DefaultController extends BaseController{
 						list_data.add(ih);
 					}
 					pageData.put("list_data", list_data);
-					HashMap<Integer,Object> hash = userHelper.getMapDanPerLineID();
+					HashMap<Integer,Object> hash = backendApiHelper.getMapDanPerLineID();
 					pageData.put("map_dan_pLine", hash);
 					String json_dan="";
 					try {
@@ -334,16 +334,16 @@ public class DefaultController extends BaseController{
 						String sql = "SELECT `id`,`name`,`serial`,`type`,`dan`,`deleted`,`create_datetime`,`modify_datetime` FROM `tbl_user`"
 								+" where serial like '%"+s+"%' or name like '%"+s+"%'";
 						String[] db_fields = {"id","name","serial","type","dan","deleted","create_datetime","modify_datetime"};
-						list_user = userHelper.userService.queryUser(sql, db_fields);
+						list_user = backendApiHelper.userService.queryUser(sql, db_fields);
 												
 						pageData.put("s", s);
 					}else{
-						list_user = userHelper.userService.listUsers();
+						list_user = backendApiHelper.userService.listUsers();
 					}
 										
-					HashMap<Integer,Dan> map_dan = userHelper.danService.mapDans();
-					HashMap<Integer,Line> map_line = userHelper.lineService.mapLines();
-					HashMap<Integer,UserRole> map_userrole = userHelper.userRoleService.mapUserRoles();
+					HashMap<Integer,Dan> map_dan = backendApiHelper.danService.mapDans();
+					HashMap<Integer,Line> map_line = backendApiHelper.lineService.mapLines();
+					HashMap<Integer,UserRole> map_userrole = backendApiHelper.userRoleService.mapUserRoles();
 					
 					List<Object> list_data = new ArrayList<Object>();
 					for(User imodel:list_user){
@@ -358,14 +358,14 @@ public class DefaultController extends BaseController{
 						ih.put("userrole", iuserrole);
 						list_data.add(ih);
 					}
-					userHelper.lineService.listLines();
-					pageData.put("list_userrole", userHelper.userRoleService.listUserRoles());
-					List<Line> list_line = userHelper.lineService.listLines();
+					backendApiHelper.lineService.listLines();
+					pageData.put("list_userrole", backendApiHelper.userRoleService.listUserRoles());
+					List<Line> list_line = backendApiHelper.lineService.listLines();
 					
 					pageData.put("list_line", list_line);
 					pageData.put("list_data", list_data);
 					
-					HashMap<Integer,Object> hash = userHelper.getMapDanPerLineID();
+					HashMap<Integer,Object> hash = backendApiHelper.getMapDanPerLineID();
 					pageData.put("map_dan_pLine", hash);
 					String json_dan="";
 					try {
@@ -393,21 +393,21 @@ public class DefaultController extends BaseController{
 						hash.put("password", pwd);
 						hash.put("id", this.currentUser.getId());
 						
-						this.userHelper.modelModify(AdminUser.class, userHelper.adminRoleService, hash, 1);
+						this.backendApiHelper.modelModify(AdminUser.class, backendApiHelper.adminRoleService, hash, 1);
 						
 						pageData.put("msg", "Password Changed!");
 					}
 				}
 			}else if(term.equals(ct)){
 				if(subterm.equals(ct)){
-					List<Ct> list_ct = userHelper.ctService.listCts();
+					List<Ct> list_ct = backendApiHelper.ctService.listCts();
 					
 					pageData.put("list_ct", list_ct);
 				}
 			}else if(term.equals(tt)){
 				if(subterm.equals(tt)){
-					List<Tt> list_tt = userHelper.ttService.listTts();
-					List<TimeType> list_timetype = userHelper.timeTypeService.listTimeTypes();
+					List<Tt> list_tt = backendApiHelper.ttService.listTts();
+					List<TimeType> list_timetype = backendApiHelper.timeTypeService.listTimeTypes();
 					
 					// 1 2 3 4  y m w d 
 					
@@ -442,8 +442,8 @@ public class DefaultController extends BaseController{
 				}
 			}else if(term.equals(faultlib)){
 				if(subterm.equals(faultlib)){
-					List<ErrorType> list_errortype = userHelper.errorTypeService.listErrorTypes();
-					List<ReasonType> list_reasontype = userHelper.reasonTypeService.listReasonTypes();
+					List<ErrorType> list_errortype = backendApiHelper.errorTypeService.listErrorTypes();
+					List<ReasonType> list_reasontype = backendApiHelper.reasonTypeService.listReasonTypes();
 					
 					// 1 2 3 4  y m w d 
 					
@@ -479,12 +479,12 @@ public class DefaultController extends BaseController{
 			}else if(term.equals(report)){
 				if(subterm.equals(report)){
 					Line model_line = null;
-					List<Report> list_report_all = userHelper.reportService.listReports();
-					List<Line> list_line = userHelper.lineService.listLines();
+					List<Report> list_report_all = backendApiHelper.reportService.listReports();
+					List<Line> list_line = backendApiHelper.lineService.listLines();
 					List<Report> list_report = new ArrayList<Report>();
 					if (request.getParameter("line_id") != null) {
 						int line_id = Integer.valueOf(request.getParameter("line_id"));
-						model_line = userHelper.lineService.getLineById(line_id);
+						model_line = backendApiHelper.lineService.getLineById(line_id);
 					}else{
 						if(list_line.size()>0){
 							model_line = list_line.get(0);
@@ -521,23 +521,23 @@ public class DefaultController extends BaseController{
 						}
 						
 						String[] ids = {"id","user_id","first_load","last_load","lunch_time","wait_time","output","deleted","create_datetime","modify_datetime"};
-						list_report = userHelper.reportService.queryReport(sql,ids);
+						list_report = backendApiHelper.reportService.queryReport(sql,ids);
 												
 						pageData.put("model_line", model_line);
 					}
 					pageData.put("list_report_all", list_report_all);
 					pageData.put("list_line", list_line);
 					
-					HashMap<Integer,Dan> map_dan = userHelper.danService.mapDans();
-					HashMap<Integer,Line> map_line = userHelper.lineService.mapLines();
+					HashMap<Integer,Dan> map_dan = backendApiHelper.danService.mapDans();
+					HashMap<Integer,Line> map_line = backendApiHelper.lineService.mapLines();
 					pageData.put("map_dan", map_dan);
 					pageData.put("map_line", map_line);
 					
 					List<Object> list_data = new ArrayList<Object>();
 					
 					for(Report imodel:list_report){
-						User maker = userHelper.userService.getUserById(imodel.getUser_id());
-						User user_pro = userHelper.getTypedUser(maker, BaseHelper.UserType.PRODUCTION);
+						User maker = backendApiHelper.userService.getUserById(imodel.getUser_id());
+						User user_pro = backendApiHelper.getTypedUser(maker, BaseHelperImpl.UserType.PRODUCTION);
 						Dan idan = map_dan.get(maker.getDan());
 						Line iline = map_line.get(idan.getLine());
 						
@@ -552,7 +552,7 @@ public class DefaultController extends BaseController{
 					
 					
 					pageData.put("list_data", list_data);
-					HashMap<Integer,Object> hash = userHelper.getMapDanPerLineID();
+					HashMap<Integer,Object> hash = backendApiHelper.getMapDanPerLineID();
 					pageData.put("map_dan_pLine", hash);
 					String json_dan="";
 					try {
@@ -566,12 +566,12 @@ public class DefaultController extends BaseController{
 			}else if(term.equals(workorder)){
 				if(subterm.equals(workorder)){
 					Line model_line = null;
-					List<Order> list_order_all = userHelper.orderService.listOrders();
-					List<Line> list_line = userHelper.lineService.listLines();
+					List<Order> list_order_all = backendApiHelper.orderService.listOrders();
+					List<Line> list_line = backendApiHelper.lineService.listLines();
 					List<Order> list_order = new ArrayList<Order>();
 					if (request.getParameter("line_id") != null) {
 						int line_id = Integer.valueOf(request.getParameter("line_id"));
-						model_line = userHelper.lineService.getLineById(line_id);
+						model_line = backendApiHelper.lineService.getLineById(line_id);
 					}else{
 						if(list_line.size()>0){
 							model_line = list_line.get(0);
@@ -608,23 +608,23 @@ public class DefaultController extends BaseController{
 						}
 						
 						String[] ids = {"id","station_id","reason_id","start_t","end_t","p_desc","issue_cause","r_desc","s_desc","user_id","complete","status","error_id","feedback","deleted","create_datetime","modify_datetime"};
-						list_order = userHelper.orderService.queryOrder(sql, ids);
+						list_order = backendApiHelper.orderService.queryOrder(sql, ids);
 												
 						pageData.put("model_line", model_line);
 					}
 					pageData.put("list_order_all", list_order_all);
 					pageData.put("list_line", list_line);
 					
-					HashMap<Integer,Dan> map_dan = userHelper.danService.mapDans();
-					HashMap<Integer,Line> map_line = userHelper.lineService.mapLines();
+					HashMap<Integer,Dan> map_dan = backendApiHelper.danService.mapDans();
+					HashMap<Integer,Line> map_line = backendApiHelper.lineService.mapLines();
 					pageData.put("map_dan", map_dan);
 					pageData.put("map_line", map_line);
 					
 					List<Object> list_data = new ArrayList<Object>();
 					for(Order imodel:list_order){
-						User maker = userHelper.userService.getUserById(imodel.getUser_id());
-						User user_pro = userHelper.getTypedUser(maker, BaseHelper.UserType.PRODUCTION);
-						Station station = userHelper.stationService.getStationById(imodel.getStation_id());
+						User maker = backendApiHelper.userService.getUserById(imodel.getUser_id());
+						User user_pro = backendApiHelper.getTypedUser(maker, BaseHelperImpl.UserType.PRODUCTION);
+						Station station = backendApiHelper.stationService.getStationById(imodel.getStation_id());
 						
 						Dan idan = map_dan.get(maker.getDan());
 						Line iline = map_line.get(idan.getLine());
@@ -639,7 +639,7 @@ public class DefaultController extends BaseController{
 						list_data.add(ih);
 					}
 					pageData.put("list_data", list_data);
-					HashMap<Integer,Object> hash = userHelper.getMapDanPerLineID();
+					HashMap<Integer,Object> hash = backendApiHelper.getMapDanPerLineID();
 					pageData.put("map_dan_pLine", hash);
 					String json_dan="";
 					try {
@@ -653,7 +653,7 @@ public class DefaultController extends BaseController{
 			}
 			else if(term.equals(announce)){
 				if(subterm.equals(announce)){
-					List<Announce> list_data = userHelper.announceService.listAnnounces();
+					List<Announce> list_data = backendApiHelper.announceService.listAnnounces();
 					
 					pageData.put("list_data", list_data);
 				}

@@ -18,13 +18,13 @@ import com.hgc.admin.database.model.Menu;
 import com.hgc.admin.model.CatMenu;
 import com.hgc.admin.model.LeftMenu;
 import com.hgc.admin.utils.AccountHelper;
-import com.hgc.admin.utils.BaseHelper;
-import com.hgc.admin.utils.UserHelper;
+import com.hgc.admin.utils.BaseHelperImpl;
+import com.hgc.admin.utils.BackendApiHelper;
 
 
 
 
-public class BaseController {
+public class BaseAdminController {
 
 	@Autowired(required = true)
 	@Qualifier(value = "transactionManager")
@@ -35,7 +35,7 @@ public class BaseController {
 	public AccountHelper currentUser;
 			
 	@Resource
-	public UserHelper userHelper;
+	public BackendApiHelper backendApiHelper;
 	
 	
 	
@@ -45,7 +45,7 @@ public class BaseController {
 		ret.put("result", "redirect");
 		if(!currentUser.hasLogin())
 			return ret;
-		if(currentUser.checkPermission(userHelper)){
+		if(currentUser.checkPermission(backendApiHelper)){
 			String chkTerm = currentUser.checkTerm(term_sum);
 			
 			ret = new HashMap<String,Object>();
