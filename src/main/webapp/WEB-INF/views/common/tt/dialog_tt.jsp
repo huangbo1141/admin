@@ -8,7 +8,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">
-					<img src="/${rootdir}/img/modalclose.png" />
+					<img src="/${rootdir}/resources/img/modalclose.png" />
 				</button>
 				<h4 class="modal-title">新建</h4>
 			</div>
@@ -83,7 +83,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">
-					<img src="/${rootdir}/img/modalclose.png" />
+					<img src="/${rootdir}/resources/img/modalclose.png" />
 				</button>
 				<h4 class="modal-title">新建</h4>
 			</div>
@@ -92,7 +92,7 @@
 					<form id='FormNewModal'>
 						<div class="col-md-12">
 							<div class="form-group">
-								<label class="control-label col-sm-2">年份*</label>
+								<label class="control-label col-sm-2">日期*</label>
 								<div class="col-sm-10">
 									<input type="text" class="form-control inputstyle" id=""
 										placeholder="" name="time_value">

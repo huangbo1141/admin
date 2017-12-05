@@ -35,6 +35,33 @@
 		</beans:property>
 	</beans:bean>
 
+	<!-- SET default mail properties -->
+	<beans:bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<beans:property name="host" value="smtp.gmail.com"></beans:property>
+		<beans:property name="port" value="25"></beans:property>
+		<beans:property name="username" value="howtodoinjava@gmail.com"></beans:property>
+		<beans:property name="password" value="password"></beans:property>
+		<beans:property name="javaMailProperties">
+			<beans:props>
+				<beans:prop key="mail.transport.protocol">smtp</beans:prop>
+				<beans:prop key="mail.smtp.auth">true</beans:prop>
+				<beans:prop key="mail.smtp.starttls.enable">true</beans:prop>
+				<beans:prop key="mail.debug">true</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="preConfiguredMessage" class="org.springframework.mail.SimpleMailMessage">
+		<beans:property name="to" value="huangbo1117@gmail.com"></beans:property>
+		<beans:property name="from" value="howtodoinjava@gmail.com"></beans:property>
+		<beans:property name="subject"
+			value="FATAL - Application crash. Save your job !!"></beans:property>
+	</beans:bean>
+
+
+
+	<!-- Multipart Resolver -->
 	<beans:bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<beans:property name="maxUploadSize" value="20971520"></beans:property>
@@ -44,8 +71,10 @@
 	<!-- Configure bean to convert JSON to POJO and vice versa -->
 	<beans:bean id="jsonMessageConverter"
 		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<beans:property name="objectMapper" ref="jacksonObjectMapper" />
 	</beans:bean>
 
+	<beans:bean id="jacksonObjectMapper" class="com.hgc.admin.utils.MyJsonMapper" />
 
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
@@ -64,7 +93,6 @@
 		<beans:property name="dataSource" ref="dataSource" />
 		<beans:property name="annotatedClasses">
 			<beans:list>
-				<beans:value>com.hgc.admin.database.model.Person</beans:value>
 				<beans:value>com.hgc.admin.database.model.AdminRole</beans:value>
 				<beans:value>com.hgc.admin.database.model.AdminUser</beans:value>
 				<beans:value>com.hgc.admin.database.model.Announce</beans:value>
@@ -77,6 +105,7 @@
 				<beans:value>com.hgc.admin.database.model.Order</beans:value>
 				<beans:value>com.hgc.admin.database.model.OrderRelation
 				</beans:value>
+				<beans:value>com.hgc.admin.database.model.Picture</beans:value>
 				<beans:value>com.hgc.admin.database.model.ReasonType</beans:value>
 				<beans:value>com.hgc.admin.database.model.Report</beans:value>
 				<beans:value>com.hgc.admin.database.model.Station</beans:value>
@@ -84,6 +113,7 @@
 				<beans:value>com.hgc.admin.database.model.Tt</beans:value>
 				<beans:value>com.hgc.admin.database.model.User</beans:value>
 				<beans:value>com.hgc.admin.database.model.UserRole</beans:value>
+
 
 
 			</beans:list>
@@ -96,17 +126,6 @@
 			</beans:props>
 		</beans:property>
 	</beans:bean>
-
-	<!-- Person Model -->
-	<beans:bean id="personDAO" class="com.hgc.admin.database.dao.PersonDAOImpl">
-		<beans:property name="sessionFactory"
-			ref="hibernate4AnnotatedSessionFactory" />
-	</beans:bean>
-	<beans:bean id="personService"
-		class="com.hgc.admin.database.service.PersonServiceImpl">
-		<beans:property name="personDAO" ref="personDAO"></beans:property>
-	</beans:bean>
-	<!-- End Person Model -->
 
 	<!-- AdminRole Model -->
 	<beans:bean id="adminRoleDAO" class="com.hgc.admin.database.dao.AdminRoleDAOImpl">
@@ -220,6 +239,16 @@
 		<beans:property name="orderRelationDAO" ref="orderRelationDAO"></beans:property>
 	</beans:bean>
 	<!-- End OrderRelation Model -->
+	<!-- Picture Model -->
+	<beans:bean id="pictureDAO" class="com.hgc.admin.database.dao.PictureDAOImpl">
+		<beans:property name="sessionFactory"
+			ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="pictureService"
+		class="com.hgc.admin.database.service.PictureServiceImpl">
+		<beans:property name="pictureDAO" ref="pictureDAO"></beans:property>
+	</beans:bean>
+	<!-- End Picture Model -->
 	<!-- ReasonType Model -->
 	<beans:bean id="reasonTypeDAO"
 		class="com.hgc.admin.database.dao.ReasonTypeDAOImpl">
@@ -291,6 +320,7 @@
 		<beans:property name="userRoleDAO" ref="userRoleDAO"></beans:property>
 	</beans:bean>
 	<!-- End UserRole Model -->
+
 
 
 	<context:component-scan base-package="com.hgc.admin" />

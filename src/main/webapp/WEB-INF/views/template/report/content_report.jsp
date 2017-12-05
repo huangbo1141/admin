@@ -57,8 +57,8 @@
 								<td>${row.get("line").name}</td>
 								<td>${row.get("dan").name}</td>
 								<td>${row.get("user_pro").name}</td>
-								<td>${row.get("model").first_load}</td>
-								<td>${row.get("model").last_load}</td>
+								<td>${row.get("model").first_load_time}</td>
+								<td>${row.get("model").last_unload_time}</td>
 								<td>${row.get("model").lunch_time}</td>
 								<td>${row.get("model").wait_time}</td>
 								<td>${row.get("model").output}</td>

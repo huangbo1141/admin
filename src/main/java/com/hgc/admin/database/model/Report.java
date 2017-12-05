@@ -32,8 +32,8 @@ public class Report {
 		}
 
   private Integer user_id;
-private String first_load;
-private String last_load;
+private String first_load_time;
+private String last_unload_time;
 private Integer lunch_time;
 private Integer wait_time;
 private Integer output;
@@ -48,17 +48,17 @@ return user_id;
 public void setUser_id(Integer user_id) {
 this.user_id = user_id;
 }
-public String getFirst_load() {
-return first_load;
+public String getFirst_load_time() {
+return first_load_time;
 }
-public void setFirst_load(String first_load) {
-this.first_load = first_load;
+public void setFirst_load_time(String first_load_time) {
+this.first_load_time = first_load_time;
 }
-public String getLast_load() {
-return last_load;
+public String getLast_unload_time() {
+return last_unload_time;
 }
-public void setLast_load(String last_load) {
-this.last_load = last_load;
+public void setLast_unload_time(String last_unload_time) {
+this.last_unload_time = last_unload_time;
 }
 public Integer getLunch_time() {
 return lunch_time;

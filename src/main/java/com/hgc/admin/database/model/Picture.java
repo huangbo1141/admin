@@ -16,8 +16,8 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="tbl_user")
-public class User {
+@Table(name="tbl_picture")
+public class Picture {
 
 	@Id
 	@Column(name="id")
@@ -31,35 +31,20 @@ public class User {
 			this.id = id;
 		}
 
-  private String name;
-private String serial;
-private String password;
+  private String filename;
 private Integer type;
-private Integer dan;
+private Integer ref_id1;
+private String ref_type1;
 private Integer deleted;
 private String create_datetime;
 private String modify_datetime;
-private String phone;
-private String head;
 
 
-	public String getName() {
-return name;
+	public String getFilename() {
+return filename;
 }
-public void setName(String name) {
-this.name = name;
-}
-public String getSerial() {
-return serial;
-}
-public void setSerial(String serial) {
-this.serial = serial;
-}
-public String getPassword() {
-return password;
-}
-public void setPassword(String password) {
-this.password = password;
+public void setFilename(String filename) {
+this.filename = filename;
 }
 public Integer getType() {
 return type;
@@ -67,11 +52,17 @@ return type;
 public void setType(Integer type) {
 this.type = type;
 }
-public Integer getDan() {
-return dan;
+public Integer getRef_id1() {
+return ref_id1;
 }
-public void setDan(Integer dan) {
-this.dan = dan;
+public void setRef_id1(Integer ref_id1) {
+this.ref_id1 = ref_id1;
+}
+public String getRef_type1() {
+return ref_type1;
+}
+public void setRef_type1(String ref_type1) {
+this.ref_type1 = ref_type1;
 }
 public Integer getDeleted() {
 return deleted;
@@ -90,18 +81,6 @@ return modify_datetime;
 }
 public void setModify_datetime(String modify_datetime) {
 this.modify_datetime = modify_datetime;
-}
-public String getPhone() {
-return phone;
-}
-public void setPhone(String phone) {
-this.phone = phone;
-}
-public String getHead() {
-return head;
-}
-public void setHead(String head) {
-this.head = head;
 }
 
 }

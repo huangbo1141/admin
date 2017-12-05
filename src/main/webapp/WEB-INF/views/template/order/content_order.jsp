@@ -55,7 +55,7 @@
 								<td>${row.get("line").name}</td>
 								<td>${row.get("dan").name}</td>
 								<td>${row.get("user_pro").name}</td>
-								<td>${row.get("model").r_desc}</td>
+								<td>${row.get("model").p_desc}</td>
 								<td>${row.get("station").serial}</td>
 <%-- 								<td>${row.get("model").name}</td> --%>
 								
@@ -79,6 +79,8 @@
 								%>
 
 								<td class="col-xs-2" data-data='<%=json%>'>
+									<button type="submit" name="view" class="ac_detail editbtn"
+										data-toggle="modal">查看</button>
 									<button type="submit" name="edit" class="ac_modify editbtn"
 										data-toggle="modal">编辑</button>
 									<button type="submit" name="delete" class="ac_delete dltbtn"

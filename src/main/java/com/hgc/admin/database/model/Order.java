@@ -36,9 +36,6 @@ private Integer reason_id;
 private String start_t;
 private String end_t;
 private String p_desc;
-private String issue_cause;
-private String r_desc;
-private String s_desc;
 private Integer user_id;
 private String complete;
 private Integer status;
@@ -78,24 +75,6 @@ return p_desc;
 }
 public void setP_desc(String p_desc) {
 this.p_desc = p_desc;
-}
-public String getIssue_cause() {
-return issue_cause;
-}
-public void setIssue_cause(String issue_cause) {
-this.issue_cause = issue_cause;
-}
-public String getR_desc() {
-return r_desc;
-}
-public void setR_desc(String r_desc) {
-this.r_desc = r_desc;
-}
-public String getS_desc() {
-return s_desc;
-}
-public void setS_desc(String s_desc) {
-this.s_desc = s_desc;
 }
 public Integer getUser_id() {
 return user_id;

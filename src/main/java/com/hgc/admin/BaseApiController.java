@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
-
+import org.springframework.stereotype.Component;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgc.admin.database.model.*;
 import com.hgc.admin.database.service.*;
 import com.hgc.admin.utils.AccountHelper;
+import com.hgc.admin.utils.ApplicationMailer;
 import com.hgc.admin.utils.BaseHelperImpl;
 import com.hgc.admin.utils.BackendApiHelper;
 
@@ -28,7 +29,9 @@ import java.math.BigInteger;
 
 public class BaseApiController {
 
-	
+	@Autowired(required = true)
+	@Qualifier(value = "mailService")
+	public ApplicationMailer mailer;
 
 	public Class<?> getModelClasses(String type) {
 		String p = type.toLowerCase();

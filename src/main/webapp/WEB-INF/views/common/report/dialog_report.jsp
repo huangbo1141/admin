@@ -8,7 +8,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">
-					<img src="/${rootdir}/img/modalclose.png" />
+					<img src="/${rootdir}/resources/img/modalclose.png" />
 				</button>
 				<h4 class="modal-title">新建工位</h4>
 			</div>
@@ -20,7 +20,7 @@
 								<label class="control-label col-sm-2">第一台上线时间*</label>
 								<div class="col-sm-10">
 									<input type="text" class="datetimepicker form-control inputstyle" id=""
-										placeholder="" name="first_load">
+										placeholder="" name="first_load_time">
 								</div>
 							</div>
 						</div>
@@ -29,7 +29,7 @@
 								<label class="control-label col-sm-2">最后一台下线时间*</label>
 								<div class="col-sm-10">
 									<input type="text" class="datetimepicker form-control inputstyle" id=""
-										placeholder="" name="last_load">
+										placeholder="" name="last_unload_time">
 								</div>
 							</div>
 						</div>

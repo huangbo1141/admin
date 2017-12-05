@@ -520,7 +520,11 @@ public class AdminController extends BaseAdminController{
 					}
 					
 					if(model_line!=null){
-						String sql = "SELECT R.id,R.user_id,R.first_load,R.last_load,R.lunch_time,R.wait_time,R.output,R.deleted,R.create_datetime,R.modify_datetime "
+						HashMap<String,Object> select = this.backendApiHelper.dbFields.getSelectFields("R", Report.class);
+						String str_select = select.get("select").toString();
+						String[] ids = (String[])select.get("fields");
+						
+						String sql = "SELECT "+str_select
 								+" FROM tbl_report as R join tbl_user as U on R.user_id = U.id  "
 								+" join tbl_dan as D on D.id = U.dan  "
 								+" where D.line = " + model_line.getId();
@@ -531,7 +535,6 @@ public class AdminController extends BaseAdminController{
 							sql = sql + " and R.create_datetime <= '"+ end_day+"'";
 						}
 						
-						String[] ids = {"id","user_id","first_load","last_load","lunch_time","wait_time","output","deleted","create_datetime","modify_datetime"};
 						list_report = backendApiHelper.reportService.queryReport(sql,ids);
 												
 						pageData.put("model_line", model_line);
@@ -548,17 +551,20 @@ public class AdminController extends BaseAdminController{
 					
 					for(Report imodel:list_report){
 						User maker = backendApiHelper.userService.getUserById(imodel.getUser_id());
-						User user_pro = backendApiHelper.getTypedUser(maker, BaseHelperImpl.UserType.PRODUCTION);
-						Dan idan = map_dan.get(maker.getDan());
-						Line iline = map_line.get(idan.getLine());
-						
-						HashMap<String,Object> ih = new HashMap<String,Object>();
-						ih.put("dan", idan);
-						ih.put("line", iline);
-						ih.put("model", imodel);
-						ih.put("maker", maker);
-						ih.put("user_pro", user_pro);
-						list_data.add(ih);
+						List list = backendApiHelper.getTypedUser(maker, BaseHelperImpl.UserType.PRODUCTION);
+						if(list!=null&&list.size()>0){
+							User user_pro = (User)list.get(0);
+							Dan idan = map_dan.get(maker.getDan());
+							Line iline = map_line.get(idan.getLine());
+							
+							HashMap<String,Object> ih = new HashMap<String,Object>();
+							ih.put("dan", idan);
+							ih.put("line", iline);
+							ih.put("model", imodel);
+							ih.put("maker", maker);
+							ih.put("user_pro", user_pro);
+							list_data.add(ih);
+						}
 					}
 					
 					
@@ -607,7 +613,10 @@ public class AdminController extends BaseAdminController{
 					}
 					
 					if(model_line!=null){
-						String sql = "SELECT O.id,O.station_id,O.reason_id,O.start_t,O.end_t,O.p_desc,O.issue_cause,O.r_desc,O.s_desc,O.user_id,O.complete,O.status,O.error_id,O.feedback,O.deleted,O.create_datetime,O.modify_datetime "
+						HashMap<String,Object> select = this.backendApiHelper.dbFields.getSelectFields("O", Order.class);
+						String str_select = select.get("select").toString();
+						String[] ids = (String[])select.get("fields");
+						String sql = "SELECT " + str_select 
 								+" FROM tbl_order O join tbl_user as U on O.user_id = U.id "
 								+" join tbl_dan as D on D.id = U.dan "
 								+" where D.line = " + model_line.getId();
@@ -618,7 +627,6 @@ public class AdminController extends BaseAdminController{
 							sql = sql + " and O.create_datetime <= '"+ end_day+"'";
 						}
 						
-						String[] ids = {"id","station_id","reason_id","start_t","end_t","p_desc","issue_cause","r_desc","s_desc","user_id","complete","status","error_id","feedback","deleted","create_datetime","modify_datetime"};
 						list_order = backendApiHelper.orderService.queryOrder(sql, ids);
 												
 						pageData.put("model_line", model_line);
@@ -634,20 +642,24 @@ public class AdminController extends BaseAdminController{
 					List<Object> list_data = new ArrayList<Object>();
 					for(Order imodel:list_order){
 						User maker = backendApiHelper.userService.getUserById(imodel.getUser_id());
-						User user_pro = backendApiHelper.getTypedUser(maker, BaseHelperImpl.UserType.PRODUCTION);
-						Station station = backendApiHelper.stationService.getStationById(imodel.getStation_id());
+						List list = backendApiHelper.getTypedUser(maker, BaseHelperImpl.UserType.PRODUCTION);
+						if(list.size()>0){
+							User user_pro = (User)list.get(0);
+							Station station = backendApiHelper.stationService.getStationById(imodel.getStation_id());
+							
+							Dan idan = map_dan.get(maker.getDan());
+							Line iline = map_line.get(idan.getLine());
+							
+							HashMap<String,Object> ih = new HashMap<String,Object>();
+							ih.put("dan", idan);
+							ih.put("line", iline);
+							ih.put("model", imodel);
+							ih.put("maker", maker);
+							ih.put("user_pro", user_pro);
+							ih.put("station", station);
+							list_data.add(ih);
+						}
 						
-						Dan idan = map_dan.get(maker.getDan());
-						Line iline = map_line.get(idan.getLine());
-						
-						HashMap<String,Object> ih = new HashMap<String,Object>();
-						ih.put("dan", idan);
-						ih.put("line", iline);
-						ih.put("model", imodel);
-						ih.put("maker", maker);
-						ih.put("user_pro", user_pro);
-						ih.put("station", station);
-						list_data.add(ih);
 					}
 					pageData.put("list_data", list_data);
 					HashMap<Integer,Object> hash = backendApiHelper.getMapDanPerLineID();

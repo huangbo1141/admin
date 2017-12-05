@@ -12,10 +12,10 @@ jQuery(document).ready(function(){
 //				required: true,
 //				number:true,
 //			},
-			first_load: {
+			first_load_time: {
 				required: true,
 			},
-			last_load: {
+			last_unload_time: {
 				required: true,
 			},
 			lunch_time: {
@@ -43,10 +43,10 @@ jQuery(document).ready(function(){
 //				required: "请输入工段名称",
 //				number:"请输入number",
 //			},
-			first_load: {
+			first_load_time: {
 				required: "请输入第一台上线时间",
 			},
-			last_load: {
+			last_unload_time: {
 				required: "请输入最后一台下线时间",
 			},
 			lunch_time: {
@@ -78,10 +78,10 @@ jQuery(document).ready(function(){
 				required: true,
 				number:true,
 			},
-			first_load: {
+			first_load_time: {
 				required: true,
 			},
-			last_load: {
+			last_unload_time: {
 				required: true,
 			},
 			lunch_time: {
@@ -109,10 +109,10 @@ jQuery(document).ready(function(){
 				required: "请输入工段名称",
 				number:"please input number",
 			},
-			first_load: {
+			first_load_time: {
 				required: "请输入第一台上线时间",
 			},
-			last_load: {
+			last_unload_time: {
 				required: "请输入最后一台下线时间",
 			},
 			lunch_time: {

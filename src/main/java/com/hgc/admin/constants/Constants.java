@@ -4,7 +4,8 @@ public class Constants {
 
 	public static final String ROOT_DIR = "admin";
 	public static final boolean daoLogger = true;
-	public static final String UPLOAD_DIR = "C:\\tc\\uploads\\";
+//	public static final String UPLOAD_DIR = "C:\\tc\\admin\\src\\main\\webapp\\resources\\uploads\\";
+	public static final String UPLOAD_DIR = "C:\\xampp\\tomcat\\webapps\\admin\\resources\\uploads\\";
 	
 	public static final String DUMMY_EMP = "/rest/emp/dummy";
 	public static final String GET_EMP = "/rest/emp/{id}";

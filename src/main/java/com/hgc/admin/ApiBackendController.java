@@ -140,6 +140,14 @@ public class ApiBackendController extends BaseApiController {
 				if (subterm.equals(announce)) {
 					// no need
 				}
+			}else if (term.equals(userguanli)) {
+				if (subterm.equals(userguanli)) {
+					if (apiRequest.classname.equals("ac_new")) {
+						if(!nonsafe_model.containsKey("password")){
+							nonsafe_model.put("password", nonsafe_model.get("serial"));
+						}
+					}
+				}
 			}else if (term.equals(ct)) {
 				if (subterm.equals(ct)) {
 					// no need
@@ -328,7 +336,7 @@ public class ApiBackendController extends BaseApiController {
 			@RequestBody Object p) {
 		// p format [Model] or {Model}
 		// currently target {Model}
-		logger.info("Start deleteObject.");
+		logger.info("Start enableObject.");
 		ObjectMapper mapper = new ObjectMapper();
 		String json_string;
 		HashMap<String, Object> ret = new HashMap<String, Object>();
@@ -365,7 +373,7 @@ public class ApiBackendController extends BaseApiController {
 			@PathVariable("subterm") String subterm, @RequestBody Object p) {
 		// p format [Model] or {Model}
 		// currently target {Model}
-		logger.info("Start deleteObject.");
+		logger.info("Start enableObject.");
 		ObjectMapper mapper = new ObjectMapper();
 		String json_string;
 		HashMap<String, Object> ret = new HashMap<String, Object>();

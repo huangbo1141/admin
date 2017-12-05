@@ -31,7 +31,7 @@ public class Tt {
 			this.id = id;
 		}
 
-  private Integer time_value;
+  private String time_value;
 private Integer time_type;
 private Integer ta;
 private Integer oee;
@@ -40,10 +40,10 @@ private String create_datetime;
 private String modify_datetime;
 
 
-	public Integer getTime_value() {
+	public String getTime_value() {
 return time_value;
 }
-public void setTime_value(Integer time_value) {
+public void setTime_value(String time_value) {
 this.time_value = time_value;
 }
 public Integer getTime_type() {

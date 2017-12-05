@@ -8,7 +8,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">
-					<img src="/${rootdir}/img/modalclose.png" />
+					<img src="/${rootdir}/resources/img/modalclose.png" />
 				</button>
 				<h4 class="modal-title">新建角色</h4>
 			</div>
@@ -60,7 +60,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">
-					<img src="/${rootdir}/img/modalclose.png" />
+					<img src="/${rootdir}/resources/img/modalclose.png" />
 				</button>
 				<h4 class="modal-title">新建角色</h4>
 			</div>
@@ -136,7 +136,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">
-					<img src="/${rootdir}/img/modalclose.png" />
+					<img src="/${rootdir}/resources/img/modalclose.png" />
 				</button>
 				<h4 class="modal-title">新建角色</h4>
 			</div>

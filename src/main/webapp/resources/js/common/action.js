@@ -49,6 +49,9 @@ O.prototype.getInfoData = function(className, pointer) {
 		infoData.dlgid = "Enable" + modeltype + "Modal";
 		cm_func.updateDialogContent(infoData);
 		break;
+	case "ac_detail":
+		infoData.dlgid = "Detail" + modeltype + "Modal";
+		break;
 	default:
 		break;
 	}
@@ -308,7 +311,7 @@ function K11(event) { // K11
 	}
 	return false;
 }
-$(".ac_new,.ac_modify,.ac_delete,.ac_auth,.ac_enable,.ac_disable").click(K11); // AA1
+$(".ac_new,.ac_modify,.ac_delete,.ac_auth,.ac_enable,.ac_disable,.ac_detail").click(K11); // AA1
 
 jQuery(document).ready(
 		function() {

@@ -3,7 +3,6 @@ jQuery(document).ready(function(){
 		rules: {
 			time_value: {
 				required: true,
-				number: true
 			},		
 			time_type: "required",	
 			ta: {
@@ -17,8 +16,7 @@ jQuery(document).ready(function(){
 		},
 		messages: {
 			time_value: {
-				required:"请输入年份",
-				number:"Please input number"
+				required:"请输入",
 			},
 			time_type: "请输入年月周日",
 			ta: {
@@ -37,7 +35,6 @@ jQuery(document).ready(function(){
 		rules: {
 			time_value: {
 				required: true,
-				number: true
 			},		
 			time_type: "required",	
 			ta: {
@@ -51,8 +48,7 @@ jQuery(document).ready(function(){
 		},
 		messages: {
 			time_value: {
-				required:"请输入年份",
-				number:"Please input number"
+				required:"请输入"
 			},
 			time_type: "请输入年月周日",
 			ta: {

@@ -4,8 +4,12 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -30,13 +34,15 @@ import com.hgc.admin.database.model.Menu;
 import com.hgc.admin.model.BackendRequest;
 import com.hgc.admin.model.RestRequest;
 import com.hgc.admin.utils.AccountHelper;
+import com.hgc.admin.utils.AppApiHelper;
 import com.hgc.admin.utils.BackendApiHelper;
 
 @RestController
 @RequestMapping("webservice/{v}/{term}")
 public class ApiAppController extends BaseApiController {
 
-	
+	@Resource
+	public AppApiHelper appApiHelper;
 	private static final Logger logger = LoggerFactory.getLogger(ApiAppController.class);
 	
 	public Object filterOutput(String version,String term,boolean isSuccess,Object nonsafe_model,Object message) {
@@ -69,7 +75,7 @@ public class ApiAppController extends BaseApiController {
 			@RequestBody Object p) {
 		// p format [Model] or {Model}
 		// currently target {Model}
-		logger.info("Start deleteObject.");
+		logger.info("Start formPostObject.");
 		ObjectMapper mapper = new ObjectMapper();
 		String json_string;
 		HashMap<String, Object> ret = new HashMap<String, Object>();
@@ -77,8 +83,23 @@ public class ApiAppController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			RestRequest apiRequest = mapper.readValue(json_string, RestRequest.class);
+			Object processed_obj = this.processRestRequest(apiRequest);
+			if(processed_obj!=null){
+				if(processed_obj.getClass().equals((new HashMap<String,Object>()).getClass())){
+					HashMap<String,Object> pp = (HashMap<String,Object>)processed_obj;
+					Iterator it = pp.entrySet().iterator();
+
+					HashMap<String, Object> gen = new HashMap<String, Object>();
+					while (it.hasNext()) {
+						HashMap.Entry pair = (HashMap.Entry) it.next();
+						String key = (String) pair.getKey();
+						Object value = pair.getValue();
+						ret.put(key, pair.getValue());
+					}
+				}
+				
+			}
 			
-			ret.put("response", 200);
 
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -87,28 +108,53 @@ public class ApiAppController extends BaseApiController {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
+		return ret;
+	}
+		
+	
+	public Object processRestRequest(RestRequest apiRequest) {
+		Object ret = null;
+		
+		try{
+			if(apiRequest.action !=null){
+				String fname = apiRequest.action;
+				Method method = appApiHelper.getClass().getMethod(fname, RestRequest.class);
+				ret = method.invoke(appApiHelper, apiRequest);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 		return ret;
 	}
 	
 	
 	
-	
 	@RequestMapping(value = Constants.ACTION_APP_UPLOAD, method = RequestMethod.POST)
-	public @ResponseBody Object uploadObject(@PathVariable("v") String version
+	public @ResponseBody Object uploadObject(@PathVariable("v") String v
 			,@RequestParam("file") MultipartFile[] files
+			,@PathVariable("term") String term
 			,HttpServletRequest request) {
 		logger.info("Start createObject.");
+		
+		
 		Map map = request.getParameterMap();
 		String[] names = request.getParameterValues("name");
 		
 		
 		String fileName = null;
     	String msg = "";
-    	Object ret = this.filterOutput(version,null, false, null, null);;
-    	
+    	Object ret =null;
+    	HashMap<String,Object> temp = new HashMap<String,Object>();
+    	temp.put("response", 400);
+    	ret = temp;
     	try{
+    		List<String> file_names = new ArrayList<String>();
     		if (files != null && files.length >0 && files.length == names.length) {
         		for(int i =0 ;i< files.length; i++){
         			fileName = files[i].getOriginalFilename();
@@ -121,15 +167,23 @@ public class ApiAppController extends BaseApiController {
 	                buffStream.flush();
 	                buffStream.close();
 	                msg += "You have successfully uploaded " + fileName +"<br/>";
+	                file_names.add(fileName);
         		}
         		msg = "You have successfully uploaded";
-        		ret = this.filterOutput(version,null, true, null, msg);
+        		        		
+        		// process files
+        		Object proc_result = this.appApiHelper.processMultipartRequest(request, term, v,file_names);
+        		if(proc_result!=null){
+        			ret = proc_result;
+        		}
             } else {
                 return "Unable to upload. File is empty.";
             }
     	}catch(Exception ex){
-    		
+    		ex.printStackTrace();
     	}
     	return ret;
 	}
+	
+	
 }
