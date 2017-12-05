@@ -1,8 +1,8 @@
 package com.hgc.admin.model;
 
 public class TaOee {
-	private double ta;
-	private double oee;
+	private double ta=0;
+	private double oee=0;
 	
 	public double getTa() {
 		return ta;

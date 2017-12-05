@@ -66,7 +66,7 @@ public class TtDAOImpl implements TtDAO {
 								}else if(d_type.equals("timestamp")){
 									Timestamp ts = (Timestamp) d_value;
 									date.setTime(ts.getTime());
-									String formattedDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+									String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 
 									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
 									Method method = T.getMethod(method_name, String.class);

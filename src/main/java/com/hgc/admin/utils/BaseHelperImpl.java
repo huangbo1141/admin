@@ -198,6 +198,24 @@ public class BaseHelperImpl implements BaseHelper {
 		return d;
 	}
 	
+	public List<String> getPastDays(int n,String day){
+		org.joda.time.format.DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTime dt = fmt.parseDateTime(day);
+		List<String> list = new ArrayList<String>();
+		for(int i=0; i<n; i++){
+			String d = dt.toString(fmt);
+			list.add(d);
+			dt = dt.plusDays(1);
+		}
+		List<String> list_data = new ArrayList<String>();
+		for(int i=list.size()-1; i>=0; i--){
+			list_data.add(list.get(i));
+		}
+		
+		
+		return list_data;
+	}
+	
 	public int getTimeDifference(String first,String second,int type){
 		
 		DateTime dt = new DateTime();
