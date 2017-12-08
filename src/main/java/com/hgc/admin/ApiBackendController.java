@@ -38,7 +38,7 @@ public class ApiBackendController extends BaseApiController {
 
 	@Resource
 	public BackendApiHelper backendApiHelper;
-	
+
 	public HashMap<String, Object> filterModel(BackendRequest apiRequest, String term, String subterm,
 			HashMap<String, Object> nonsafe_model) {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
@@ -115,40 +115,40 @@ public class ApiBackendController extends BaseApiController {
 					String json_roles = "";
 					try {
 						json_roles = mapper.writeValueAsString(list);
-						if(list.size()>0){
-							nonsafe_model.put("roles", json_roles);	
-						}else{
+						if (list.size() > 0) {
+							nonsafe_model.put("roles", json_roles);
+						} else {
 							nonsafe_model.put("roles", "0");
 						}
-						
+
 					} catch (JsonProcessingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
-				}else if(subterm.equals(menu_adminuser)){
-					if(apiRequest.classname.equals("ac_new")){
-//						String[] fields = {"username","password"};
-//						for(String field:fields){
-//							if(!nonsafe_model.containsKey(field)){
-//								
-//							}
-//						}
+				} else if (subterm.equals(menu_adminuser)) {
+					if (apiRequest.classname.equals("ac_new")) {
+						// String[] fields = {"username","password"};
+						// for(String field:fields){
+						// if(!nonsafe_model.containsKey(field)){
+						//
+						// }
+						// }
 					}
 				}
 			} else if (term.equals(announce)) {
 				if (subterm.equals(announce)) {
 					// no need
 				}
-			}else if (term.equals(userguanli)) {
+			} else if (term.equals(userguanli)) {
 				if (subterm.equals(userguanli)) {
 					if (apiRequest.classname.equals("ac_new")) {
-						if(!nonsafe_model.containsKey("password")){
+						if (!nonsafe_model.containsKey("password")) {
 							nonsafe_model.put("password", nonsafe_model.get("serial"));
 						}
 					}
 				}
-			}else if (term.equals(ct)) {
+			} else if (term.equals(ct)) {
 				if (subterm.equals(ct)) {
 					// no need
 				}
@@ -158,9 +158,9 @@ public class ApiBackendController extends BaseApiController {
 		}
 
 		DateTime dt = new DateTime();
-		//String a = dt.toString();
-		//String b = dt.toString("dd:MM:yy");
-		//String c = dt.toString("EEE", Locale.CHINA);
+		// String a = dt.toString();
+		// String b = dt.toString("dd:MM:yy");
+		// String c = dt.toString("EEE", Locale.CHINA);
 		org.joda.time.format.DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 		String d = dt.toString(fmt);
 
@@ -183,8 +183,6 @@ public class ApiBackendController extends BaseApiController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiBackendController.class);
 
-	
-	
 	@RequestMapping(value = Constants.ACTION_WEB_NEW, method = RequestMethod.POST)
 	public @ResponseBody Object createObject(@PathVariable("term") String term, @PathVariable("subterm") String subterm,
 			@RequestBody Object p) {
@@ -196,18 +194,19 @@ public class ApiBackendController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
-			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm,
+					(HashMap<String, Object>) apiRequest.model);
 			// menu_level
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+			if (apiRequest.modeltype == null || apiRequest.modeltype.length() == 0) {
 				Object t = this.backendApiHelper.parseNew(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
-			}else{
+			} else {
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object service = this.getServiceInstances(apiRequest.modeltype, this.backendApiHelper);
 				Object t = this.backendApiHelper.modelNew(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
-			}			
-			
+			}
+
 			ret.put("response", 200);
 
 		} catch (JsonProcessingException e) {
@@ -238,15 +237,20 @@ public class ApiBackendController extends BaseApiController {
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
 			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
-				Object t = this.backendApiHelper.parseDelete(term, subterm, filtered_model.get("model"));
-				ret.put("model", t);
-			}else{
-				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
-				Object t = this.backendApiHelper.modelDelete(ModelT, service, filtered_model.get("model"), 1);
-				ret.put("model", t);
-			}	
+			Object obj_prepare_delete = this.prepareDelete(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			if(obj_prepare_delete == null){
+				if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+					
+					Object t = this.backendApiHelper.parseDelete(term, subterm, filtered_model.get("model"));
+					ret.put("model", t);
+				}else{
+					Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
+					Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+					Object t = this.backendApiHelper.modelDelete(ModelT, service, filtered_model.get("model"), 1);
+					ret.put("model", t);
+				}
+			}
+				
 			ret.put("response", 200);
 
 		} catch (JsonProcessingException e) {
@@ -271,14 +275,15 @@ public class ApiBackendController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
-			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm,
+					(HashMap<String, Object>) apiRequest.model);
 			// menu_level
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+			if (apiRequest.modeltype == null || apiRequest.modeltype.length() == 0) {
 				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
-			}else{
+			} else {
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object service = this.getServiceInstances(apiRequest.modeltype, this.backendApiHelper);
 				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
@@ -306,18 +311,19 @@ public class ApiBackendController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
-			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm,
+					(HashMap<String, Object>) apiRequest.model);
 
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+			if (apiRequest.modeltype == null || apiRequest.modeltype.length() == 0) {
 				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
-			}else{
+			} else {
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object service = this.getServiceInstances(apiRequest.modeltype, this.backendApiHelper);
 				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
-			
+
 			ret.put("response", 200);
 
 		} catch (JsonProcessingException e) {
@@ -344,14 +350,15 @@ public class ApiBackendController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
-			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm,
+					(HashMap<String, Object>) apiRequest.model);
 			// menu_level
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+			if (apiRequest.modeltype == null || apiRequest.modeltype.length() == 0) {
 				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
-			}else{
+			} else {
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object service = this.getServiceInstances(apiRequest.modeltype, this.backendApiHelper);
 				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
@@ -381,19 +388,20 @@ public class ApiBackendController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
-			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm,
+					(HashMap<String, Object>) apiRequest.model);
 			// menu_level
-			
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+
+			if (apiRequest.modeltype == null || apiRequest.modeltype.length() == 0) {
 				Object t = this.backendApiHelper.parseModify(term, subterm, filtered_model.get("model"));
 				ret.put("model", t);
-			}else{
+			} else {
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object service = this.getServiceInstances(apiRequest.modeltype, this.backendApiHelper);
 				Object t = this.backendApiHelper.modelModify(ModelT, service, filtered_model.get("model"), 1);
 				ret.put("model", t);
 			}
-			
+
 			ret.put("response", 200);
 
 		} catch (JsonProcessingException e) {
@@ -406,7 +414,7 @@ public class ApiBackendController extends BaseApiController {
 
 		return ret;
 	}
-	
+
 	@RequestMapping(value = Constants.ACTION_WEB_CHECK, method = RequestMethod.POST)
 	public @ResponseBody Object checkObject(@PathVariable("term") String term, @PathVariable("subterm") String subterm,
 			@RequestBody Object p) {
@@ -417,14 +425,15 @@ public class ApiBackendController extends BaseApiController {
 		try {
 			json_string = mapper.writeValueAsString(p);
 			BackendRequest apiRequest = mapper.readValue(json_string, BackendRequest.class);
-			//HashMap<String, Object> filtered_model = filterModel(apiRequest, term, subterm, (HashMap<String, Object>)apiRequest.model);
+			// HashMap<String, Object> filtered_model = filterModel(apiRequest,
+			// term, subterm, (HashMap<String, Object>)apiRequest.model);
 			// menu_level
-			Object t=null;
-			if(apiRequest.modeltype==null||apiRequest.modeltype.length()==0){
+			Object t = null;
+			if (apiRequest.modeltype == null || apiRequest.modeltype.length() == 0) {
 				t = this.backendApiHelper.parseCheck(term, subterm, apiRequest.model);
-			}else{
+			} else {
 				Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
-				Object service = this.getServiceInstances(apiRequest.modeltype,this.backendApiHelper);
+				Object service = this.getServiceInstances(apiRequest.modeltype, this.backendApiHelper);
 				t = this.backendApiHelper.modelModify(ModelT, service, apiRequest.model, 1);
 			}
 
@@ -438,9 +447,8 @@ public class ApiBackendController extends BaseApiController {
 		}
 		return ret;
 	}
-	
-	public Object filterOutput(BackendRequest apiRequest, String term, String subterm,
-			Object nonsafe_model) {
+
+	public Object filterOutput(BackendRequest apiRequest, String term, String subterm, Object nonsafe_model) {
 		Object ret = new Object();
 		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(backendApiHelper);
 		try {
@@ -459,13 +467,87 @@ public class ApiBackendController extends BaseApiController {
 			String report = map_menu.get(11).getTerm();
 			String announce = map_menu.get(12).getTerm();
 			if (term.equals(menu)) {
-				if(subterm.equals(menu_adminuser)){
+				if (subterm.equals(menu_adminuser)) {
 					ret = nonsafe_model;
 				}
-			} 
+			}
 		} catch (Exception ex) {
 
 		}
+		return ret;
+	}
+
+	public Object prepareDelete(BackendRequest apiRequest, String term, String subterm,
+			HashMap<String, Object> nonsafe_model) {
+		Object ret = null;
+		
+		HashMap<Integer, Menu> map_menu = AccountHelper.getAllMenu(backendApiHelper);
+		try {
+			String menu = map_menu.get(1).getTerm();
+			String menu_smenu = map_menu.get(13).getTerm();
+			String menu_role = map_menu.get(14).getTerm();
+			String menu_adminuser = map_menu.get(15).getTerm();
+			String line = map_menu.get(3).getTerm();
+			String workstation = map_menu.get(4).getTerm();
+			String userguanli = map_menu.get(5).getTerm();
+			String password = map_menu.get(6).getTerm();
+			String ct = map_menu.get(7).getTerm();
+			String tt = map_menu.get(8).getTerm();
+			String faultlib = map_menu.get(9).getTerm();
+			String workorder = map_menu.get(10).getTerm();
+			String report = map_menu.get(11).getTerm();
+			String announce = map_menu.get(12).getTerm();
+			Integer id = Integer.valueOf(nonsafe_model.get("id").toString());
+			if (term.equals(menu)) {
+				if (subterm.equals(menu_smenu)) {
+					if (nonsafe_model.containsKey("menu_level")) {
+						// parent should be same
+
+					}
+				} else if (subterm.equals(menu_role)) {
+
+				} else if (subterm.equals(menu_adminuser)) {
+
+				}
+			} else if (term.equals(workorder)) {
+				if (subterm.equals(workorder)) {
+					Object rm_ret = this.backendApiHelper.removeOrderAndRelation(id);
+					ret = 1;
+				}
+			}else if (term.equals(faultlib)) {
+				if (subterm.equals(faultlib)) {
+					Object rm_ret = this.backendApiHelper.removeErrorAndRelatedOnes(id);
+					ret = 1;
+				}
+			}else if (term.equals(userguanli)) {
+				if (subterm.equals(userguanli)) {
+					Object rm_ret = this.backendApiHelper.removeUser(id);
+					ret = 1;
+				}
+			}else if (term.equals(workstation)) {
+				if (subterm.equals(workstation)) {
+					Object rm_ret = this.backendApiHelper.removeStationAndRelatedOnes(id);
+					ret = 1;
+				}
+			}else if (term.equals(line)) {
+				if (subterm.equals(line)) {
+					Class<?> ModelT = this.getModelClasses(apiRequest.modeltype);
+					if(ModelT.getSimpleName().toLowerCase().equals("dan")){
+						// remove dan
+						Object rm_ret = this.backendApiHelper.removeDanAndRelatedOnes(id);
+						ret = 1;
+					}else if(ModelT.getSimpleName().toLowerCase().equals("line")){
+						// remove line
+						Object rm_ret = this.backendApiHelper.removeLineAndRelatedOnes(id);
+						ret = 1;
+					}
+					
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		return ret;
 	}
 }

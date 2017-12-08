@@ -36,11 +36,13 @@ private String serial;
 private String password;
 private Integer type;
 private Integer dan;
+private Integer part;
 private Integer deleted;
 private String create_datetime;
 private String modify_datetime;
 private String phone;
 private String head;
+private String token;
 
 
 	public String getName() {
@@ -73,6 +75,12 @@ return dan;
 public void setDan(Integer dan) {
 this.dan = dan;
 }
+public Integer getPart() {
+return part;
+}
+public void setPart(Integer part) {
+this.part = part;
+}
 public Integer getDeleted() {
 return deleted;
 }
@@ -102,6 +110,12 @@ return head;
 }
 public void setHead(String head) {
 this.head = head;
+}
+public String getToken() {
+return token;
+}
+public void setToken(String token) {
+this.token = token;
 }
 
 }

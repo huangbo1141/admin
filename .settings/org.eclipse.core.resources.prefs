@@ -1,8 +1,14 @@
 eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/java/com/hgc/admin/push/AndroidPushMsgToAll.java=UTF-8
+encoding//src/main/java/com/hgc/admin/push/AndroidPushMsgToSingleDevice.java=UTF-8
 encoding//src/main/java/com/hgc/admin/utils/AccountHelper.java=UTF-8
+encoding//src/main/java/com/hgc/admin/utils/AppApiHelper.java=UTF-8
+encoding//src/main/java/com/hgc/admin/view/ExcelRevenueReportView.java=UTF-8
 encoding//src/main/webapp/WEB-INF/views/common/header.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/common/line/dialog_line.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/common/menu/dialog_smenu.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/common/navbar.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/person.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/template/screen_content.jsp=UTF-8
+encoding//src/test/java=UTF-8

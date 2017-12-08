@@ -26,6 +26,7 @@
 							<th>姓名</th>
 							<th>工号</th>
 							<th>平台权限</th>
+							<th>部门</th>
 							<th>生产线</th>
 							<th>工段</th>
 							<th>操作</th>
@@ -37,6 +38,7 @@
 								<td>${row.get("model").name}</td>
 								<td>${row.get("model").serial}</td>
 								<td>${row.get("userrole").name}</td>
+								<td>${row.get("userpart").name}</td>
 								<td>${row.get("line").name}</td>
 								<td>${row.get("dan").name}</td>
 								<%

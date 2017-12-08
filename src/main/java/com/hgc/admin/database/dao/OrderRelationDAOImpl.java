@@ -71,6 +71,10 @@ public class OrderRelationDAOImpl implements OrderRelationDAO {
 									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
 									Method method = T.getMethod(method_name, String.class);
 									method.invoke(station, formattedDate);
+								}else if(d_type.equals("double")){
+									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
+									Method method = T.getMethod(method_name, double.class);
+									method.invoke(station, (Double) d_value);
 								}else{
 									String method_name = "set"+m_name.substring(0, 1).toUpperCase() + m_name.substring(1);
 									Method method = T.getMethod(method_name, String.class);

@@ -19,8 +19,8 @@
 							<div class="form-group">
 								<label class="control-label col-sm-2">年份*</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control inputstyle" id=""
-										placeholder="" name="time_value">
+									<input type="text" id="time_value1" class="form-control inputstyle" id=""
+										placeholder="YYYY" name="time_value">
 								</div>
 							</div>
 						</div>
@@ -29,7 +29,7 @@
 								<label class="control-label col-sm-2">年月周日*</label>
 								<div class="col-sm-10">
 									<div class="col-md-6">
-										<select name="time_type" class="form-control inputstyle">
+										<select id="time_type1" name="time_type" class="form-control inputstyle">
 											<c:forEach items="${pageData.list_timetype}" var="row">
 												<option value='${row.id}'>${row.name}</option>
 											</c:forEach>
@@ -94,8 +94,8 @@
 							<div class="form-group">
 								<label class="control-label col-sm-2">日期*</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control inputstyle" id=""
-										placeholder="" name="time_value">
+									<input type="text" id="time_value2" class="form-control inputstyle" id=""
+										placeholder="YYYY" name="time_value">
 								</div>
 							</div>
 						</div>
@@ -104,7 +104,7 @@
 								<label class="control-label col-sm-2">年月周日*</label>
 								<div class="col-sm-10">
 									<div class="col-md-6">
-										<select name="time_type" class="form-control inputstyle">
+										<select name="time_type" id="time_type2" class="form-control inputstyle">
 											<c:forEach items="${pageData.list_timetype}" var="row">
 												<option value='${row.id}'>${row.name}</option>
 											</c:forEach>

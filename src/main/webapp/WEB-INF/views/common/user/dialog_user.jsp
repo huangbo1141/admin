@@ -38,7 +38,7 @@
 							<div class="form-group">
 								<label class="control-label col-sm-2">平台权限*</label>
 								<div class="col-sm-10">
-									<select name="type" class="form-control inputstyle">
+									<select name="type" class="usertype form-control inputstyle">
 										<c:forEach items="${pageData.list_userrole}" var="row">
 											<option value='${row.id}'>${row.name}</option>
 										</c:forEach>
@@ -46,7 +46,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12">
+						<div class="col-md-12 divline">
 							<div class="form-group">
 								<label class="control-label col-sm-2">生产线*</label>
 								<div class="col-sm-10">
@@ -58,12 +58,24 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12">
+						<div class="col-md-12 divdan">
 							<div class="form-group">
 								<label class="control-label col-sm-2">工段*</label>
 								<div class="col-sm-10">
 									<select name="dan" class="dan form-control inputstyle">
 										<c:forEach items="${pageData.list_dan}" var="row">
+											<option value='${row.id}'>${row.name}</option>
+										</c:forEach>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<label class="control-label col-sm-2">部门*</label>
+								<div class="col-sm-10">
+									<select name="part" class="form-control inputstyle">
+										<c:forEach items="${pageData.list_part}" var="row">
 											<option value='${row.id}'>${row.name}</option>
 										</c:forEach>
 									</select>
@@ -126,7 +138,7 @@
 							<div class="form-group">
 								<label class="control-label col-sm-2">平台权限*</label>
 								<div class="col-sm-10">
-									<select name="type" class="form-control inputstyle">
+									<select name="type" class="usertype form-control inputstyle">
 										<c:forEach items="${pageData.list_userrole}" var="row">
 											<option value='${row.id}'>${row.name}</option>
 										</c:forEach>
@@ -134,7 +146,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12">
+						<div class="col-md-12 divline">
 							<div class="form-group">
 								<label class="control-label col-sm-2">生产线*</label>
 								<div class="col-sm-10">
@@ -146,7 +158,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12">
+						<div class="col-md-12 divdan">
 							<div class="form-group">
 								<label class="control-label col-sm-2">工段*</label>
 								<div class="col-sm-10">
@@ -158,8 +170,21 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<label class="control-label col-sm-2">部门*</label>
+								<div class="col-sm-10">
+									<select name="part" class="form-control inputstyle">
+										<c:forEach items="${pageData.list_part}" var="row">
+											<option value='${row.id}'>${row.name}</option>
+										</c:forEach>
+									</select>
+								</div>
+							</div>
+						</div>
 
 						<div class="col-md-12" style="display: none">
+							<input type="text" 	class="form-control inputstyle non_clear" name="token" value="">
 						</div>
 					</form>
 				</div>

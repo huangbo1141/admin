@@ -2,6 +2,7 @@
 	pageEncoding="utf-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="com.fasterxml.jackson.databind.ObjectMapper"%>
+<%@ page import="com.hgc.admin.database.model.*"%>
 <div class="content-wrapper">
 	<div class=row>
 		<div class="col-md-12">
@@ -22,27 +23,30 @@
 					<tbody>
 						<c:forEach items="${pageData.list_data}" var="row">
 							<tr>
-								<td>${row.time}</td>
+								<td>${row.time.substring(0,10)}</td>
 								<td>${row.content}</td>
 								<%
 									String json = "";
 										try {
+											
 											ObjectMapper mapper = (ObjectMapper) request.getAttribute("mapper");
-											Object row = pageContext.getAttribute("row");
+											Announce row = (Announce)pageContext.getAttribute("row");
 											if(mapper == null){
 												out.print("mapper null");
 											}
 											if(row == null){
 												out.print("row null");
 											}
+											//row.setContent("");
 											json = mapper.writeValueAsString(row);
+											pageContext.setAttribute("json", json);
 											//out.print(json);
 										} catch (Exception ex) {
 											//out.print(ex.toString());
 										}
 								%>
 								
-								<td class="col-xs-2" data-data='<%=json%>'>
+								<td class="col-xs-2" data-data='<c:out value="${json}"/>'>
 									<button type="submit" name="delete" class="ac_delete dltbtn"
 										data-toggle="modal" >删除</button>
 								</td>

@@ -24,6 +24,7 @@ public class Constants {
 	public static final String TERM_DETAIL = "ac_detail";
 	public static final String TERM_ALL = "ac_all";
 	public static final String TERM_CHECK = "ac_check";
+	public static final String TERM_REPORT = "report";
 	
 	public static final String TERM_UPLOAD = "ac_upload";
 	public static final String TERM_FORMPOST = "formpost";
@@ -40,10 +41,18 @@ public class Constants {
 	public static final String ACTION_WEB_ALL = 	"/"+TERM_ALL;
 	
 	public static final String ACTION_WEB_CHECK = 	"/"+TERM_CHECK;
+	public static final String ACTION_WEB_REPORTD = 	"/"+TERM_REPORT;
 	//public static final String ACTION_CHECK = 	"/";
 	
 	public static final String ACTION_APP_UPLOAD = 	"/"+TERM_UPLOAD;
 	public static final String ACTION_APP_FORMPOST = 	"/"+TERM_FORMPOST;
 	
+	public static final String PUSH_APIKEY = 	"smGStwBYsGgCLfLlO9Dr8iT7";
+	public static final String PUSH_SECRETKEY = 	"ABGrBzKTgfPF9QG39Q3tIyKC3d8wAGCH";
 	
+	public static final Integer USERTYPE_PRODUCTION = 1;
+	public static final Integer USERTYPE_QUALITY = 2;
+	public static final Integer USERTYPE_MAINTENANCE = 3;
+	public static final Integer USERTYPE_SPECIALIST = 4;
+	public static final Integer USERTYPE_MANAGER = 5;
 }

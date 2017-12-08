@@ -144,7 +144,7 @@ jQuery(document).ready(function(){
 		}
 	});
 	
-	$('#view').on('click', function() {
+	$('.formsubmit').on('click', function() {
 		// alert(this.value);
 		line_id = $('#line_input').val();
 		start_day = $('#start_day').val();
@@ -160,6 +160,10 @@ jQuery(document).ready(function(){
 		params.start_day = start_day;
 		params.end_day = end_day;
 		params.line_id = line_id;
+		var name = $(this).attr("name");
+		if(name == 'excel'){
+			params.report = 'excel';
+		}
 		for (var property in params) {
 		    if (params.hasOwnProperty(property)) {
 		        var value = params[property];

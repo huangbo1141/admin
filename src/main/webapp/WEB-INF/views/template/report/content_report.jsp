@@ -29,8 +29,12 @@
 			</div>
 		</div>
 		<div class="col-md-12">
-			<button type="button" name="new" class="NewBTN"
-				id="view" data-toggle="modal">View</button>
+			<button type="button" name="excel" class="formsubmit NewBTN"
+				data-toggle="modal">导出 EXCEL</button>
+		</div>
+		<div class="col-md-12">
+			<button type="button" name="view" class="formsubmit NewBTN"
+				data-toggle="modal">View</button>
 		</div>
 		
 		<div class="col-md-12">
@@ -57,8 +61,8 @@
 								<td>${row.get("line").name}</td>
 								<td>${row.get("dan").name}</td>
 								<td>${row.get("user_pro").name}</td>
-								<td>${row.get("model").first_load_time}</td>
-								<td>${row.get("model").last_unload_time}</td>
+								<td>${row.get("model").first_load_time.substring(11,16)}</td>
+								<td>${row.get("model").last_unload_time.substring(11,16)}</td>
 								<td>${row.get("model").lunch_time}</td>
 								<td>${row.get("model").wait_time}</td>
 								<td>${row.get("model").output}</td>

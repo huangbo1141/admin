@@ -69,69 +69,67 @@
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">工单日期</label> <label
-									class="control-label col-md-2">2017-10-16</label>
+									class="control-label col-md-6" name="create_day"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">工位</label> <label
-									class="control-label col-md-2">P-CH-120.2</label>
+									class="control-label col-md-6" name="model_station;serial"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">记录人</label> <label
-									class="control-label col-md-2">XXX</label>
+									class="control-label col-md-6" name="maker;name"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">记录时间</label> <label
-									class="control-label col-md-2">6:30</label>
+									class="control-label col-md-6" name="create_time"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">开始时间</label> <label
-									class="control-label col-md-2">6:00</label>
+									class="control-label col-md-6" name="start_t"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">结束时间</label> <label
-									class="control-label col-md-2">30MIN</label>
+									class="control-label col-md-6" name="end_t"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">损失时间</label> <label
-									class="control-label col-md-2">A 设备原因</label>
+									class="control-label col-md-6" name="loss_time"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">故障原因</label> <label
-									class="control-label col-md-2">不知道怎么了就是不运行了</label>
+									class="control-label col-md-6" name="model_reason;name"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">问题描述</label> <label
-									class="control-label col-md-2"></label>
+									class="control-label col-md-6" name="p_desc"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">原因描述</label> <label
-									class="control-label col-md-2">改造后造成的停机 (Downtime
-									caused by modification)</label>
+									class="control-label col-md-6" name="model_error;desc"></label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label col-md-2">反馈</label> <label
-									class="control-label col-md-2">改造后造成的停机 (Downtime
-									caused by modification)</label>
+									class="control-label col-md-6" name="feedback"></label>
 							</div>
 						</div>
 
@@ -143,12 +141,12 @@
 						</div>
 					</form>
 				</div>
-				<div class="row" style="border-top: 1px solid black;">
-					<div class="col-md-12">
-						<label class="control-label col-md-12">XXX指派工单给JAC</label> 
-						<label class="control-label col-md-2 pull-right">2017-10-24 6:30</label>
+				<div id="list_relation" class="row" style="border-top: 1px solid black;">
+					<div class="relation col-md-12">
+						<label class="control-label col-md-8">XXX指派工单给JAC</label> 
+						<label class="control-label col-md-4 pull-right">2017-10-24 6:30</label>
 					</div>
-					<div class="col-md-12">
+					<div class="relation col-md-12">
 						<label class="control-label col-md-12">2017-10-24 6:30</label>
 					</div>
 				</div>

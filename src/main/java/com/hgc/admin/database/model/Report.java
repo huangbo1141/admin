@@ -34,9 +34,9 @@ public class Report {
   private Integer user_id;
 private String first_load_time;
 private String last_unload_time;
-private Integer lunch_time;
-private Integer wait_time;
-private Integer output;
+private double lunch_time;
+private double wait_time;
+private double output;
 private Integer deleted;
 private String create_datetime;
 private String modify_datetime;
@@ -60,22 +60,22 @@ return last_unload_time;
 public void setLast_unload_time(String last_unload_time) {
 this.last_unload_time = last_unload_time;
 }
-public Integer getLunch_time() {
+public double getLunch_time() {
 return lunch_time;
 }
-public void setLunch_time(Integer lunch_time) {
+public void setLunch_time(double lunch_time) {
 this.lunch_time = lunch_time;
 }
-public Integer getWait_time() {
+public double getWait_time() {
 return wait_time;
 }
-public void setWait_time(Integer wait_time) {
+public void setWait_time(double wait_time) {
 this.wait_time = wait_time;
 }
-public Integer getOutput() {
+public double getOutput() {
 return output;
 }
-public void setOutput(Integer output) {
+public void setOutput(double output) {
 this.output = output;
 }
 public Integer getDeleted() {

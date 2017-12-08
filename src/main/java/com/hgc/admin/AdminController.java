@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -54,7 +56,7 @@ public class AdminController extends BaseAdminController{
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String indexPost(@PathVariable("term") String term,@PathVariable("subterm") String subterm,Model model,HttpServletRequest request){
+	public Object indexPost(@PathVariable("term") String term,@PathVariable("subterm") String subterm,Model model,HttpServletRequest request){
 		
 		HashMap<String,Object> chkAll = checkAll(currentUser,term+"_"+subterm); 
 		String chkResult = chkAll.get("result").toString();
@@ -71,8 +73,18 @@ public class AdminController extends BaseAdminController{
 		
 		setBaseModelData(model,term,subterm);
 		setContentModelData(model,term,subterm,request);
+		Map paramMap = request.getParameterMap();
+		if(paramMap.containsKey("report")){
+			String report = request.getParameter("report");
+			if(report.equals("excel")){
+				return new ModelAndView("ExcelRevenueSummary","model",model);	
+			}
+			
+		}
+		
 		return "layout/default";
 	}
+	
 	
 	public void setContentModelData(Model model,String term,String subterm,HttpServletRequest request){
 		HashMap<String,Object> pageData = new HashMap<String,Object>();
@@ -344,18 +356,21 @@ public class AdminController extends BaseAdminController{
 					HashMap<Integer,Dan> map_dan = backendApiHelper.danService.mapDans();
 					HashMap<Integer,Line> map_line = backendApiHelper.lineService.mapLines();
 					HashMap<Integer,UserRole> map_userrole = backendApiHelper.userRoleService.mapUserRoles();
+					HashMap<Integer,UserPart> map_userpart = backendApiHelper.userPartService.mapUserParts();
 					
 					List<Object> list_data = new ArrayList<Object>();
 					for(User imodel:list_user){
 						Dan idan = map_dan.get(imodel.getDan());
 						Line iline = map_line.get(idan.getLine());
 						UserRole iuserrole = map_userrole.get(imodel.getType());
+						UserPart iuserpart = map_userpart.get(imodel.getPart());
 						
 						HashMap<String,Object> ih = new HashMap<String,Object>();
 						ih.put("dan", idan);
 						ih.put("line", iline);
 						ih.put("model", imodel);
 						ih.put("userrole", iuserrole);
+						ih.put("userpart", iuserpart);
 						list_data.add(ih);
 					}
 					backendApiHelper.lineService.listLines();
@@ -382,6 +397,14 @@ public class AdminController extends BaseAdminController{
 							pageData.put("list_dan", hash.get(list_line.get(0).getId()));
 						}
 					}
+					
+					String sql = "select * from tbl_user_part order by id asc";
+					List list_part = backendApiHelper.sqlQuery(UserPart.class, backendApiHelper.userPartService, sql, 1);
+					//List<UserPart> list_part = backendApiHelper.userPartService.listUserParts();
+					
+					pageData.put("list_part", list_part);
+					
+					
 				}
 			}else if(term.equals(password)){
 				if(subterm.equals(password)){
@@ -650,14 +673,73 @@ public class AdminController extends BaseAdminController{
 							Dan idan = map_dan.get(maker.getDan());
 							Line iline = map_line.get(idan.getLine());
 							
+							HashMap<String,Object> map_imodel = backendApiHelper.getOrderInfo(imodel, 1);
+							map_imodel.put("create_day", imodel.getCreate_datetime().substring(0, 10));
+							map_imodel.put("create_time", imodel.getCreate_datetime().substring(11, 16));
+							
+							
+							String end_t = this.backendApiHelper.getDateTime(2);
+							String start_t = end_t;
+							if(imodel.getEnd_t().trim().length()>0){
+								end_t = imodel.getEnd_t();
+							}
+							if(imodel.getStart_t().trim().length()>0){
+								start_t = imodel.getStart_t();
+							}
+							
+							Integer min = backendApiHelper.getTimeDifference(end_t, start_t, 1);
+							map_imodel.put("loss_time", min+" Min");
+							map_imodel.put("maker", backendApiHelper.getHashMapOfObject(maker,User.class,null));
+							
+							List<Object> list_relation = (List<Object>)map_imodel.get("list_relation");
+							if(list_relation!=null)
+							for(int i=0; i<list_relation.size(); i++){
+								HashMap<String, Object> ihash = (HashMap<String, Object>)list_relation.get(i);
+								String s_time = null;
+								String r_time = null;
+								ihash.put("duration", "");
+								if(ihash.containsKey("s_time")){
+									s_time = ihash.get("s_time").toString();
+								}
+								if(ihash.containsKey("r_time")){
+									r_time = ihash.get("r_time").toString();
+								}
+								if(i==0){
+									if(s_time!=null&&r_time!=null){
+										Integer duration = backendApiHelper.getTimeDifference(r_time,s_time, 0);
+										ihash.put("duration", duration);
+									}
+								}else{								
+									if(s_time!=null&&r_time!=null){
+										Integer duration = backendApiHelper.getTimeDifference(r_time,s_time, 0);
+										ihash.put("duration", duration);
+									}									
+								}
+							}
+							
+							
 							HashMap<String,Object> ih = new HashMap<String,Object>();
 							ih.put("dan", idan);
 							ih.put("line", iline);
-							ih.put("model", imodel);
-							ih.put("maker", maker);
+							ih.put("model", map_imodel);
+							ih.put("maker", backendApiHelper.getHashMapOfObject(maker,User.class,null));
 							ih.put("user_pro", user_pro);
-							ih.put("station", station);
+							ih.put("station", backendApiHelper.getHashMapOfObject(station,Station.class,null));
 							list_data.add(ih);
+							
+							if(imodel.getStatus() == 2 && list_relation.size()>0){
+								String complete = imodel.getComplete();
+								String r_time = complete;
+								HashMap<String, Object> ihash = (HashMap<String, Object>)list_relation.get(list_relation.size()-1);
+								if(ihash.containsKey("r_time")){
+									r_time = ihash.get("r_time").toString();
+								}
+								int complete_min = this.backendApiHelper.getTimeDifference(complete, r_time, 0);
+								
+								ihash.put("complete_min", complete_min);
+								
+								map_imodel.put("data_complete", ihash);
+							}
 						}
 						
 					}
@@ -676,9 +758,10 @@ public class AdminController extends BaseAdminController{
 			}
 			else if(term.equals(announce)){
 				if(subterm.equals(announce)){
-					List<Announce> list_data = backendApiHelper.announceService.listAnnounces();
+					String sql = "select * from tbl_announce order by id desc limit 30";
+					List list = this.backendApiHelper.sqlQuery(Announce.class, this.backendApiHelper.announceService, sql, 1);
 					
-					pageData.put("list_data", list_data);
+					pageData.put("list_data", list);
 				}
 			}
 		}catch(Exception ex){

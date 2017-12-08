@@ -5,6 +5,9 @@ var O = function(someValue) {
 	this.cat = cat;
 }
 var cm_func = new O("chris");
+O.prototype.updateDialogContentEx = function(infoData) {
+	return false;
+}
 O.prototype.getInfoData = function(className, pointer) {
 	var infoData = {};
 	infoData.fnName = 'showDialog';
@@ -165,6 +168,7 @@ O.prototype.updateDialogContent = function(infoData) {
 			console.log(value);
 		});
 	}
+	cm_func.updateDialogContentEx(infoData);
 	return false;
 }
 O.prototype.pagereload = function(event) {

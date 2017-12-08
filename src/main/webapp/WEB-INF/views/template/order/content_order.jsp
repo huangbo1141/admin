@@ -29,10 +29,13 @@
 			</div>
 		</div>
 		<div class="col-md-12">
-			<button type="button" name="new" class="NewBTN"
-				id="view" data-toggle="modal">View</button>
+			<button type="button" name="excel" class="formsubmit NewBTN"
+				data-toggle="modal">导出 EXCEL</button>
 		</div>
-		
+		<div class="col-md-12">
+			<button type="button" name="view" class="formsubmit NewBTN"
+				data-toggle="modal">View</button>
+		</div>
 		<div class="col-md-12">
 			<div class="tablediv" style="margin-top:8px">
 				<table class="table custometable">
@@ -51,7 +54,7 @@
 					<tbody>
 						<c:forEach items="${pageData.list_data}" var="row">
 							<tr>
-								<td>${row.get("model").create_datetime}</td>
+								<td>${row.get("model").create_datetime.substring(0,10)}</td>
 								<td>${row.get("line").name}</td>
 								<td>${row.get("dan").name}</td>
 								<td>${row.get("user_pro").name}</td>
@@ -72,9 +75,10 @@
 											out.print("row null");
 										}
 										json = mapper.writeValueAsString(row.get("model"));
+										//roles = mapper.writeValueAsString(row);
 										//out.print(json);
 									} catch (Exception ex) {
-										//out.print(ex.toString());
+										out.print(ex.toString());
 									}
 								%>
 

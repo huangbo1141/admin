@@ -9,7 +9,7 @@ import com.hgc.admin.utils.BaseHelperImpl;
 
 @Component("tablefields")
 public class DbFields {
-
+	
 	public String[] tbl_admin_role = {"id","name","roles","deleted","create_datetime","modify_datetime"};
 	public String[] type_tbl_admin_role = {"int","varchar","varchar","int","datetime","datetime"};
 	public String[] tbl_admin_user = {"id","name","phone","log_time","role","username","password","deleted","create_datetime","modify_datetime"};
@@ -36,16 +36,22 @@ public class DbFields {
 	public String[] type_tbl_picture = {"int","varchar","int","int","varchar","int","datetime","datetime"};
 	public String[] tbl_reason_type = {"id","name","deleted","create_datetime","modify_datetime"};
 	public String[] type_tbl_reason_type = {"int","varchar","int","datetime","datetime"};
+	public String[] tbl_rec_daily = {"id","time","acnt","pcnt","qcnt","ncnt","ta","oee","output","content","deleted","create_datetime","modify_datetime"};
+	public String[] type_tbl_rec_daily = {"int","datetime","int","int","int","int","double","double","double","varchar","int","datetime","datetime"};
+	public String[] tbl_rec_oac = {"id","sender_id","receiver_id","content","deleted","create_datetime","modify_datetime"};
+	public String[] type_tbl_rec_oac = {"int","int","int","varchar","int","datetime","datetime"};
 	public String[] tbl_report = {"id","user_id","first_load_time","last_unload_time","lunch_time","wait_time","output","deleted","create_datetime","modify_datetime"};
-	public String[] type_tbl_report = {"int","int","datetime","datetime","int","int","int","int","datetime","datetime"};
+	public String[] type_tbl_report = {"int","int","datetime","datetime","double","double","double","int","datetime","datetime"};
 	public String[] tbl_station = {"id","serial","dan","deleted","create_datetime","modify_datetime"};
 	public String[] type_tbl_station = {"int","varchar","int","int","datetime","datetime"};
 	public String[] tbl_time_type = {"id","name","ty_name","deleted","create_datetime","modify_datetime"};
 	public String[] type_tbl_time_type = {"int","varchar","varchar","int","datetime","datetime"};
 	public String[] tbl_tt = {"id","time_value","time_type","ta","oee","deleted","create_datetime","modify_datetime"};
 	public String[] type_tbl_tt = {"int","varchar","int","int","int","int","datetime","datetime"};
-	public String[] tbl_user = {"id","name","serial","password","type","dan","deleted","create_datetime","modify_datetime","phone","head"};
-	public String[] type_tbl_user = {"int","varchar","varchar","varchar","int","int","int","datetime","datetime","varchar","varchar"};
+	public String[] tbl_user = {"id","name","serial","password","type","dan","part","deleted","create_datetime","modify_datetime","phone","head","token"};
+	public String[] type_tbl_user = {"int","varchar","varchar","varchar","int","int","int","int","datetime","datetime","varchar","varchar","varchar"};
+	public String[] tbl_user_part = {"id","name","tp_name","deleted","create_datetime","modify_datetime"};
+	public String[] type_tbl_user_part = {"int","varchar","varchar","int","datetime","datetime"};
 	public String[] tbl_user_role = {"id","name","tr_name","deleted","create_datetime","modify_datetime"};
 	public String[] type_tbl_user_role = {"int","varchar","varchar","int","datetime","datetime"};
 	

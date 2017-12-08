@@ -19,8 +19,18 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
+import com.baidu.yun.core.log.YunLogEvent;
+import com.baidu.yun.core.log.YunLogHandler;
+import com.baidu.yun.push.auth.*;
+import com.baidu.yun.push.client.*;
+import com.baidu.yun.push.constants.*;
+import com.baidu.yun.push.exception.PushClientException;
+import com.baidu.yun.push.exception.PushServerException;
+import com.baidu.yun.push.model.PushMsgToSingleDeviceRequest;
+import com.baidu.yun.push.model.PushMsgToSingleDeviceResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hgc.admin.constants.Constants;
 import com.hgc.admin.constants.DbFields;
 import com.hgc.admin.database.model.*;
 import com.hgc.admin.model.BackendRequest;
@@ -28,16 +38,34 @@ import com.hgc.admin.model.LeftMenu;
 import com.hgc.admin.model.RestRequest;
 import com.hgc.admin.model.Role;
 import com.hgc.admin.model.TaOee;
+import com.hgc.admin.push.AndroidPushMsgToAll;
+import com.hgc.admin.push.AndroidPushMsgToSingleDevice;
 
 @Component
 public class AppApiHelper extends BaseHelperImpl {
 
 	public Object login(RestRequest apiRequest) {
-		HashMap<String, Object> whereFields = (HashMap<String, Object>) apiRequest.model;
-		if (whereFields.containsKey("serial") && whereFields.containsKey("password")) {
-			List list = this.modelQuery(User.class, this.userService, apiRequest.model, 1);
+		HashMap<String, Object> wF = (HashMap<String, Object>) apiRequest.model;
+		if (wF.containsKey("serial") && wF.containsKey("password")&&wF.containsKey("token")) {
+			String token = wF.get("token").toString();
+			String sql = "select * from tbl_user where token = '"+token+"'";
+			List list = this.sqlQuery(User.class, this.userService, sql, 1);
+			for(Object obj:list){
+				User iuser = (User)obj;
+				iuser.setToken("");
+				this.userService.updateUser(iuser);
+			}
+			
+			wF.remove("token");
+			
+			list = this.modelQuery(User.class, this.userService, apiRequest.model, 1);
 			if (list.size() > 0) {
 				User user = (User) list.get(0);
+				
+				user = this.userService.getUserById(user.getId());
+				user.setToken(token);
+				this.userService.updateUser(user);
+				
 				HashMap<String, Object> uf = this.getUserInfo(user);
 				// ret.put("user", user);
 				HashMap<String, Object> map_user = this.getHashMapOfObject(user, User.class, null);
@@ -49,6 +77,50 @@ public class AppApiHelper extends BaseHelperImpl {
 				}
 				if (uf.containsKey("userrole")) {
 					map_user.put("model_userrole", uf.get("userrole"));
+				}
+				if (uf.containsKey("userpart")) {
+					map_user.put("model_userpart", uf.get("userpart"));
+				}
+				HashMap<String, Object> ret = new HashMap<String, Object>();
+
+				sql = "select * from tbl_announce " + " order by time desc";
+				List list_announce = this.sqlQuery(Announce.class, this.announceService, sql, 1);
+
+				ret.put("response", 200);
+				ret.put("user", map_user);
+				ret.put("list_announce", list_announce);
+				return ret;
+			}
+		} else {
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "serial or password token not come");
+			return ret;
+		}
+		return null;
+	}
+
+	public Object get_userinfo(RestRequest apiRequest) {
+		HashMap<String, Object> wF = (HashMap<String, Object>) apiRequest.model;
+		if (wF.containsKey("id")) {
+			
+			List list = this.modelQuery(User.class, this.userService, apiRequest.model, 1);
+			if (list.size() > 0) {
+				User user = (User) list.get(0);
+				
+				HashMap<String, Object> uf = this.getUserInfo(user);
+				// ret.put("user", user);
+				HashMap<String, Object> map_user = this.getHashMapOfObject(user, User.class, null);
+				if (uf.containsKey("dan")) {
+					map_user.put("model_dan", uf.get("dan"));
+				}
+				if (uf.containsKey("line")) {
+					map_user.put("model_line", uf.get("line"));
+				}
+				if (uf.containsKey("userrole")) {
+					map_user.put("model_userrole", uf.get("userrole"));
+				}
+				if (uf.containsKey("userpart")) {
+					map_user.put("model_userpart", uf.get("userpart"));
 				}
 				HashMap<String, Object> ret = new HashMap<String, Object>();
 
@@ -62,12 +134,12 @@ public class AppApiHelper extends BaseHelperImpl {
 			}
 		} else {
 			HashMap<String, Object> ret = new HashMap<String, Object>();
-			ret.put("message", "serial or password not come");
+			ret.put("message", "id not come");
 			return ret;
 		}
 		return null;
 	}
-
+	
 	public HashMap<String, Object> filterModel(RestRequest apiRequest) {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		HashMap<String, Object> nonsafe_model = (HashMap<String, Object>) apiRequest.model;
@@ -97,6 +169,7 @@ public class AppApiHelper extends BaseHelperImpl {
 		Dan dan = this.danService.getDanById(user.getDan());
 		Line line = this.lineService.getLineById(dan.getLine());
 		UserRole userRole = this.userRoleService.getUserRoleById(user.getType());
+		UserPart userPart = this.userPartService.getUserPartById(user.getPart());
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 
 		String p = dan.getName();
@@ -110,9 +183,104 @@ public class AppApiHelper extends BaseHelperImpl {
 		obj = getHashMapOfObject(userRole, UserRole.class, null);
 		ret.put("userrole", obj);
 
+		obj = getHashMapOfObject(userPart, UserPart.class, null);
+		ret.put("userpart", obj);
+		
 		return ret;
 	}
+	public HashMap<String, Object> pushtest(RestRequest apiRequest) {
+		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
+		if (wf.containsKey("message") && wf.containsKey("token")) {
+			String message = wf.get("message").toString();
+			String token = wf.get("token").toString();
+			
+			HashMap<String,Object> map_msg = new HashMap<String,Object>();
+			map_msg.put("title", "Test");
+			map_msg.put("description", message);
+			
+			AndroidPushMsgToSingleDevice push = new AndroidPushMsgToSingleDevice();
+			try {
+				push.sendPush(map_msg,token);
+				HashMap<String, Object> ret = new HashMap<String, Object>();
+				ret.put("response", 200);
+				return ret;
+			} catch (PushClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PushServerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "message or token not come");
+			return ret;
+		}
+		return null;
+	}
+	public HashMap<String, Object> push(RestRequest apiRequest) {
+		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
+		if (wf.containsKey("message") && wf.containsKey("token")) {
+			String message = wf.get("message").toString();
+			String token = wf.get("token").toString();
+			
+			String apiKey = Constants.PUSH_APIKEY;
+			String secretKey = Constants.PUSH_SECRETKEY;  
+			PushKeyPair pair = new PushKeyPair(apiKey,secretKey);
 
+			BaiduPushClient pushClient = new BaiduPushClient(pair,
+					BaiduPushConstants.CHANNEL_REST_URL);
+			pushClient.setChannelLogHandler (new YunLogHandler () {
+			    @Override
+			    public void onHandle (YunLogEvent event) {
+			        System.out.println(event.getMessage());
+			    }
+			});
+			//HashMap<String,Object> message = new HashMap<String,Object>();
+			
+			
+			PushMsgToSingleDeviceRequest request = new PushMsgToSingleDeviceRequest().
+				    addChannelId("xxxxxxxxxxxxxxxxxx").
+				    addMsgExpires(new Integer(3600)).   //设置消息的有效时间,单位秒,默认3600 x 5.
+				    addMessageType(1).                  //设置消息类型,0表示消息,1表示通知,默认为0.
+				    addMessage("{\"title\":\"TEST\",\"description\":\"Hello Baidu push!\"}").
+				    addDeviceType(3);          //设置设备类型，3 for android, 4 for ios.
+			
+			try {
+				PushMsgToSingleDeviceResponse response = pushClient.
+						pushMsgToSingleDevice(request);
+				System.out.println("msgId: " + response.getMsgId()
+				+ ",sendTime: " + response.getSendTime());
+			} catch (PushClientException e) {
+				// TODO Auto-generated catch block
+				if (BaiduPushConstants.ERROROPTTYPE) { 
+			        e.printStackTrace();
+			    } else {
+			        e.printStackTrace();
+			    }
+			} catch (PushServerException e) {
+				// TODO Auto-generated catch block
+				if (BaiduPushConstants.ERROROPTTYPE) {
+					e.printStackTrace();
+			    } else {
+			        System.out.println(String.format(
+			                "requestId: %d, errorCode: %d, errorMessage: %s",
+			                e.getRequestId(), e.getErrorCode(), e.getErrorMsg()));
+			    }
+			}catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "message or token not come");
+			return ret;
+		}
+		return null;
+	}
 	public Object forgot(RestRequest apiRequest) {
 		HashMap<String, Object> whereFields = (HashMap<String, Object>) apiRequest.model;
 		if (whereFields.containsKey("serial") && whereFields.containsKey("password")) {
@@ -230,87 +398,7 @@ public class AppApiHelper extends BaseHelperImpl {
 		}
 	}
 
-	public HashMap<String, Object> getOrderInfo(Order order, int mode) {
-		HashMap<String, Object> map_model = this.getHashMapOfObject(order, Order.class, null);
-		Station st = this.stationService.getStationById(order.getStation_id());
-		map_model.put("model_station", this.getHashMapOfObject(st, Station.class, null));
-
-		if (order.getReason_id() > 0) {
-			ReasonType rt = this.reasonTypeService.getReasonTypeById(order.getReason_id());
-			map_model.put("model_reason", this.getHashMapOfObject(rt, ReasonType.class, null));
-		}
-		if (order.getError_id() > 0) {
-			ErrorType et = this.errorTypeService.getErrorTypeById(order.getError_id());
-			map_model.put("model_error", this.getHashMapOfObject(et, ErrorType.class, null));
-		}
-		if (mode == 1) {
-			// relation info
-			List<Object> relation = new ArrayList<Object>();
-			String[] filter = { "id", "name" };
-			String[] filter_relation = { "id", "s_time", "r_time" };
-
-			HashMap<String, Object> select = this.dbFields.getSelectFields("", OrderRelation.class);
-			String str_select = select.get("select").toString();
-			String[] ids = (String[]) select.get("fields");
-
-			String sql = "select " + str_select + " from " + this.getTableName(OrderRelation.class.getSimpleName())
-					+ " where order_id = " + order.getId() + " order by create_datetime asc";
-			List list = this.sqlQuery(OrderRelation.class, this.orderRelationService, sql, 1);
-			for (int i = 0; i < list.size(); i++) {
-				OrderRelation or = (OrderRelation) list.get(i);
-				User sender = this.userService.getUserById(or.getSender_id());
-				User receiver = this.userService.getUserById(or.getReceiver_id());
-
-				HashMap<String, Object> map_sender = this.getHashMapOfObject(sender, User.class, filter);
-				HashMap<String, Object> map_receiver = this.getHashMapOfObject(receiver, User.class, filter);
-
-				HashMap<String, Object> ihash = new HashMap<String, Object>();
-				ihash.put("sender", map_sender);
-				ihash.put("receiver", map_receiver);
-				if (or.getS_time() != null) {
-					ihash.put("s_time", or.getS_time());
-				}
-				if (or.getR_time() != null) {
-					ihash.put("r_time", or.getR_time());
-				}
-				relation.add(ihash);
-			}
-
-			map_model.put("list_relation", relation);
-
-			HashMap<String, Object> non_safe = new HashMap<String, Object>();
-			non_safe.put("ref_type1", Order.class.getSimpleName());
-			non_safe.put("ref_id1", order.getId());
-
-			List list_picture = this.modelQuery(Picture.class, this.pictureService, non_safe, 1);
-			if (list_picture != null) {
-				Collections.sort(list_picture, new Comparator<Picture>() {
-					@Override
-					public int compare(Picture lhs, Picture rhs) {
-						// -1 - less than, 1 - greater than, 0 - equal, all
-						// inversed for
-						// descending
-
-						return lhs.getId() > rhs.getId() ? -1 : (lhs.getId() < rhs.getId()) ? 1 : 0;
-						// return rhs.getId() > lhs.getId() ? -1 : (rhs.getId()
-						// < lhs.getId()) ? 1 : 0;
-					}
-
-				});
-				List<Object> list_temp = new ArrayList<Object>();
-				String[] allowed = { "id", "filename", "type" };
-				for (Object obj : list_picture) {
-					Picture picture = (Picture) obj;
-					list_temp.add(this.getHashMapOfObject(picture, Picture.class, allowed));
-				}
-				map_model.put("list_picture", list_temp);
-			} else {
-				map_model.put("list_picture", new ArrayList<Object>());
-			}
-
-		}
-		return map_model;
-	}
+	
 
 	public Object create_workorder(RestRequest apiRequest) {
 		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
@@ -327,7 +415,7 @@ public class AppApiHelper extends BaseHelperImpl {
 				or.setSender_id(order.getUser_id());
 				or.setReceiver_id(Integer.valueOf(receiver_id));
 				or.setOrder_id(order.getId());
-				String d = this.getCurrentTime(0);
+				String d = this.getDateTime(0);
 				or.setS_time(d);
 				or.setDeleted(0);
 				or.setCreate_datetime(d);
@@ -335,8 +423,14 @@ public class AppApiHelper extends BaseHelperImpl {
 				Object model_or = this.modelNew(OrderRelation.class, this.orderService,
 						this.getHashMapOfObject(or, OrderRelation.class, null), 1);
 				if (model_or != null) {
+					HashMap<String, Object> inputParam =  new HashMap<String, Object>();
+					inputParam.put("receiver_id", or.getReceiver_id());
+					inputParam.put("sender_id",or.getSender_id());
+					inputParam.put("order_id",order.getId());
+					inputParam.put("order_type","create_workorder");
+					this.sendOrderPush(inputParam);
+					
 					HashMap<String, Object> ret = new HashMap<String, Object>();
-
 					HashMap<String, Object> map_model = this.getOrderInfo(order, 0);
 					ret.put("model", map_model);
 					ret.put("response", 200);
@@ -381,7 +475,7 @@ public class AppApiHelper extends BaseHelperImpl {
 			ReasonType rt = this.reasonTypeService.getReasonTypeById(Integer.valueOf(reason_id));
 			if (reason_id.equals("3")) {
 				// this is p
-				wf.put("complete", this.getCurrentTime(0));
+				wf.put("complete", this.getDateTime(0));
 			}
 
 			wf.put("status", "2");
@@ -391,7 +485,7 @@ public class AppApiHelper extends BaseHelperImpl {
 					// this is p
 					String sql = "select * from tbl_order_relation " + " where order_id = '" + order_id + "'";
 					List list = this.sqlQuery(OrderRelation.class, this.orderRelationService, sql, 1);
-					String d = this.getCurrentTime(0);
+					String d = this.getDateTime(0);
 					for (Object obj : list) {
 						OrderRelation or = (OrderRelation) obj;
 						or.setR_time(d);
@@ -512,26 +606,7 @@ public class AppApiHelper extends BaseHelperImpl {
 		return T;
 	}
 
-	public List getReportForPeriod(String T1, String T2, HashMap<String, Object> wf) {
-		List list = new ArrayList();
-		if (wf != null) {
-
-			if (wf.containsKey("mode_line")) {
-				Integer line_id = Integer.valueOf(wf.get("user_id").toString());
-				String sql = "select R.* from tbl_report as R" + " join tbl_user as U on R.user_id = U.id"
-						+ " join tbl_dan as D on U.dan = D.id" + " where substring(R.create_datetime,1,10) >= '" + T1
-						+ "'" + " and substring(R.create_datetime,1,10) <= '" + T2 + "'" + " and D.line = " + line_id;
-				list = this.sqlQuery(Report.class, this.reportService, sql, 1);
-			}
-
-		} else {
-			String sql = "select R.* from tbl_report as R" + " where substring(R.create_datetime,1,10) >= '" + T1 + "'"
-					+ " and substring(R.create_datetime,1,10) <= '" + T2 + "'";
-			list = this.sqlQuery(Report.class, this.reportService, sql, 1);
-		}
-		return list;
-
-	}
+	
 
 	public List sortCalculatedData1(HashMap map_data) {
 		List<Object> values = new ArrayList<Object>();
@@ -563,85 +638,144 @@ public class AppApiHelper extends BaseHelperImpl {
 		String T = this.getNearestTime();
 
 		if (wf.containsKey("T1") && wf.containsKey("T2") && wf.containsKey("time_type") && wf.containsKey("time_value")
-				&& wf.containsKey("line_id")) {
+				&& (wf.containsKey("line_id")|| wf.containsKey("dan_id"))) {
 			// time_type 1 2 3 4
 			// year month week day
 			String T1 = wf.get("T1").toString();
 			String T2 = wf.get("T2").toString();
 			Integer time_type = Integer.valueOf(wf.get("time_type").toString());
 			String time_value = wf.get("time_value").toString();
-			Integer line_id = Integer.valueOf(wf.get("line_id").toString());
+			Integer id = 0;
+			Integer mode_id = 1;
+			if(wf.containsKey("line_id")){
+				id = Integer.valueOf(wf.get("line_id").toString());
+				mode_id = 1;
+			}else{
+				id = Integer.valueOf(wf.get("dan_id").toString());
+				mode_id = 2;
+			} 
 
-			if (time_type == 4) {
-				// day mode
-				if (T1.equals("") && T2.equals("")) {
-					T1 = T;
-					T2 = T;
-				} else {
-					// T1 T2 will be same
-				}
+			if (T1.equals("") || T2.equals("")) {
+				T1 = T;
+				T2 = T;
+				time_value = T;
+			} else {
+				// T1 T2 will be same
+			}
 
-				// get 6 days strings
-				List<String> list_pastday = this.getPastDays(6, T1);
-				List<Object> list_graph = new ArrayList<Object>();
-				for (int i = 0; i < list_pastday.size(); i++) {
-					HashMap<String, Object> cond = new HashMap<String, Object>();
-					cond.put("mode_line", 1);
-					cond.put("line_id", line_id);
-					String iT = list_pastday.get(i);
-					List list_report = this.getReportForPeriod(iT, iT, cond);
-					// this is report table
-
-					HashMap<String, Object> input_param = new HashMap<String, Object>();
-					input_param.put("time_type", 4);
+			// get 6 days strings
+			List<Object> list_pastday = this.getPastDays(6, wf);
+			List<Object> list_graph = new ArrayList<Object>();
+			for (int i = 0; i < list_pastday.size(); i++) {
+				HashMap<String, Object> cond = new HashMap<String, Object>();
+				cond.put("mode_id", mode_id);
+				cond.put("id", id);
+				List list_report = new ArrayList();
+				TaOee tt_target = new TaOee();
+				HashMap<String, Object> input_param = new HashMap<String, Object>();
+				input_param.put("time_type", time_type);
+				if(time_type == 4){
+					String iT = (String)list_pastday.get(i);
+					list_report = this.getReportForPeriod(iT, iT, cond);
+					
 					input_param.put("T1", iT);
 					input_param.put("T2", iT);
-					
 					// get tt value
 					input_param.put("time_value", iT);
-					TaOee tt_forday = this.getTt(input_param);
+					tt_target = this.getTt(input_param);
+				}else{
+					List<String> iT = (List<String>)list_pastday.get(i);
+					list_report = this.getReportForPeriod(iT.get(0), iT.get(1), cond);
 					
-					HashMap<String, Object> map_ret = this.processUserForReport(list_report, input_param);
-					HashMap<Integer, Object> map_line = (HashMap<Integer, Object>) map_ret.get("line");
-					if (map_line.containsKey(line_id)) {
+					input_param.put("T1", iT.get(0));
+					input_param.put("T2", iT.get(1));
+					// get tt value
+					String p = iT.get(2);
+					input_param.put("time_value", p);
+					tt_target = this.getTt(input_param);
+				}
+				
+				if(mode_id == 2){
+					// dan mode
+					input_param.put("calculate_dan", 1);
+				}else if(mode_id == 1){
+					input_param.put("calculate_line", 1);
+				}
+				
+				HashMap<String, Object> map_ret = this.processUserForReport(list_report, input_param);
+				HashMap<Integer, Object> map_line = (HashMap<Integer, Object>) map_ret.get("line");
+				HashMap<Integer, Object> map_dan = (HashMap<Integer, Object>) map_ret.get("dan");
+				if(mode_id == 1){
+					// line mode
+					if (map_line.containsKey(id)) {
 						// has data
-						HashMap<String, Object> hash = (HashMap<String, Object>) map_line.get(line_id);
-						HashMap<String, Object> cal_data = (HashMap<String, Object>) hash.get("cal_data");
+						HashMap<String, Object> hash = (HashMap<String, Object>) map_line.get(id);
+						Object cal_data = hash.get("cal_data");
 						HashMap<String, Object> idata = new HashMap<String, Object>();
-						idata.put("model_tt", tt_forday);
+						idata.put("model_tt", tt_target);
 						idata.put("model_cal", cal_data);
-						idata.put("time_value", iT);
-						idata.put("time_type", 4);
+						idata.put("time_value", input_param.get("time_value"));
+						idata.put("time_type", input_param.get("time_type"));
 						list_graph.add(idata);
 					} else {
 						// no data
 						TaOee taoee = new TaOee();
 						HashMap<String, Object> idata = new HashMap<String, Object>();
-						idata.put("model_tt", tt_forday);
+						idata.put("model_tt", tt_target);
 						idata.put("model_cal", taoee);
-						idata.put("time_value", iT);
-						idata.put("time_type", 4);
+						idata.put("time_value", input_param.get("time_value"));
+						idata.put("time_type", input_param.get("time_type"));
 						list_graph.add(idata);
 					}
-					
+				}else if(mode_id == 2){
+					// dan mode
+					if (map_dan.containsKey(id)) {
+						// has data
+						HashMap<String, Object> hash = (HashMap<String, Object>) map_dan.get(id);
+						Object cal_data = hash.get("cal_data");
+						HashMap<String, Object> idata = new HashMap<String, Object>();
+						idata.put("model_tt", tt_target);
+						idata.put("model_cal", cal_data);
+						idata.put("time_value", input_param.get("time_value"));
+						idata.put("time_type", input_param.get("time_type"));
+						list_graph.add(idata);
+					} else {
+						// no data
+						TaOee taoee = new TaOee();
+						HashMap<String, Object> idata = new HashMap<String, Object>();
+						idata.put("model_tt", tt_target);
+						idata.put("model_cal", taoee);
+						idata.put("time_value", input_param.get("time_value"));
+						idata.put("time_type", input_param.get("time_type"));
+						list_graph.add(idata);
+					}
 				}
+			}
 
-				HashMap<String, Object> cond = new HashMap<String, Object>();
-				cond.put("mode_line", 1);
-				cond.put("line_id", line_id);
+			HashMap<String, Object> cond = new HashMap<String, Object>();
+			cond.put("mode_id", mode_id);
+			cond.put("id", id);
+			List list_report = this.getReportForPeriod(T1, T2, cond);
 
-				List list_report = this.getReportForPeriod(T1, T2, cond);
+			HashMap<String, Object> input_param = new HashMap<String, Object>();
+			input_param.put("time_type", time_type);
+			input_param.put("calculate_dan", 1);
+			input_param.put("calculate_line", 1);
+			input_param.put("T1", T1);
+			input_param.put("T2", T2);
+			input_param.put("time_value", time_value);
+			
+			HashMap<String, Object> map_ret = this.processUserForReport(list_report, input_param);
+			HashMap<Integer, Object> map_dan = (HashMap<Integer, Object>) map_ret.get("dan");
 
-				HashMap<String, Object> input_param = new HashMap<String, Object>();
-				input_param.put("time_type", 4);
-				input_param.put("T1", T1);
-				input_param.put("T2", T2);
-				input_param.put("calculate_dan", 1);
-				HashMap<String, Object> map_ret = this.processUserForReport(list_report, input_param);
-				HashMap<Integer, Object> map_dan = (HashMap<Integer, Object>) map_ret.get("dan");
-
-				// get dan list for this line
-				sql = "select * from tbl_dan where line = " + line_id;
+			if(list_graph.size()>0){
+				Object idata = list_graph.get(list_graph.size()-1);
+				ret.put("model_the", idata);
+			}
+			// get dan list for this line
+			if(mode_id == 1){
+				// line mode
+				sql = "select * from tbl_dan where line = " + id;
 				List list_dan = this.sqlQuery(Dan.class, this.danService, sql, 1);
 				List<Object> list_data_dan = new ArrayList<Object>();
 				for (Object obj : list_dan) {
@@ -649,27 +783,29 @@ public class AppApiHelper extends BaseHelperImpl {
 					
 					if (map_dan.containsKey(dan.getId())) {
 						HashMap<String, Object> hash = (HashMap<String, Object>) map_dan.get(dan.getId());
-						HashMap<String, Object> cal_data = (HashMap<String, Object>) hash.get("cal_data");
+						Object cal_data = hash.get("cal_data");
 
 						HashMap<String, Object> idata = new HashMap<String, Object>();
 						idata.put("model_dan", dan);
 						idata.put("model_cal", cal_data);
-						idata.put("time_value", T1);
-						idata.put("time_type", 4);
+						idata.put("time_value", time_value);
+						idata.put("time_type", time_type);
 						list_data_dan.add(idata);
 					} else {
 						HashMap<String, Object> idata = new HashMap<String, Object>();
 						idata.put("model_dan", dan);
 						idata.put("model_cal", new TaOee());
-						idata.put("time_value", T1);
-						idata.put("time_type", 4);
+						idata.put("time_value", time_value);
+						idata.put("time_type", time_type);
 						list_data_dan.add(idata);
 					}
 				}
-
-				// ret.put("list_data", list_data);
-				ret.put("response", 200);
+				ret.put("list_data_dan", list_data_dan);
 			}
+			
+			ret.put("list_graph", list_graph);
+			ret.put("list_bar", map_ret.get("list_bar"));
+			ret.put("response", 200);
 
 		} else {
 			ret.put("message", "T1 T2 time_type time_value line_id not come");
@@ -678,90 +814,7 @@ public class AppApiHelper extends BaseHelperImpl {
 		return ret;
 	}
 
-	public Object get_line_detail22(RestRequest apiRequest) {
-		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
-
-		HashMap<String, Object> ret = new HashMap<String, Object>();
-		ret.put("response", 400);
-		String sql = "";
-		String T = this.getNearestTime();
-
-		if (wf.containsKey("mode")) {
-			List<TimeType> list_timetype = this.timeTypeService.listTimeTypes();
-			TimeType timetype_year = list_timetype.get(0);
-			TimeType timetype_month = list_timetype.get(1);
-			TimeType timetype_week = list_timetype.get(2);
-			TimeType timetype_day = list_timetype.get(3);
-
-			String mode = wf.get("mode").toString();
-			if (mode.equals("1")) {
-				// now mode
-
-				List list_report = this.getReportForPeriod(T, T, null);
-				// this is report table
-				HashMap<String, Object> map_ret = this.processUserForReport(list_report, null);
-				HashMap<Integer, Object> map_data = (HashMap<Integer, Object>) map_ret.get("line");
-				// get tt value
-				List<Object> values = new ArrayList<Object>();
-				if (T != null) {
-
-					Iterator it = map_data.entrySet().iterator();
-					while (it.hasNext()) {
-						HashMap.Entry pair = (HashMap.Entry) it.next();
-						Integer key = (Integer) pair.getKey();
-						HashMap<String, Object> hash = (HashMap<String, Object>) pair.getValue();
-						HashMap<String, Object> line = (HashMap<String, Object>) hash.get("model_");
-						TaOee taoee = (TaOee) hash.get("cal_data");
-
-						// get tt value
-						sql = "select T.* from tbl_tt as T" + " where time_value = '" + T.substring(0, 10) + "'"
-								+ " and time_type = " + timetype_day.getId();
-						List list_tt = this.sqlQuery(Tt.class, this.ttService, sql, 1);
-						if (list_tt.size() > 0) {
-							Tt tt = (Tt) list_tt.get(0);
-							hash.put("model_tt", tt);
-						} else {
-							Tt tt = new Tt();
-							tt.setTa(0);
-							tt.setOee(0);
-							hash.put("model_tt", tt);
-						}
-					}
-					values.addAll(map_data.values());
-				}
-
-				ret.put("list_data", values);
-				ret.put("response", 200);
-			} else if (mode.equals("2")) {
-				if (wf.containsKey("T1") && wf.containsKey("T2") && wf.containsKey("time_type")
-						&& wf.containsKey("time_value")) {
-					// time_type 1 2 3 4
-					// year month week day
-					String T1 = wf.get("T1").toString();
-					String T2 = wf.get("T2").toString();
-					String time_type = wf.get("time_type").toString();
-					String time_value = wf.get("time_value").toString();
-					sql = "select T.* from tbl_tt as T" + " where time_value = '" + time_value + "'"
-							+ " and time_type = " + time_type;
-					List list_tt = this.sqlQuery(Tt.class, this.ttService, sql, 1);
-					if (list_tt.size() > 0) {
-						Tt tt = (Tt) list_tt.get(0);
-						ret.put("model_tt", tt);
-					}
-
-					List list_report = this.getReportForPeriod(T1, T2, null);
-					// this is report table
-					HashMap map_data = this.processUserForReport(list_report, null);
-					List list_data = this.sortCalculatedData1(map_data);
-					ret.put("list_data", list_data);
-					ret.put("response", 200);
-				}
-
-			}
-		}
-
-		return ret;
-	}
+	
 
 	public Object get_line_report(RestRequest apiRequest) {
 		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
@@ -786,6 +839,7 @@ public class AppApiHelper extends BaseHelperImpl {
 			input_param.put("time_type", 4);
 			input_param.put("T1", T);
 			input_param.put("T2", T);
+			input_param.put("calculate_line", 1);
 			HashMap<String, Object> map_ret = this.processUserForReport(list_report, input_param);
 			HashMap<Integer, Object> map_data = (HashMap<Integer, Object>) map_ret.get("line");
 
@@ -821,8 +875,6 @@ public class AppApiHelper extends BaseHelperImpl {
 	}
 
 	public TaOee getTt(HashMap<String, Object> wf) {
-		String T1 = wf.get("T1").toString();
-		String T2 = wf.get("T2").toString();
 		String time_type = wf.get("time_type").toString();
 		String time_value = wf.get("time_value").toString();
 		String sql = "select T.* from tbl_tt as T" + " where time_value = '" + time_value + "'"
@@ -832,181 +884,16 @@ public class AppApiHelper extends BaseHelperImpl {
 			Tt tt = (Tt) list_tt.get(0);
 			TaOee taoee = new TaOee();
 			taoee.setTa(tt.getTa());
+			taoee.setOee(tt.getOee());
 			return taoee;
 		}else{
 			TaOee taoee = new TaOee();
 			return taoee;
 		}
 	}
-	public HashMap<String, Object> processUserForReport(List list, HashMap<String, Object> wf) {
-		// ASSUME LIST REPORT AS SAME DAYS
-		HashMap<Integer, Object> map_linedata = new HashMap<Integer, Object>();
-		HashMap<Integer, Object> map_dandata = new HashMap<Integer, Object>();
-		HashMap<Integer, Object> map_order = new HashMap<Integer, Object>();
-		Integer time_type = Integer.valueOf(wf.get("time_type").toString());
-		String T1 = wf.get("T1").toString();
-		String T2 = wf.get("T2").toString();
-		for (Object obj : list) {
-			Report report = (Report) obj;
-			String sql = "";
-			if (time_type == 4) {
-				sql = "select sum(TIMESTAMPDIFF(MINUTE, O.create_datetime, O.complete)) as sum1"
-						+ " from tbl_order as O" 
-						+ " where O.user_id = " + report.getUser_id() 
-						+ " and O.status = 2 "
-						+ " and substring(O.create_datetime,1,10) = '" + T1 + "'";
-			}
-			SessionFactory sessionFactory = this.transactionManager.getSessionFactory();
-			Session session = sessionFactory.openSession();
-			List<Object> ret = new ArrayList<Object>();
-
-			int order_min = 0;
-			try {
-				ret = session.createSQLQuery(sql).list();
-				if (ret.size() > 0) {
-					Object[] iraw_row = (Object[]) ret.get(0);
-					Float sum1 = Float.parseFloat(iraw_row[0].toString());
-					order_min = sum1.intValue();
-				}
-				session.close();
-
-			} catch (Exception e) {
-				session.close();
-			}
-
-			int work_min = this.getTimeDifference(report.getLast_unload_time(), report.getFirst_load_time(), 1);
-			int lunch_min = report.getLunch_time();
-			double ct_value = 0;
-			// 2017-12-04 14:57:00
-			//
-			String report_time = report.getCreate_datetime();
-			// get day part.
-			User reporter = this.userService.getUserById(report.getUser_id());
-			Dan dan = this.danService.getDanById(reporter.getDan());
-			Line line = this.lineService.getLineById(dan.getLine());
-			sql = "Select C.* from ct where line = " + line.getId();
-			List list_ct = this.sqlQuery(Ct.class, this.ctService, sql, 1);
-			if (list_ct.size() > 0) {
-				Ct ct = (Ct) list_ct.get(0);
-				String report_hr = report_time.substring(12, 13);
-				if (Integer.parseInt(report_hr) > 12) {
-					ct_value = ct.getV2();
-				} else {
-					ct_value = ct.getV1();
-				}
-			}
-			double ta = (work_min - lunch_min - order_min) / (work_min - lunch_min);
-			double oee = report.getOutput() * ct_value / (work_min - lunch_min);
-
-			if (map_linedata.containsKey(line.getId())) {
-				List<TaOee> ilist = (List<TaOee>) map_linedata.get(line.getId());
-				TaOee taoee = new TaOee();
-				taoee.setTa(ta);
-				taoee.setOee(oee);
-				ilist.add(taoee);
-			} else {
-				List<TaOee> ilist = new ArrayList<TaOee>();
-				TaOee taoee = new TaOee();
-				taoee.setTa(ta);
-				taoee.setOee(oee);
-				ilist.add(taoee);
-				map_linedata.put(line.getId(), ilist);
-			}
-
-			if (wf.containsKey("calculate_dan")) {
-				if (map_dandata.containsKey(dan.getId())) {
-					List<TaOee> ilist = (List<TaOee>) map_dandata.get(dan.getId());
-					TaOee taoee = new TaOee();
-					taoee.setTa(ta);
-					taoee.setOee(oee);
-					ilist.add(taoee);
-				} else {
-					List<TaOee> ilist = new ArrayList<TaOee>();
-					TaOee taoee = new TaOee();
-					taoee.setTa(ta);
-					taoee.setOee(oee);
-					ilist.add(taoee);
-					map_dandata.put(dan.getId(), ilist);
-				}
-			}
-		}
-
-		//
-
-		HashMap<Integer, Object> map_line_ret = new HashMap<Integer, Object>();
-		Iterator it = map_linedata.entrySet().iterator();
-
-		while (it.hasNext()) {
-			HashMap.Entry pair = (HashMap.Entry) it.next();
-			Integer key = (Integer) pair.getKey();
-			List<TaOee> ilist = (List<TaOee>) pair.getValue();
-			double sum_ta = 0;
-			double sum_oee = 0;
-			double ta = 0;
-			double oee = 0;
-			for (TaOee taoee : ilist) {
-				sum_ta = sum_ta + taoee.getTa();
-				sum_oee = sum_oee + taoee.getOee();
-			}
-			if (sum_ta > 0) {
-				ta = sum_ta / ilist.size();
-			}
-			if (sum_oee > 0) {
-				oee = sum_oee / ilist.size();
-			}
-			TaOee taoee = new TaOee();
-			taoee.setOee(sum_oee);
-			taoee.setTa(sum_ta);
-
-			HashMap<String, Object> hash = new HashMap<String, Object>();
-			Line line = this.lineService.getLineById(key);
-			hash.put("model_line", this.getHashMapOfObject(line, Line.class, null));
-			hash.put("cal_data", taoee);
-
-			// list_data.add(hash);
-			map_line_ret.put(key, hash);
-		}
-
-		HashMap<Integer, Object> map_dan_ret = new HashMap<Integer, Object>();
-		if (wf.containsKey("calculate_dan")) {
-			it = map_dan_ret.entrySet().iterator();
-			while (it.hasNext()) {
-				HashMap.Entry pair = (HashMap.Entry) it.next();
-				Integer key = (Integer) pair.getKey();
-				List<TaOee> ilist = (List<TaOee>) pair.getValue();
-				double sum_ta = 0;
-				double sum_oee = 0;
-				double ta = 0;
-				double oee = 0;
-				for (TaOee taoee : ilist) {
-					sum_ta = sum_ta + taoee.getTa();
-					sum_oee = sum_oee + taoee.getOee();
-				}
-				if (sum_ta > 0) {
-					ta = sum_ta / ilist.size();
-				}
-				if (sum_oee > 0) {
-					oee = sum_oee / ilist.size();
-				}
-				TaOee taoee = new TaOee();
-				taoee.setOee(sum_oee);
-				taoee.setTa(sum_ta);
-
-				HashMap<String, Object> hash = new HashMap<String, Object>();
-				Dan dan = this.danService.getDanById(key);
-				hash.put("model_dan", this.getHashMapOfObject(dan, Dan.class, null));
-				hash.put("cal_data", taoee);
-
-				// list_data.add(hash);
-				map_dan_ret.put(key, hash);
-			}
-		}
-
-		HashMap<String, Object> map_ret = new HashMap<String, Object>();
-		map_ret.put("line", map_line_ret);
-		map_ret.put("dan", map_dan_ret);
-		return map_ret;
-	}
+	
+	
+	
 
 	public Object search(RestRequest apiRequest) {
 		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
@@ -1015,20 +902,32 @@ public class AppApiHelper extends BaseHelperImpl {
 
 			String term = "%" + key + "%";
 			String sql = "select U.* from tbl_user as U " + " where U.name like '" + term + "'" + " order by U.id asc";
-			List list = this.sqlQuery(Order.class, this.orderService, sql, 1);
+			List list = this.sqlQuery(User.class, this.userService, sql, 1);
 
 			HashMap<String, Object> ret = new HashMap<String, Object>();
 			if (list.size() > 0) {
 				// get info for these users
 				String T = this.getNearestTime();
-				HashMap map_data = new HashMap();
+				HashMap<Integer, Object> map_line_data = new HashMap();
+				HashMap<Integer, Object> map_dan_data = new HashMap();
+				TaOee tt_target = new TaOee();
 				if (T != null) {
 					List list_report = this.getReportForPeriod(T, T, null);
 					HashMap<String, Object> input_param = new HashMap<String, Object>();
 					input_param.put("time_type", 4);
 					input_param.put("T1", T);
 					input_param.put("T2", T);
-					map_data = this.processUserForReport(list_report, input_param);
+					input_param.put("time_value", T);
+					input_param.put("calculate_line", 1);
+					input_param.put("calculate_dan", 1);
+					
+					HashMap<String, Object> map_ret = this.processUserForReport(list_report, input_param);
+					map_line_data = (HashMap<Integer, Object>) map_ret.get("line");
+					map_dan_data = (HashMap<Integer, Object>) map_ret.get("dan");
+					
+					tt_target = this.getTt(input_param);
+				}else{
+					// will be 0 for target
 				}
 				List<Object> list_data = new ArrayList<Object>();
 				for (Object obj : list) {
@@ -1036,19 +935,41 @@ public class AppApiHelper extends BaseHelperImpl {
 					Dan dan = this.danService.getDanById(user.getDan());
 					Line line = this.lineService.getLineById(dan.getLine());
 
-					HashMap<String, Object> map_user = new HashMap<String, Object>();
-					if (map_data.containsKey(line.getId())) {
-						HashMap<String, Object> hash = (HashMap<String, Object>) map_data.get(line.getId());
-						map_user.put("cal_data", hash);
+					
+					// need to get target for today
+					HashMap<String, Object> map_user = this.getHashMapOfObject(user, User.class, null);
+					if (map_line_data.containsKey(line.getId())) {
+						HashMap<String, Object> hash = (HashMap<String, Object>) map_line_data.get(line.getId());
+						Object cal_data = hash.get("cal_data");
+						
+						HashMap<String, Object> map_line = this.getHashMapOfObject(line, Line.class, null);
+						map_line.put("model_tt", tt_target);
+						map_line.put("model_cal", cal_data);
+						map_user.put("model_line", map_line);
 					} else {
 						TaOee taoee = new TaOee();
-
-						HashMap<String, Object> hash = new HashMap<String, Object>();
-						hash.put("model_line", this.getHashMapOfObject(line, Line.class, null));
-						hash.put("cal_data", taoee);
-						map_user.put("cal_data", hash);
+						HashMap<String, Object> map_line = this.getHashMapOfObject(line, Line.class, null);
+						map_line.put("model_tt", tt_target);
+						map_line.put("model_cal", taoee);
+						map_user.put("model_line", map_line);
 					}
-					list_data.add(user);
+					
+					if (map_dan_data.containsKey(line.getId())) {
+						HashMap<String, Object> hash = (HashMap<String, Object>) map_dan_data.get(dan.getId());
+						Object cal_data = hash.get("cal_data");
+						
+						HashMap<String, Object> map_dan = this.getHashMapOfObject(dan, Dan.class, null);
+						map_dan.put("model_tt", tt_target);
+						map_dan.put("model_cal", cal_data);
+						map_user.put("model_dan", map_dan);
+					} else {
+						TaOee taoee = new TaOee();
+						HashMap<String, Object> map_dan = this.getHashMapOfObject(dan, Dan.class, null);
+						map_dan.put("model_tt", tt_target);
+						map_dan.put("model_cal", taoee);
+						map_user.put("model_dan", map_dan);
+					}
+					list_data.add(map_user);
 				}
 				ret.put("list_user", list_data);
 
@@ -1056,7 +977,13 @@ public class AppApiHelper extends BaseHelperImpl {
 				// work
 				sql = "select O.* from tbl_order as O" + " where O.p_desc like '" + term + "'";
 				list = this.sqlQuery(Order.class, this.orderService, sql, 1);
-				ret.put("list_order", list);
+				List<Object> list_data = new ArrayList<Object>();
+				for(Object obj:list){
+					Order order = (Order)obj;
+					Object info = this.getOrderInfo(order, 1);
+					list_data.add(info);
+				}
+				ret.put("list_order", list_data);
 			}
 
 			ret.put("response", 200);
@@ -1097,6 +1024,89 @@ public class AppApiHelper extends BaseHelperImpl {
 		return null;
 	}
 
+	public Object save_token(RestRequest apiRequest) {
+		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
+		if (wf.containsKey("id")&&wf.containsKey("token")) {
+			Integer id = Integer.valueOf(wf.get("id").toString());
+			String token = wf.get("token").toString();
+			User user = this.userService.getUserById(id);
+			if(user!=null){
+				String sql = "select * from tbl_user where token = '"+token+"'";
+				List list = this.sqlQuery(User.class, this.userService, sql, 1);
+				for(Object obj:list){
+					User iuser = (User)obj;
+					iuser.setToken("");
+					this.userService.updateUser(iuser);
+				}
+				user.setToken(token);
+				this.userService.updateUser(user);
+				HashMap<String, Object> ret = new HashMap<String, Object>();
+				ret.put("response", 200);
+				return ret;
+			}
+			
+		} else {
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "id or token not come");
+			return ret;
+		}
+		return null;
+	}
+	public Object user_logout(RestRequest apiRequest) {
+		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
+		if (wf.containsKey("id")) {
+			Integer id = Integer.valueOf(wf.get("id").toString());
+			User user = this.userService.getUserById(id);
+			if(user!=null){
+				user.setToken("");
+				this.userService.updateUser(user);
+				HashMap<String, Object> ret = new HashMap<String, Object>();
+				ret.put("response", 200);
+				return ret;
+			}
+			
+		} else {
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "id not come");
+			return ret;
+		}
+		return null;
+	}
+	public Object get_pushdata(RestRequest apiRequest) {
+		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
+		if(wf.containsKey("user_id")){
+			String user_id = wf.get("user_id").toString();
+			String sql = "select * from tbl_rec_daily order by id desc limit 30";
+			List list = this.sqlQuery(RecDaily.class, this.recDailyService, sql, 1);
+							
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("list_noti", list);
+			
+			// get push data
+			sql = "select * from tbl_rec_oac"
+					+" where receiver_id = "+user_id
+					+" order by id desc"
+					;
+			list = this.sqlQuery(RecOac.class, this.recOacService, sql, 1);
+			ret.put("list_info", list);
+			
+			for(Object obj:list){
+				RecOac ro = (RecOac)obj;
+				this.recOacService.removeRecOac(ro.getId());
+			}
+			ret.put("response", 200);
+			return ret;
+		}else{
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "user_id not come");
+			return ret;
+		}
+		
+	}
+	
+	
+
+	
 	public Object assign_workorder(RestRequest apiRequest) {
 		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
 		if (wf.containsKey("sender_id") && wf.containsKey("receiver_id") && wf.containsKey("order_id")) {
@@ -1109,7 +1119,7 @@ public class AppApiHelper extends BaseHelperImpl {
 			String sql = "select R.* from tbl_order_relation as R" + " where R.order_id = '" + order_id + "'"
 					+ " and R.receiver_id = " + sender_id;
 			List list = this.sqlQuery(OrderRelation.class, this.orderRelationService, sql, 1);
-			String d = this.getCurrentTime(0);
+			String d = this.getDateTime(0);
 			if (list.size() > 0) {
 				OrderRelation temp = (OrderRelation) list.get(0);
 				temp.setR_time(d);
@@ -1129,6 +1139,12 @@ public class AppApiHelper extends BaseHelperImpl {
 				Object model_or = this.modelNew(OrderRelation.class, this.orderService,
 						this.getHashMapOfObject(or, OrderRelation.class, null), 1);
 				if (model_or != null) {
+					HashMap<String, Object> inputParam = new HashMap<String, Object>();
+					inputParam.put("receiver_id", or.getReceiver_id());
+					inputParam.put("sender_id",or.getSender_id());
+					inputParam.put("order_id",order_id);
+					inputParam.put("order_type","assign_workorder");
+					this.sendOrderPush(inputParam);
 					HashMap<String, Object> ret = new HashMap<String, Object>();
 					ret.put("response", 200);
 					return ret;
@@ -1137,6 +1153,84 @@ public class AppApiHelper extends BaseHelperImpl {
 		} else {
 			HashMap<String, Object> ret = new HashMap<String, Object>();
 			ret.put("message", "sender_id receiver_id order_id not come");
+			return ret;
+		}
+		return null;
+	}
+	public Object sendOrderPush(HashMap<String, Object> wf){
+		Integer sender_id = Integer.valueOf(wf.get("sender_id").toString());
+		Integer receiver_id = Integer.valueOf(wf.get("receiver_id").toString());
+		Integer order_id = Integer.valueOf(wf.get("order_id").toString());
+		String order_type = wf.get("order_type").toString();
+		
+		User receiver = this.userService.getUserById(Integer.valueOf(receiver_id));
+		User sender = this.userService.getUserById(Integer.valueOf(sender_id));
+		// add table first
+		String text = sender.getName()+ " assigns you a workorder";
+		RecOac recoac = new RecOac();
+		recoac.setSender_id(sender_id);
+		recoac.setReceiver_id(receiver_id);
+		recoac.setContent(text);
+		String d = this.getDateTime(0);
+		recoac.setCreate_datetime(d);
+		recoac.setModify_datetime(d);
+		recoac.setDeleted(0);
+		int id = this.recOacService.addRecOac(recoac);
+		if(id>0){
+			recoac.setId(id);
+			HashMap<String,Object> map_msg = new HashMap<String,Object>();
+			map_msg.put("title", order_type);
+			map_msg.put("description", text);
+			
+			AndroidPushMsgToSingleDevice push = new AndroidPushMsgToSingleDevice();
+			try {
+				
+				push.sendPush(map_msg,receiver.getToken());
+				
+				HashMap<String, Object> ret = new HashMap<String, Object>();
+				ret.put("response", 200);
+				return ret;
+			} catch (PushClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PushServerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return null;
+		
+	}
+	
+	public Object accept_work_order(RestRequest apiRequest) {
+		HashMap<String, Object> wf = (HashMap<String, Object>) apiRequest.model;
+		if (wf.containsKey("workorder_id") && wf.containsKey("user_id")) {
+			// &&wf.containsKey("r_time")
+			Integer user_id = Integer.valueOf(wf.get("user_id").toString());
+			Integer workorder_id = Integer.valueOf(wf.get("workorder_id").toString());
+
+			String nulltime = "0000-00-00 00:00:00";
+			String sql = "select R.* from tbl_order_relation as R" 
+					+ " where R.order_id = " + workorder_id  
+					+ " and R.receiver_id = " + user_id;
+			List list = this.sqlQuery(OrderRelation.class, this.orderRelationService, sql, 1);
+			String d = this.getDateTime(0);
+			if (list.size() == 1) {
+				OrderRelation temp = (OrderRelation) list.get(0);
+				temp.setR_time(d);
+				this.orderRelationService.updateOrderRelation(temp);
+				
+				HashMap<String, Object> ret = new HashMap<String, Object>();
+				ret.put("response", 200);
+				return ret;
+			}
+		} else {
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+			ret.put("message", "workorder_id user_id  not come");
 			return ret;
 		}
 		return null;
@@ -1342,8 +1436,10 @@ public class AppApiHelper extends BaseHelperImpl {
 
 		List<Line> list_line = this.lineService.listLines();
 		HashMap<Integer, Dan> map_dan = this.danService.mapDans();
+		HashMap<Integer, UserRole> map_userrole = this.userRoleService.mapUserRoles();
 
 		List<Object> list_data = new ArrayList<Object>();
+		
 		for (Line line : list_line) {
 			String sql = "select U.* from tbl_user as U " + " JOIN tbl_dan as D ON D.id = U.dan"
 					+ " JOIN tbl_line as L ON L.id = D.line" + " where L.id =" + line.getId();
@@ -1354,8 +1450,12 @@ public class AppApiHelper extends BaseHelperImpl {
 				User user = (User) obj;
 				Integer dan_id = Integer.valueOf(user.getDan());
 				Dan dan = map_dan.get(dan_id);
+				UserRole ur = map_userrole.get(user.getType());
+				
 				HashMap<String, Object> map_user = this.getHashMapOfObject(user, User.class, null);
 				map_user.put("model_dan", this.getHashMapOfObject(dan, Dan.class, null));
+				map_user.put("model_userrole", this.getHashMapOfObject(ur, UserRole.class, null));
+				
 				ilist_user.add(map_user);
 			}
 			HashMap<String, Object> map_line = this.getHashMapOfObject(line, Line.class, null);
@@ -1408,7 +1508,7 @@ public class AppApiHelper extends BaseHelperImpl {
 					picture.setType(0);
 					picture.setFilename(filename);
 					picture.setDeleted(0);
-					String time = getCurrentTime(0);
+					String time = getDateTime(0);
 					picture.setCreate_datetime(time);
 					picture.setModify_datetime(time);
 					int id = this.pictureService.addPicture(picture);
@@ -1432,7 +1532,7 @@ public class AppApiHelper extends BaseHelperImpl {
 			String error_id = request.getParameter("error_id");
 			String feedback = request.getParameter("feedback");
 
-			String time = getCurrentTime(0);
+			String time = getDateTime(0);
 			HashMap<String, Object> non_safe = new HashMap<String, Object>();
 			non_safe.put("id", order_id);
 			non_safe.put("error_id", error_id);
@@ -1472,7 +1572,7 @@ public class AppApiHelper extends BaseHelperImpl {
 					
 					picture.setFilename(file_names.get(i));
 					picture.setDeleted(0);
-					time = getCurrentTime(0);
+					time = getDateTime(0);
 					picture.setCreate_datetime(time);
 					picture.setModify_datetime(time);
 					int id = this.pictureService.addPicture(picture);
