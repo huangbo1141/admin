@@ -50,6 +50,9 @@ public class Constants {
 	public static final String PUSH_APIKEY = 	"smGStwBYsGgCLfLlO9Dr8iT7";
 	public static final String PUSH_SECRETKEY = 	"ABGrBzKTgfPF9QG39Q3tIyKC3d8wAGCH";
 	
+	public static final String PUSH_MASTERSECRET = 	"01fe4a763f19309f8b0901ec";
+	public static final String PUSH_APPKEY = 	"9a7b099d09c72a1a8986c0a6";
+	
 	public static final Integer USERTYPE_PRODUCTION = 1;
 	public static final Integer USERTYPE_QUALITY = 2;
 	public static final Integer USERTYPE_MAINTENANCE = 3;

@@ -101,43 +101,56 @@ public class AppApiHelper extends BaseHelperImpl {
 
 	public Object get_userinfo(RestRequest apiRequest) {
 		HashMap<String, Object> wF = (HashMap<String, Object>) apiRequest.model;
-		if (wF.containsKey("id")) {
+		if (wF.containsKey("id") && wF.containsKey("token")) {
+			Integer id = Integer.parseInt(wF.get("id").toString());
+			User user = this.userService.getUserById(id);
+			if(user==null)
+				return null;
 			
-			List list = this.modelQuery(User.class, this.userService, apiRequest.model, 1);
-			if (list.size() > 0) {
-				User user = (User) list.get(0);
-				
-				HashMap<String, Object> uf = this.getUserInfo(user);
-				// ret.put("user", user);
-				HashMap<String, Object> map_user = this.getHashMapOfObject(user, User.class, null);
-				if (uf.containsKey("dan")) {
-					map_user.put("model_dan", uf.get("dan"));
-				}
-				if (uf.containsKey("line")) {
-					map_user.put("model_line", uf.get("line"));
-				}
-				if (uf.containsKey("userrole")) {
-					map_user.put("model_userrole", uf.get("userrole"));
-				}
-				if (uf.containsKey("userpart")) {
-					map_user.put("model_userpart", uf.get("userpart"));
-				}
-				HashMap<String, Object> ret = new HashMap<String, Object>();
-
-				String sql = "select * from tbl_announce " + " order by time desc";
-				List list_announce = this.sqlQuery(Announce.class, this.announceService, sql, 1);
-
-				ret.put("response", 200);
-				ret.put("user", map_user);
-				ret.put("list_announce", list_announce);
-				return ret;
+			String token = wF.get("token").toString();
+			String sql = "select * from tbl_user where token = '"+token+"'";
+			List list = this.sqlQuery(User.class, this.userService, sql, 1);
+			for(Object obj:list){
+				User iuser = (User)obj;
+				iuser.setToken("");
+				this.userService.updateUser(iuser);
 			}
+			
+			wF.remove("token");
+
+			user = this.userService.getUserById(user.getId());
+			user.setToken(token);
+			this.userService.updateUser(user);
+			
+			HashMap<String, Object> uf = this.getUserInfo(user);
+			// ret.put("user", user);
+			HashMap<String, Object> map_user = this.getHashMapOfObject(user, User.class, null);
+			if (uf.containsKey("dan")) {
+				map_user.put("model_dan", uf.get("dan"));
+			}
+			if (uf.containsKey("line")) {
+				map_user.put("model_line", uf.get("line"));
+			}
+			if (uf.containsKey("userrole")) {
+				map_user.put("model_userrole", uf.get("userrole"));
+			}
+			if (uf.containsKey("userpart")) {
+				map_user.put("model_userpart", uf.get("userpart"));
+			}
+			HashMap<String, Object> ret = new HashMap<String, Object>();
+
+			sql = "select * from tbl_announce " + " order by time desc";
+			List list_announce = this.sqlQuery(Announce.class, this.announceService, sql, 1);
+
+			ret.put("response", 200);
+			ret.put("user", map_user);
+			ret.put("list_announce", list_announce);
+			return ret;
 		} else {
 			HashMap<String, Object> ret = new HashMap<String, Object>();
-			ret.put("message", "id not come");
+			ret.put("message", "id or token not come");
 			return ret;
 		}
-		return null;
 	}
 	
 	public HashMap<String, Object> filterModel(RestRequest apiRequest) {
@@ -196,7 +209,7 @@ public class AppApiHelper extends BaseHelperImpl {
 			
 			HashMap<String,Object> map_msg = new HashMap<String,Object>();
 			map_msg.put("title", "Test");
-			map_msg.put("description", message);
+			map_msg.put("alert", message);
 			
 			AndroidPushMsgToSingleDevice push = new AndroidPushMsgToSingleDevice();
 			try {
@@ -591,7 +604,7 @@ public class AppApiHelper extends BaseHelperImpl {
 
 	public String getNearestTime() {
 		String sql = "select R.id,(TIMESTAMPDIFF(	DAY ,DATE_FORMAT( NOW() ,'%Y-%c-%d'	) ,	DATE_FORMAT( R.create_datetime ,'%Y-%c-%d' ))) as DAY"
-				+ " ,R.create_datetime " + " from tbl_report as R" + " order by DAY asc limit 5";
+				+ " ,R.create_datetime " + " from tbl_report as R" + " order by DAY desc limit 5";
 		SessionFactory sf = this.transactionManager.getSessionFactory();
 		Session session = sf.openSession();
 		List<Object> temp = session.createSQLQuery(sql).list();
@@ -1180,7 +1193,7 @@ public class AppApiHelper extends BaseHelperImpl {
 			recoac.setId(id);
 			HashMap<String,Object> map_msg = new HashMap<String,Object>();
 			map_msg.put("title", order_type);
-			map_msg.put("description", text);
+			map_msg.put("alert", text);
 			
 			AndroidPushMsgToSingleDevice push = new AndroidPushMsgToSingleDevice();
 			try {
@@ -1566,8 +1579,10 @@ public class AppApiHelper extends BaseHelperImpl {
 					picture.setRef_type1(Order.class.getSimpleName());
 					if (fname.endsWith(".jpg")) {
 						picture.setType(0);
-					} else {
+					} else if (fname.endsWith(".mp4")) {
 						picture.setType(1);
+					}else {
+						picture.setType(2);
 					}
 					
 					picture.setFilename(file_names.get(i));
